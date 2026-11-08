@@ -36,7 +36,7 @@ class AgyCliProvider(BaseSubprocessCliProvider):
             models: list[ModelOption] = []
             for line in clean_lines:
                 # Match: "<model_id>    <Label>"
-                parts = re.split(r"\s{2,}", line, maxsplit=1)
+                parts = re.split(r"\s+", line.strip(), maxsplit=1)
                 if len(parts) == 2:
                     m_id, m_label = parts[0].strip(), parts[1].strip()
                 elif len(parts) == 1 and parts[0]:

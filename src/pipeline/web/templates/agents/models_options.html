@@ -1,5 +1,5 @@
 {% for m in models %}
-  <option value="{{ m.id }}" {% if selected_model == m.id %}selected{% endif %}>{{ m.label }}</option>
+  <option value="{{ m.model_id }}" {% if selected_model == m.model_id %}selected{% endif %}>{{ m.label }}</option>
 {% else %}
   <option value="" disabled selected>Nenhum modelo encontrado para este provedor</option>
 {% endfor %}

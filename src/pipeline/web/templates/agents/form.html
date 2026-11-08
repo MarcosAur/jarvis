@@ -38,7 +38,7 @@
           <div style="display: flex; gap: 0.5rem;">
             <select id="model_id_select" name="model_id" required style="flex-grow: 1;">
               {% for m in models %}
-                <option value="{{ m.id }}" {% if agent and agent.model_id == m.id %}selected{% endif %}>{{ m.label }}</option>
+                <option value="{{ m.model_id }}" {% if agent and agent.model_id == m.model_id %}selected{% endif %}>{{ m.label }}</option>
               {% else %}
                 <option value="" disabled selected>Nenhum modelo disponível</option>
               {% endfor %}
