@@ -11,6 +11,9 @@ class Config(BaseSettings):
     DATA_DIR: Path = BASE_DIR / "data"
     LOGS_DIR: Path = BASE_DIR / "logs"
 
+    # Timeout para execuções de agentes de IA nas CLIs (em segundos, padrão 10 minutos)
+    CLI_TIMEOUT_SECONDS: int = 600
+
     # Default provider secrets/keys (opcionais, fallback se não informados no DB)
     GITHUB_TOKEN: str | None = None
     GITHUB_OWNER: str | None = None

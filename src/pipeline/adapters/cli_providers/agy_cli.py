@@ -76,7 +76,7 @@ class AgyCliProvider(BaseSubprocessCliProvider):
         ]
 
         try:
-            raw_output = self._run_cmd(cmd, cwd=req.working_dir, timeout=300)
+            raw_output = self._run_cmd(cmd, cwd=req.working_dir)
             try:
                 data = json.loads(raw_output)
                 output_text = data.get("response") or data.get("text") or data.get("content") or raw_output

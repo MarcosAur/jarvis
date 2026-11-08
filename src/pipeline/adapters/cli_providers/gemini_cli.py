@@ -30,7 +30,7 @@ class GeminiCliProvider(BaseSubprocessCliProvider):
         ]
 
         try:
-            output = self._run_cmd(cmd, cwd=req.working_dir, timeout=300)
+            output = self._run_cmd(cmd, cwd=req.working_dir)
             return CliPromptResult(
                 success=True,
                 output_text=output,

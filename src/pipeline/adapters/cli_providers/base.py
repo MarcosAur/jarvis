@@ -2,6 +2,7 @@ import os
 import shutil
 import subprocess
 from pathlib import Path
+from pipeline.config import config
 from pipeline.domain.exceptions import ProviderExecutionError, ProviderNotInstalledError
 
 
@@ -25,10 +26,11 @@ class BaseSubprocessCliProvider:
         self,
         args: list[str],
         cwd: Path | None = None,
-        timeout: int = 120,
+        timeout: int | None = None,
         env: dict[str, str] | None = None,
     ) -> str:
         self._ensure_installed()
+        actual_timeout = timeout if timeout is not None else config.CLI_TIMEOUT_SECONDS
         full_env = os.environ.copy()
         if env:
             full_env.update(env)
@@ -40,7 +42,7 @@ class BaseSubprocessCliProvider:
                 env=full_env,
                 capture_output=True,
                 text=True,
-                timeout=timeout,
+                timeout=actual_timeout,
                 check=False,
             )
             if result.returncode != 0:
@@ -48,7 +50,7 @@ class BaseSubprocessCliProvider:
                 raise ProviderExecutionError(f"Error executing '{self.binary_name}': {err_msg}")
             return result.stdout.strip()
         except subprocess.TimeoutExpired as e:
-            raise ProviderExecutionError(f"Command '{self.binary_name}' timed out after {timeout} seconds.") from e
+            raise ProviderExecutionError(f"Command '{self.binary_name}' timed out after {actual_timeout} seconds.") from e
         except Exception as e:
             if isinstance(e, ProviderExecutionError):
                 raise
