@@ -108,6 +108,16 @@ class JobRunnerService:
                 if job.target_column_snapshot and settings.active_project_provider:
                     p_provider = project_registry.get_or_none(settings.active_project_provider)
                     if p_provider:
+                        warnings = []
+                        try:
+                            p_provider.add_comment(
+                                project.project_key,
+                                card.remote_id,
+                                f"🤖 **Agente {agent.name}** ({provider_key}/{model_id}):\n\n{res.output_text}",
+                                settings.provider_settings,
+                            )
+                        except Exception as e:
+                            warnings.append(f"Falha ao comentar no card: {e}")
                         try:
                             p_provider.move_card(
                                 project.project_key,
@@ -115,14 +125,6 @@ class JobRunnerService:
                                 job.target_column_snapshot,
                                 settings.provider_settings,
                             )
-                            # Add comment with AI response
-                            p_provider.add_comment(
-                                project.project_key,
-                                card.remote_id,
-                                f"🤖 **Agente {agent.name}** ({provider_key}/{model_id}):\n\n{res.output_text}",
-                                settings.provider_settings,
-                            )
-                            # Update local card column
                             uow.cards.update(card.id, column_name=job.target_column_snapshot)
                             uow.events.create(
                                 card_id=card.id,
@@ -130,9 +132,10 @@ class JobRunnerService:
                                 from_column=card.column_name,
                                 to_column=job.target_column_snapshot,
                             )
-                        except Exception:
-                            # Card movement non-blocking on error
-                            pass
+                        except Exception as e:
+                            warnings.append(f"Falha ao mover o card: {e}")
+                        if warnings:
+                            uow.jobs.update(job_id, error=" | ".join(warnings))
                 uow.commit()
                 return {"success": True, "job_id": job_id, "output": res.output_text}
             else:

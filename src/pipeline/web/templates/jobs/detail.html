@@ -90,10 +90,12 @@
       {% if job.output_summary %}
         <label>Resumo / Saída do Agente:</label>
         <pre class="agent-prompt-preview">{{ job.output_summary }}</pre>
-      {% elif job.error %}
-        <label style="color: #d32f2f;">Erro de Execução:</label>
+      {% endif %}
+      {% if job.error %}
+        <label style="color: #d32f2f;">{% if job.state == 'succeeded' %}Avisos (job concluído, mas com falha ao atualizar o quadro){% else %}Erro de Execução{% endif %}:</label>
         <pre class="agent-prompt-preview" style="color: #d32f2f;">{{ job.error }}</pre>
-      {% else %}
+      {% endif %}
+      {% if not job.output_summary and not job.error %}
         <p style="color: var(--pico-muted-color);">O job ainda não foi executado ou está pendente.</p>
       {% endif %}
     </article>

@@ -339,17 +339,43 @@ class GitHubProjectProvider:
         markdown: str,
         settings: dict[str, Any],
     ) -> None:
-        # For full issues, comments are added to issue node ID
+        """Comenta na issue/PR do item; para draft issues, anexa ao corpo do rascunho."""
         token = self._get_token(settings)
-        mutation = """
-        mutation($subjectId: ID!, $body: String!) {
-          addComment(input: { subjectId: $subjectId, body: $body }) {
-            commentEdge { node { id } }
+        query = """
+        query($id: ID!) {
+          node(id: $id) {
+            ... on ProjectV2Item {
+              content {
+                __typename
+                ... on Issue { id }
+                ... on PullRequest { id }
+                ... on DraftIssue { id title body }
+              }
+            }
           }
         }
         """
-        try:
-            self._execute_graphql(token, mutation, {"subjectId": remote_card_id, "body": markdown})
-        except Exception:
-            # Non-blocking for comments
-            pass
+        data = self._execute_graphql(token, query, {"id": remote_card_id})
+        content = (data.get("node") or {}).get("content") or {}
+        kind = content.get("__typename")
+        if kind in ("Issue", "PullRequest"):
+            mutation = """
+            mutation($subjectId: ID!, $body: String!) {
+              addComment(input: { subjectId: $subjectId, body: $body }) {
+                commentEdge { node { id } }
+              }
+            }
+            """
+            self._execute_graphql(token, mutation, {"subjectId": content["id"], "body": markdown})
+        elif kind == "DraftIssue":
+            mutation = """
+            mutation($draftId: ID!, $body: String!) {
+              updateProjectV2DraftIssue(input: { draftIssueId: $draftId, body: $body }) {
+                draftIssue { id }
+              }
+            }
+            """
+            new_body = f"{content.get('body') or ''}\n\n---\n\n{markdown}".strip()
+            self._execute_graphql(token, mutation, {"draftId": content["id"], "body": new_body})
+        else:
+            raise BoardError("Card sem conteúdo (issue/PR/rascunho) para receber comentário.")
