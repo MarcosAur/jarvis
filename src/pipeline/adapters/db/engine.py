@@ -37,3 +37,10 @@ def get_engine(db_url: str | None = None):
 def init_db(engine=None) -> None:
     eng = engine or get_engine()
     SQLModel.metadata.create_all(eng)
+
+
+def reset_engine() -> None:
+    global _engine
+    if _engine is not None:
+        _engine.dispose()
+        _engine = None
