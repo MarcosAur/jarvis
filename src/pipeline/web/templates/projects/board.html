@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Quadro: {{ project.name }} — AI Pipeline{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+  <div>
+    <h2>Quadro Espelhado: {{ project.name }}</h2>
+    <p>Chave: <code>{{ project.project_key }}</code> &bull; Repositório: <code>{{ project.local_path }}</code></p>
+  </div>
+  <div style="display: flex; gap: 0.5rem;">
+    <form method="post" action="/projects/{{ project.id }}/run" style="margin: 0;">
+      <button type="submit" style="margin: 0; background-color: #2e7d32; border-color: #2e7d32; color: #fff;">▶ Rodar Pipeline Agora</button>
+    </form>
+    <a href="/projects" role="button" class="secondary outline" style="margin: 0;">Voltar</a>
+  </div>
+</div>
+
+<div class="kanban-board">
+  {% for col in columns %}
+    {% set col_cards = cards_by_column.get(col.column_name.strip().lower(), []) %}
+    <div class="kanban-col">
+      <div class="kanban-col-header">
+        <div>
+          <span>{{ col.column_name }}</span>
+          {% if col.agent %}
+            <br><small style="font-weight: normal; color: var(--pico-primary);">🤖 {{ col.agent.name }}</small>
+          {% endif %}
+        </div>
+        <span class="badge">{{ col_cards|length }}</span>
+      </div>
+
+      <div class="kanban-col-cards">
+        {% for card in col_cards %}
+          <div class="kanban-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+              <span class="badge badge-info">
+                {% if card.issue_number %}#{{ card.issue_number }}{% else %}Card{% endif %}
+              </span>
+              {% if card.rework_count > 0 %}
+                <span class="badge badge-rework" title="Retrabalho: voltou {{ card.rework_count }}x para arquitetura">
+                  ↺ Retrabalho ({{ card.rework_count }})
+                </span>
+              {% endif %}
+            </div>
+
+            <div class="kanban-card-title">
+              {% if card.url %}
+                <a href="{{ card.url }}" target="_blank" rel="noopener">{{ card.title }}</a>
+              {% else %}
+                {{ card.title }}
+              {% endif %}
+            </div>
+
+            {% if card.body %}
+              <div class="kanban-card-body">{{ card.body }}</div>
+            {% endif %}
+
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; margin-top: 0.5rem; color: var(--pico-muted-color);">
+              <span>Visto: {{ card.last_seen_at.strftime('%d/%m %H:%M') if card.last_seen_at else '' }}</span>
+              <a href="/cards/{{ card.id }}" style="font-size: 0.75rem;">Histórico &rarr;</a>
+            </div>
+          </div>
+        {% else %}
+          <div style="text-align: center; color: var(--pico-muted-color); font-size: 0.85rem; padding: 2rem 0;">
+            Vazio
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Agentes de IA — AI Pipeline{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+  <div>
+    <h2>CRUD 1 — Agentes de IA</h2>
+    <p>Agentes inteligentes configurados com CLI local e modelos de IA para atuar nas etapas do Kanban.</p>
+  </div>
+  <a href="/agents/new" role="button">＋ Novo Agente</a>
+</div>
+
+<article>
+  <table role="grid">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Provedor CLI</th>
+        <th>Modelo</th>
+        <th>Status</th>
+        <th style="text-align: right;">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for a in agents %}
+        <tr>
+          <td><strong>{{ a.name }}</strong></td>
+          <td><span class="badge badge-info">{{ a.cli_provider }}</span></td>
+          <td><code>{{ a.model_id }}</code></td>
+          <td>
+            {% if a.active %}
+              <span class="badge badge-success">Ativo</span>
+            {% else %}
+              <span class="badge badge-danger">Inativo</span>
+            {% endif %}
+          </td>
+          <td style="text-align: right;">
+            <div class="table-actions" style="justify-content: flex-end;">
+              <a href="/agents/{{ a.id }}/edit" role="button" class="secondary outline">Editar</a>
+              <form method="post" action="/agents/{{ a.id }}/toggle" style="display:inline; margin:0;">
+                <button type="submit" class="outline" style="margin:0;">
+                  {% if a.active %}Pausar{% else %}Ativar{% endif %}
+                </button>
+              </form>
+              <form method="post" action="/agents/{{ a.id }}/delete" style="display:inline; margin:0;" onsubmit="return confirm('Excluir este agente?');">
+                <button type="submit" class="danger outline" style="margin:0;">Excluir</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      {% else %}
+        <tr>
+          <td colspan="5" style="text-align: center; color: var(--pico-muted-color);">Nenhum agente cadastrado ainda.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</article>
+{% endblock %}

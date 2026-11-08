@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Fila de Jobs & Execuções — AI Pipeline{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+  <div>
+    <h2>CRUD 5 — Fila de Jobs & Execuções</h2>
+    <p>Tarefas geradas pela pipeline para cada card nas colunas de agentes. Controle total de execução e auditoria.</p>
+  </div>
+  <div>
+    <a href="/jobs/new" role="button">＋ Enfileirar Job Manual</a>
+  </div>
+</div>
+
+<!-- Filters -->
+<article style="padding: 1rem; margin-bottom: 1.5rem;">
+  <form method="get" action="/jobs" style="margin: 0; display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;">
+    <div style="flex-grow: 1; min-width: 200px;">
+      <label for="project_id" style="margin-bottom: 0.25rem;">Filtrar por Projeto</label>
+      <select id="project_id" name="project_id" style="margin: 0;">
+        <option value="">Todos os Projetos</option>
+        {% for p in projects %}
+          <option value="{{ p.id }}" {% if selected_project_id == p.id %}selected{% endif %}>{{ p.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div style="flex-grow: 1; min-width: 180px;">
+      <label for="state" style="margin-bottom: 0.25rem;">Estado do Job</label>
+      <select id="state" name="state" style="margin: 0;">
+        <option value="">Todos os Estados</option>
+        <option value="pending" {% if selected_state == 'pending' %}selected{% endif %}>Pending (Pendente)</option>
+        <option value="running" {% if selected_state == 'running' %}selected{% endif %}>Running (Em execução)</option>
+        <option value="succeeded" {% if selected_state == 'succeeded' %}selected{% endif %}>Succeeded (Sucesso)</option>
+        <option value="failed" {% if selected_state == 'failed' %}selected{% endif %}>Failed (Falha)</option>
+        <option value="cancelled" {% if selected_state == 'cancelled' %}selected{% endif %}>Cancelled (Cancelado)</option>
+      </select>
+    </div>
+
+    <div>
+      <button type="submit" class="secondary" style="margin: 0;">Filtrar</button>
+    </div>
+  </form>
+</article>
+
+<article>
+  <table role="grid">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Projeto</th>
+        <th>Card</th>
+        <th>Etapa / Coluna</th>
+        <th>Agente / Modelo</th>
+        <th>Estado</th>
+        <th>Criado em</th>
+        <th style="text-align: right;">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for j in jobs %}
+        <tr>
+          <td><strong>#{{ j.id }}</strong></td>
+          <td>{{ j.project_name }}</td>
+          <td>
+            <strong>{{ j.card_title }}</strong>
+            {% if j.card_issue %}<span class="badge badge-info">#{{ j.card_issue }}</span>{% endif %}
+          </td>
+          <td>{{ j.column_name }}</td>
+          <td>
+            <small>{{ j.agent_name }}<br><code>{{ j.cli_provider_snapshot }}/{{ j.model_id_snapshot }}</code></small>
+          </td>
+          <td>
+            {% if j.state == 'pending' %}
+              <span class="badge badge-warning">Pendente</span>
+            {% elif j.state == 'running' %}
+              <span class="badge badge-info">Executando</span>
+            {% elif j.state == 'succeeded' %}
+              <span class="badge badge-success">Sucesso</span>
+            {% elif j.state == 'failed' %}
+              <span class="badge badge-danger">Falhou</span>
+            {% elif j.state == 'cancelled' %}
+              <span class="badge">Cancelado</span>
+            {% endif %}
+          </td>
+          <td><small>{{ j.created_at.strftime('%d/%m %H:%M') }}</small></td>
+          <td style="text-align: right;">
+            <div class="table-actions" style="justify-content: flex-end;">
+              <a href="/jobs/{{ j.id }}" role="button" class="secondary outline">Detalhes</a>
+
+              {% if j.state in ['pending', 'failed', 'cancelled'] %}
+                <form method="post" action="/jobs/{{ j.id }}/run" style="display:inline; margin:0;">
+                  <button type="submit" style="margin:0; background-color: #2e7d32; border-color: #2e7d32; color: #fff;" title="Executar job (dry-run)">▶ Executar</button>
+                </form>
+              {% endif %}
+
+              {% if j.state == 'pending' %}
+                <form method="post" action="/jobs/{{ j.id }}/cancel" style="display:inline; margin:0;">
+                  <button type="submit" class="outline" style="margin:0;">Cancelar</button>
+                </form>
+              {% endif %}
+
+              {% if j.state in ['failed', 'cancelled'] %}
+                <form method="post" action="/jobs/{{ j.id }}/retry" style="display:inline; margin:0;">
+                  <button type="submit" class="secondary outline" style="margin:0;">Retry</button>
+                </form>
+              {% endif %}
+
+              <form method="post" action="/jobs/{{ j.id }}/delete" style="display:inline; margin:0;" onsubmit="return confirm('Remover este job?');">
+                <button type="submit" class="danger outline" style="margin:0;">&times;</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      {% else %}
+        <tr>
+          <td colspan="8" style="text-align: center; color: var(--pico-muted-color);">Nenhum job encontrado.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</article>
+{% endblock %}

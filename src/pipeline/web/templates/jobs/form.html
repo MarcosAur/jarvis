@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Enfileirar Job Manual — AI Pipeline{% endblock %}
+
+{% block content %}
+<article>
+  <header>
+    <h2>Enfileirar Execução Manual de Agente</h2>
+    <p>Selecione o Card e a Etapa/Coluna para forçar a criação de um Job.</p>
+  </header>
+
+  <form method="post" action="/jobs/new">
+    <div class="grid">
+      <div>
+        <label for="project_id">
+          Projeto
+          <select id="project_id" name="project_id" required>
+            {% for p in projects %}
+              <option value="{{ p.id }}">{{ p.name }} ({{ p.project_key }})</option>
+            {% endfor %}
+          </select>
+        </label>
+      </div>
+
+      <div>
+        <label for="flow_column_id">
+          Etapa / Coluna de Destino
+          <select id="flow_column_id" name="flow_column_id" required>
+            {% for c in columns %}
+              <option value="{{ c.id }}">
+                {{ c.column_name }} {% if c.agent %}(🤖 {{ c.agent.name }}){% else %}(Sem agente){% endif %}
+              </option>
+            {% endfor %}
+          </select>
+        </label>
+      </div>
+    </div>
+
+    <label for="card_id">
+      Card do Projeto
+      <select id="card_id" name="card_id" required>
+        {% for card in cards %}
+          <option value="{{ card.id }}">
+            {% if card.issue_number %}#{{ card.issue_number }} - {% endif %}{{ card.title }} (Coluna atual: {{ card.column_name }})
+          </option>
+        {% else %}
+          <option value="" disabled selected>Nenhum card sincronizado ainda. Rode a pipeline em um projeto primeiro.</option>
+        {% endfor %}
+      </select>
+    </label>
+
+    <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+      <button type="submit">Enfileirar Job</button>
+      <a href="/jobs" role="button" class="secondary outline">Cancelar</a>
+    </div>
+  </form>
+</article>
+{% endblock %}

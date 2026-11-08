@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}{% if project %}Editar Projeto{% else %}Novo Projeto{% endif %} — AI Pipeline{% endblock %}
+
+{% block content %}
+<article>
+  <header>
+    <h2>{% if project %}Editar Projeto: {{ project.name }}{% else %}Novo Projeto{% endif %}</h2>
+    <p>Cadastre o vínculo entre o projeto externo e o diretório na máquina local.</p>
+  </header>
+
+  <form method="post" action="{% if project %}/projects/{{ project.id }}/edit{% else %}/projects/new{% endif %}">
+    <div class="grid">
+      <div>
+        <label for="name">
+          Nome do Projeto
+          <input type="text" id="name" name="name" value="{{ project.name if project else '' }}" required placeholder="Ex.: API de Pagamentos">
+        </label>
+      </div>
+
+      <div>
+        <label for="project_key">
+          Chave do Projeto (GitHub / Jira / Trello)
+          <input type="text" id="project_key" name="project_key" value="{{ project.project_key if project else '' }}" required placeholder="Ex.: 3, login/3, URL do GitHub, PROJ-1 ou ID do Trello">
+          <small>Provedor ativo: <strong>{{ active_provider_name }}</strong></small>
+        </label>
+      </div>
+    </div>
+
+    <label for="local_path">
+      Caminho Absoluto na Máquina (local_path)
+      <input type="text" id="local_path" name="local_path" value="{{ project.local_path if project else '' }}" required placeholder="Ex.: /home/maurelio/Projetos/meu_projeto">
+      <small>Onde o código-fonte está clonado na sua máquina.</small>
+    </label>
+
+    <fieldset>
+      <label for="active">
+        <input type="checkbox" id="active" name="active" value="true" {% if not project or project.active %}checked{% endif %}>
+        Projeto Ativo (incluído nas execuções automáticas da pipeline)
+      </label>
+    </fieldset>
+
+    <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+      <button type="submit">Salvar Projeto</button>
+      <a href="/projects" role="button" class="secondary outline">Cancelar</a>
+    </div>
+  </form>
+</article>
+{% endblock %}

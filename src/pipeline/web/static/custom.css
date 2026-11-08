@@ -1,0 +1,154 @@
+/* Custom styles for Pipeline de Desenvolvimento Automático */
+:root {
+  --pico-font-size: 92%;
+}
+
+header nav {
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--pico-muted-border-color);
+  padding-bottom: 0.5rem;
+}
+
+.brand-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 4px;
+  background-color: var(--pico-secondary-background);
+  color: var(--pico-secondary-inverse);
+  margin-right: 0.25rem;
+}
+
+.badge-success {
+  background-color: #2e7d32;
+  color: #fff;
+}
+
+.badge-warning {
+  background-color: #ed6c02;
+  color: #fff;
+}
+
+.badge-danger {
+  background-color: #d32f2f;
+  color: #fff;
+}
+
+.badge-info {
+  background-color: #0288d1;
+  color: #fff;
+}
+
+.badge-rework {
+  background-color: #9c27b0;
+  color: #fff;
+}
+
+.table-actions {
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.table-actions a,
+.table-actions button {
+  padding: 0.25rem 0.6rem;
+  font-size: 0.8rem;
+  margin-bottom: 0;
+}
+
+/* Kanban Board Layout */
+.kanban-board {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(280px, 1fr);
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 1.5rem;
+}
+
+.kanban-col {
+  background-color: var(--pico-card-background-color);
+  border: 1px solid var(--pico-card-border-color);
+  border-radius: var(--pico-border-radius);
+  padding: 0.75rem;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+}
+
+.kanban-col-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 2px solid var(--pico-muted-border-color);
+  font-weight: bold;
+}
+
+.kanban-col-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex-grow: 1;
+}
+
+.kanban-card {
+  background-color: var(--pico-background-color);
+  border: 1px solid var(--pico-muted-border-color);
+  border-radius: 6px;
+  padding: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.kanban-card-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 0.35rem;
+}
+
+.kanban-card-body {
+  font-size: 0.85rem;
+  color: var(--pico-muted-color);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.flash-message {
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: var(--pico-border-radius);
+  background-color: #2e7d32;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flash-message.error {
+  background-color: #d32f2f;
+}
+
+.agent-prompt-preview {
+  background-color: var(--pico-card-background-color);
+  border: 1px solid var(--pico-muted-border-color);
+  border-radius: 6px;
+  padding: 1rem;
+  margin-top: 0.5rem;
+  white-space: pre-wrap;
+  font-family: monospace;
+  font-size: 0.85rem;
+}

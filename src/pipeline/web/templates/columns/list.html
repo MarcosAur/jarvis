@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Colunas do Fluxo — AI Pipeline{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+  <div>
+    <h2>CRUD 3 — Colunas do Fluxo (Kanban)</h2>
+    <p>Defina a estrutura do seu quadro Kanban, quais agentes atuam em cada etapa e para onde os cards avançam.</p>
+  </div>
+  <a href="/columns/new" role="button">＋ Nova Coluna</a>
+</div>
+
+<article>
+  <table role="grid">
+    <thead>
+      <tr>
+        <th style="width: 50px;">#</th>
+        <th>Nome da Coluna</th>
+        <th>Identificador (Slug)</th>
+        <th>Agente Responsável</th>
+        <th>Próxima Coluna</th>
+        <th>Status</th>
+        <th style="text-align: right;">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for col in columns %}
+        <tr>
+          <td><strong>{{ col.order_index }}</strong></td>
+          <td><strong>{{ col.column_name }}</strong></td>
+          <td><code>{{ col.identifier }}</code></td>
+          <td>
+            {% if col.agent %}
+              <span class="badge badge-info">🤖 {{ col.agent.name }}</span>
+              <br><small style="color: var(--pico-muted-color);">{{ col.agent.cli_provider }} / {{ col.agent.model_id }}</small>
+            {% else %}
+              <span class="badge">Manual / Humano</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if col.next_column_name %}
+              &rarr; <strong>{{ col.next_column_name }}</strong>
+            {% else %}
+              <small style="color: var(--pico-muted-color);">(Etapa Final)</small>
+            {% endif %}
+          </td>
+          <td>
+            {% if col.active %}
+              <span class="badge badge-success">Ativa</span>
+            {% else %}
+              <span class="badge badge-danger">Inativa</span>
+            {% endif %}
+          </td>
+          <td style="text-align: right;">
+            <div class="table-actions" style="justify-content: flex-end;">
+              <a href="/columns/{{ col.id }}/edit" role="button" class="secondary outline">Editar</a>
+              <form method="post" action="/columns/{{ col.id }}/toggle" style="display:inline; margin:0;">
+                <button type="submit" class="outline" style="margin:0;">
+                  {% if col.active %}Pausar{% else %}Ativar{% endif %}
+                </button>
+              </form>
+              <form method="post" action="/columns/{{ col.id }}/delete" style="display:inline; margin:0;" onsubmit="return confirm('Excluir esta coluna?');">
+                <button type="submit" class="danger outline" style="margin:0;">Excluir</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      {% else %}
+        <tr>
+          <td colspan="7" style="text-align: center; color: var(--pico-muted-color);">Nenhuma coluna configurada ainda.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</article>
+{% endblock %}

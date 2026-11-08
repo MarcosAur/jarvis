@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}{% if column %}Editar Coluna{% else %}Nova Coluna{% endif %} — AI Pipeline{% endblock %}
+
+{% block content %}
+<article>
+  <header>
+    <h2>{% if column %}Editar Coluna: {{ column.column_name }}{% else %}Nova Coluna do Fluxo{% endif %}</h2>
+    <p>Configure a correspondência com a coluna do seu quadro externo e o agente responsável por executar tarefas nela.</p>
+  </header>
+
+  <form method="post" action="{% if column %}/columns/{{ column.id }}/edit{% else %}/columns/new{% endif %}">
+    <div class="grid">
+      <div>
+        <label for="column_name">
+          Nome da Coluna no Quadro
+          <input type="text" id="column_name" name="column_name" value="{{ column.column_name if column else '' }}" required placeholder="Ex.: Todo, To architect, Architected, In Progress">
+          <small>Deve coincidir exatamente com o nome da coluna no GitHub / Jira / Trello.</small>
+        </label>
+      </div>
+
+      <div>
+        <label for="identifier">
+          Identificador Único (Slug)
+          <input type="text" id="identifier" name="identifier" value="{{ column.identifier if column else '' }}" required placeholder="Ex.: todo, to_architect, architected">
+        </label>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div>
+        <label for="agent_id">
+          Agente Responsável
+          <select id="agent_id" name="agent_id">
+            <option value="" {% if not column or not column.agent_id %}selected{% endif %}>Nenhum — Etapa manual / humana</option>
+            {% for a in agents %}
+              <option value="{{ a.id }}" {% if column and column.agent_id == a.id %}selected{% endif %}>
+                🤖 {{ a.name }} ({{ a.cli_provider }} / {{ a.model_id }})
+              </option>
+            {% endfor %}
+          </select>
+          <small>Quando um card entra nesta coluna, este agente será acionado.</small>
+        </label>
+      </div>
+
+      <div>
+        <label for="next_column_name">
+          Próxima Coluna (após conclusão com sucesso)
+          <input type="text" id="next_column_name" name="next_column_name" value="{{ column.next_column_name if column and column.next_column_name else '' }}" placeholder="Ex.: Architected, Done (ou vazio se final)">
+          <small>Para onde o card será movido no quadro externo quando o agente finalizar.</small>
+        </label>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div>
+        <label for="order_index">
+          Ordem de Exibição no Quadro
+          <input type="number" id="order_index" name="order_index" value="{{ column.order_index if column else 1 }}" min="1">
+        </label>
+      </div>
+      <div>
+        <label for="active" style="margin-top: 2rem;">
+          <input type="checkbox" id="active" name="active" value="true" {% if not column or column.active %}checked{% endif %}>
+          Coluna Ativa
+        </label>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+      <button type="submit">Salvar Coluna</button>
+      <a href="/columns" role="button" class="secondary outline">Cancelar</a>
+    </div>
+  </form>
+</article>
+{% endblock %}

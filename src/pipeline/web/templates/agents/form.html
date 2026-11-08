@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}{% if agent %}Editar Agente{% else %}Novo Agente{% endif %} — AI Pipeline{% endblock %}
+
+{% block content %}
+<article>
+  <header>
+    <h2>{% if agent %}Editar Agente: {{ agent.name }}{% else %}Novo Agente de IA{% endif %}</h2>
+    <p>Configure o papel do agente, o provedor de CLI e o modelo de IA correspondente.</p>
+  </header>
+
+  <form method="post" action="{% if agent %}/agents/{{ agent.id }}/edit{% else %}/agents/new{% endif %}">
+    <label for="name">
+      Nome do Agente
+      <input type="text" id="name" name="name" value="{{ agent.name if agent else '' }}" required placeholder="Ex.: Arquiteto Gemini, Desenvolvedor Claude, Revisor Codex">
+    </label>
+
+    <div class="grid">
+      <div>
+        <label for="cli_provider">
+          Provedor de CLI (IA)
+          <select id="cli_provider" name="cli_provider" required
+                  hx-get="/agents/models-options"
+                  hx-target="#model_id_select"
+                  hx-trigger="change">
+            {% for p in cli_providers %}
+              <option value="{{ p.key }}" {% if (agent and agent.cli_provider == p.key) or (not agent and default_cli == p.key) %}selected{% endif %}>
+                {{ p.name }} {% if p.installed %}(✅ Instalado){% else %}(⚠️ Não instalado){% endif %}
+              </option>
+            {% endfor %}
+          </select>
+        </label>
+      </div>
+
+      <div>
+        <label for="model_id_select">
+          Modelo de IA
+          <div style="display: flex; gap: 0.5rem;">
+            <select id="model_id_select" name="model_id" required style="flex-grow: 1;">
+              {% for m in models %}
+                <option value="{{ m.id }}" {% if agent and agent.model_id == m.id %}selected{% endif %}>{{ m.label }}</option>
+              {% else %}
+                <option value="" disabled selected>Nenhum modelo disponível</option>
+              {% endfor %}
+            </select>
+            <button type="button" class="secondary outline" style="width: auto; white-space: nowrap;"
+                    hx-post="/agents/sync-models"
+                    hx-include="#cli_provider"
+                    hx-target="#model_id_select"
+                    hx-swap="innerHTML"
+                    title="Sincronizar modelos deste provedor">
+              ↻ Sincronizar
+            </button>
+          </div>
+        </label>
+      </div>
+    </div>
+
+    <label for="prompt_markdown">
+      Prompt Básico de Atuação (Markdown)
+      <textarea id="prompt_markdown" name="prompt_markdown" rows="10" placeholder="Defina o papel, diretrizes arquiteturais, contexto e formato esperado...">{{ agent.prompt_markdown if agent else '' }}</textarea>
+    </label>
+
+    <fieldset>
+      <label for="active">
+        <input type="checkbox" id="active" name="active" value="true" {% if not agent or agent.active %}checked{% endif %}>
+        Agente Ativo (disponível para vincular a colunas do Kanban)
+      </label>
+    </fieldset>
+
+    <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+      <button type="submit">Salvar Agente</button>
+      <a href="/agents" role="button" class="secondary outline">Cancelar</a>
+    </div>
+  </form>
+</article>
+{% endblock %}

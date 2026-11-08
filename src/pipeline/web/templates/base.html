@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Pipeline de Desenvolvimento Automático{% endblock %}</title>
+  <link rel="stylesheet" href="/static/pico.min.css">
+  <link rel="stylesheet" href="/static/custom.css">
+  <script src="/static/htmx.min.js"></script>
+</head>
+<body>
+  <header class="container">
+    <nav>
+      <ul>
+        <li>
+          <a href="/projects" class="contrast brand-title">
+            <strong>🤖 AI Pipeline</strong>
+          </a>
+        </li>
+      </ul>
+      <ul>
+        <li><a href="/agents" {% if active_page == 'agents' %}class="secondary"{% endif %}>Agentes</a></li>
+        <li><a href="/projects" {% if active_page == 'projects' %}class="secondary"{% endif %}>Projetos</a></li>
+        <li><a href="/columns" {% if active_page == 'columns' %}class="secondary"{% endif %}>Colunas</a></li>
+        <li><a href="/jobs" {% if active_page == 'jobs' %}class="secondary"{% endif %}>Jobs</a></li>
+        <li><a href="/runs" {% if active_page == 'runs' %}class="secondary"{% endif %}>Histórico</a></li>
+        <li><a href="/settings" {% if active_page == 'settings' %}class="secondary"{% endif %}>Configurações</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="container">
+    {% if alert_message %}
+      <div class="flash-message {% if alert_type == 'error' %}error{% endif %}">
+        <span>{{ alert_message }}</span>
+        <button type="button" onclick="this.parentElement.remove()" style="background:none;border:none;color:white;cursor:pointer;font-weight:bold;">&times;</button>
+      </div>
+    {% endif %}
+
+    <div id="flash-container"></div>
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="container" style="margin-top: 3rem; padding-bottom: 2rem; text-align: center; font-size: 0.8rem; color: var(--pico-muted-color);">
+    <p>Pipeline de Desenvolvimento Automático com IA &bull; Arquitetura Aberta (SOLID Ports & Adapters)</p>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Histórico de Execuções — AI Pipeline{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+  <div>
+    <h2>Histórico de Execuções da Pipeline</h2>
+    <p>Auditoria de todas as rodadas da pipeline disparadas via Web ou linha de comando (cron).</p>
+  </div>
+  <form method="post" action="/projects/run-all" style="margin: 0;">
+    <button type="submit" class="contrast" style="margin: 0;">▶ Rodar Todos os Projetos Agora</button>
+  </form>
+</div>
+
+<article>
+  <table role="grid">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Gatilho</th>
+        <th>Projeto</th>
+        <th>Provedor Usado</th>
+        <th>Cards Sincronizados</th>
+        <th>Jobs Criados</th>
+        <th>Status</th>
+        <th>Início</th>
+        <th>Duração</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in runs %}
+        <tr>
+          <td><strong>#{{ r.id }}</strong></td>
+          <td><code>{{ r.trigger }}</code></td>
+          <td>{{ r.project_name if r.project_name else 'Todos os Projetos' }}</td>
+          <td><span class="badge badge-info">{{ r.project_provider_used }}</span></td>
+          <td>{{ r.cards_synced }}</td>
+          <td><strong>{{ r.jobs_created }}</strong></td>
+          <td>
+            {% if r.status == 'ok' %}
+              <span class="badge badge-success">Sucesso</span>
+            {% elif r.status == 'partial' %}
+              <span class="badge badge-warning">Parcial</span>
+            {% else %}
+              <span class="badge badge-danger">Erro</span>
+            {% endif %}
+          </td>
+          <td><small>{{ r.started_at.strftime('%d/%m %H:%M:%S') }}</small></td>
+          <td>
+            {% if r.finished_at %}
+              <small>{{ (r.finished_at - r.started_at).total_seconds()|round(1) }}s</small>
+            {% else %}
+              <small>—</small>
+            {% endif %}
+          </td>
+        </tr>
+      {% else %}
+        <tr>
+          <td colspan="9" style="text-align: center; color: var(--pico-muted-color);">Nenhuma execução registrada ainda.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</article>
+{% endblock %}

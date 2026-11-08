@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}Configurações Globais — AI Pipeline{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+  <div>
+    <h2>CRUD 4 — Configurações Globais</h2>
+    <p>Defina o Provedor de Projeto ativo, o Provedor CLI padrão e as credenciais de integração.</p>
+  </div>
+  <div style="display: flex; gap: 0.5rem;">
+    <form method="post" action="/settings/sync-models" style="margin: 0;">
+      <button type="submit" class="secondary outline" style="margin: 0;">↻ Sincronizar Modelos de Todas as CLIs</button>
+    </form>
+  </div>
+</div>
+
+<div class="grid">
+  <div>
+    <article>
+      <header>
+        <h3>Provedores e Integrações</h3>
+      </header>
+
+      <form method="post" action="/settings">
+        <label for="default_cli_provider">
+          Provedor CLI Padrão (sugerido ao criar novos agentes)
+          <select id="default_cli_provider" name="default_cli_provider" required>
+            {% for p in cli_providers %}
+              <option value="{{ p.key }}" {% if settings.default_cli_provider == p.key %}selected{% endif %}>
+                {{ p.name }} {% if p.installed %}(✅ Instalado na máquina){% else %}(⚠️ Não instalado){% endif %}
+              </option>
+            {% endfor %}
+          </select>
+          <small>Cada agente pode escolher livremente qualquer uma das CLIs instaladas.</small>
+        </label>
+
+        <label for="active_project_provider">
+          Provedor de Projetos Ativo
+          <select id="active_project_provider" name="active_project_provider" required>
+            {% for pp in project_providers %}
+              <option value="{{ pp.key }}" {% if settings.active_project_provider == pp.key %}selected{% endif %}>
+                {{ pp.name }} ({{ pp.key }})
+              </option>
+            {% endfor %}
+          </select>
+          <small>Define onde os quadros Kanban e cards serão lidos e atualizados.</small>
+        </label>
+
+        <hr style="margin: 1.5rem 0;">
+
+        <h4>Credenciais do Provedor de Projetos</h4>
+
+        <!-- GitHub Fields -->
+        <fieldset style="margin-bottom: 1.5rem;">
+          <legend><strong>GitHub Projects (v2)</strong></legend>
+          <label for="github_token">
+            GitHub Token (Personal Access Token)
+            <input type="password" id="github_token" name="github_token"
+                   value="{{ provider_settings.get('github_token', '') }}"
+                   placeholder="ghp_... (ou deixe vazio para usar .env)">
+          </label>
+
+          <label for="github_owner">
+            GitHub Owner Padrão (Usuário ou Organização)
+            <input type="text" id="github_owner" name="github_owner"
+                   value="{{ provider_settings.get('github_owner', '') }}"
+                   placeholder="Ex.: maurelio (usado quando a chave do projeto for apenas o número)">
+          </label>
+        </fieldset>
+
+        <!-- Jira Fields -->
+        <fieldset style="margin-bottom: 1.5rem;">
+          <legend><strong>Atlassian Jira</strong></legend>
+          <label for="jira_base_url">
+            Jira Base URL
+            <input type="text" id="jira_base_url" name="jira_base_url"
+                   value="{{ provider_settings.get('jira_base_url', '') }}"
+                   placeholder="https://sua-empresa.atlassian.net">
+          </label>
+          <div class="grid">
+            <div>
+              <label for="jira_email">
+                E-mail Jira
+                <input type="text" id="jira_email" name="jira_email"
+                       value="{{ provider_settings.get('jira_email', '') }}"
+                       placeholder="seu-email@dominio.com">
+              </label>
+            </div>
+            <div>
+              <label for="jira_api_token">
+                Jira API Token
+                <input type="password" id="jira_api_token" name="jira_api_token"
+                       value="{{ provider_settings.get('jira_api_token', '') }}">
+              </label>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Trello Fields -->
+        <fieldset style="margin-bottom: 1.5rem;">
+          <legend><strong>Trello</strong></legend>
+          <div class="grid">
+            <div>
+              <label for="trello_api_key">
+                Trello API Key
+                <input type="text" id="trello_api_key" name="trello_api_key"
+                       value="{{ provider_settings.get('trello_api_key', '') }}">
+              </label>
+            </div>
+            <div>
+              <label for="trello_token">
+                Trello Token
+                <input type="password" id="trello_token" name="trello_token"
+                       value="{{ provider_settings.get('trello_token', '') }}">
+              </label>
+            </div>
+          </div>
+        </fieldset>
+
+        <button type="submit">Salvar Configurações</button>
+      </form>
+    </article>
+  </div>
+
+  <div>
+    <article>
+      <header>
+        <h3>Status do Ambiente Local</h3>
+      </header>
+
+      <p>Provedores de CLI detectados no <code>$PATH</code> da sua máquina:</p>
+      <ul>
+        {% for p in cli_providers %}
+          <li style="margin-bottom: 0.5rem;">
+            <strong>{{ p.name }}</strong> (<code>{{ p.binary_name }}</code>):
+            {% if p.installed %}
+              <span class="badge badge-success">Instalado</span>
+            {% else %}
+              <span class="badge badge-danger">Não encontrado</span>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+
+      <hr>
+
+      <h4>Provedores de Projeto Plugados (SOLID OCP)</h4>
+      <p>Qualquer novo provedor adicionado via Pull Request em <code>adapters/project_providers/</code> aparece aqui automaticamente:</p>
+      <ul>
+        {% for pp in project_providers %}
+          <li><strong>{{ pp.name }}</strong> (<code>{{ pp.key }}</code>)</li>
+        {% endfor %}
+      </ul>
+    </article>
+  </div>
+</div>
+{% endblock %}
