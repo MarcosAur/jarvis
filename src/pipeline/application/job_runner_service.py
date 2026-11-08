@@ -119,3 +119,15 @@ class JobRunnerService:
                 )
                 uow.commit()
                 return {"success": False, "job_id": job_id, "error": res.error_message}
+
+    def run_all_pending(self, project_id: int | None = None, limit: int = 50, dry_run: bool = True) -> list[dict]:
+        with self.uow_factory() as uow:
+            pending_jobs = uow.jobs.list_all(project_id=project_id, state="pending", limit=limit)
+            job_ids = [j.id for j in pending_jobs]
+
+        results = []
+        for j_id in job_ids:
+            res = self.run_job(j_id, dry_run=dry_run)
+            results.append(res)
+        return results
+

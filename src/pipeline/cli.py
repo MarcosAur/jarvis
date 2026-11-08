@@ -4,6 +4,7 @@ import uvicorn
 from rich.console import Console
 from rich.table import Table
 from pipeline.adapters.db.seed import seed_database
+from pipeline.application.job_runner_service import JobRunnerService
 from pipeline.application.model_catalog_service import ModelCatalogService
 from pipeline.application.pipeline_orchestrator import PipelineOrchestrator
 from pipeline.adapters.db.uow import SqlAlchemyUnitOfWork
@@ -17,9 +18,11 @@ app = typer.Typer(
 )
 db_app = typer.Typer(name="db", help="Comandos de gerenciamento do banco de dados")
 models_app = typer.Typer(name="models", help="Comandos de catálogo de modelos de IA")
+jobs_app = typer.Typer(name="jobs", help="Comandos de gerenciamento e execução da fila de jobs")
 
 app.add_typer(db_app)
 app.add_typer(models_app)
+app.add_typer(jobs_app)
 console = Console()
 
 
@@ -46,6 +49,74 @@ def models_sync():
         table.add_row(k, str(v))
 
     console.print(table)
+
+
+@jobs_app.command("list")
+def list_jobs_cmd(
+    project_id: int | None = typer.Option(None, "--project", "-p", help="Filtrar por ID do projeto"),
+    state: str | None = typer.Option(None, "--state", "-s", help="Filtrar por estado (pending, running, succeeded, failed, cancelled)"),
+):
+    """Lista os jobs cadastrados na fila com filtros opcionais."""
+    with SqlAlchemyUnitOfWork() as uow:
+        raw_jobs = uow.jobs.list_all(project_id=project_id, state=state)
+        projects = {p.id: p.name for p in uow.projects.list_all()}
+        cards = {c.id: c.title for c in uow.cards.list_by_project(project_id) if project_id} if project_id else {}
+
+        table = Table(title="Fila de Jobs & Execuções")
+        table.add_column("ID", style="bold cyan", justify="right")
+        table.add_column("Projeto", style="yellow")
+        table.add_column("Card ID", justify="right")
+        table.add_column("Coluna Snapshot", style="magenta")
+        table.add_column("Provedor/Modelo", style="blue")
+        table.add_column("Estado", style="bold")
+
+        for j in raw_jobs:
+            color = {
+                "pending": "yellow",
+                "running": "blue",
+                "succeeded": "green",
+                "failed": "red",
+                "cancelled": "dim",
+            }.get(j.state, "white")
+
+            table.add_row(
+                str(j.id),
+                projects.get(j.project_id, str(j.project_id)),
+                str(j.card_id),
+                j.target_column_snapshot or "—",
+                f"{j.cli_provider_snapshot or '—'}/{j.model_id_snapshot or '—'}",
+                f"[{color}]{j.state}[/{color}]",
+            )
+
+        console.print(table)
+
+
+@jobs_app.command("run")
+def run_jobs_cmd(
+    job_id: int | None = typer.Option(None, "--job-id", "-j", help="ID de um job específico a ser executado"),
+    project_id: int | None = typer.Option(None, "--project", "-p", help="ID do projeto para filtrar jobs pendentes"),
+    live: bool = typer.Option(False, "--live", help="Executar modo live chamando a CLI real (padrão é simulação dry-run)"),
+):
+    """Executa jobs pendentes da fila (ou um job específico)."""
+    runner = JobRunnerService(SqlAlchemyUnitOfWork)
+    dry_run = not live
+    mode_label = "[bold red]LIVE (CLI Real)[/bold red]" if live else "[bold yellow]DRY-RUN (Simulação)[/bold yellow]"
+    console.print(f"Iniciando execução no modo {mode_label}...")
+
+    if job_id is not None:
+        res = runner.run_job(job_id, dry_run=dry_run)
+        if res.get("success"):
+            console.print(f"[bold green]✔ Job #{job_id} executado com sucesso![/bold green]")
+            if res.get("summary"):
+                console.print(f"  Saída: {res.get('summary')}")
+        else:
+            console.print(f"[bold red]✘ Falha no Job #{job_id}:[/bold red] {res.get('error')}")
+    else:
+        results = runner.run_all_pending(project_id=project_id, dry_run=dry_run)
+        console.print(f"[bold green]✔ Processados {len(results)} job(s) pendente(s).[/bold green]")
+        for r in results:
+            status = "[green]OK[/green]" if r.get("success") else "[red]FALHA[/red]"
+            console.print(f" - Job #{r.get('job_id')}: {status}")
 
 
 @app.command("run")
