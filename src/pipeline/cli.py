@@ -95,12 +95,12 @@ def list_jobs_cmd(
 def run_jobs_cmd(
     job_id: int | None = typer.Option(None, "--job-id", "-j", help="ID de um job específico a ser executado"),
     project_id: int | None = typer.Option(None, "--project", "-p", help="ID do projeto para filtrar jobs pendentes"),
-    live: bool = typer.Option(False, "--live", help="Executar modo live chamando a CLI real (padrão é simulação dry-run)"),
+    live: bool = typer.Option(True, "--live/--dry-run", help="Executar com a CLI de IA real (padrão) ou simulação (--dry-run)"),
 ):
-    """Executa jobs pendentes da fila (ou um job específico)."""
+    """Executa jobs pendentes da fila (ou um job específico). Por padrão roda em modo LIVE com a IA."""
     runner = JobRunnerService(SqlAlchemyUnitOfWork)
     dry_run = not live
-    mode_label = "[bold red]LIVE (CLI Real)[/bold red]" if live else "[bold yellow]DRY-RUN (Simulação)[/bold yellow]"
+    mode_label = "[bold green]LIVE (CLI de IA Real)[/bold green]" if live else "[bold yellow]DRY-RUN (Simulação)[/bold yellow]"
     console.print(f"Iniciando execução no modo {mode_label}...")
 
     if job_id is not None:

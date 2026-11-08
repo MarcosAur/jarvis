@@ -80,8 +80,9 @@ class AgyCliProvider(BaseSubprocessCliProvider):
             try:
                 data = json.loads(raw_output)
                 output_text = data.get("response") or data.get("text") or data.get("content") or raw_output
-                tokens_in = data.get("usage", {}).get("prompt_tokens", 0)
-                tokens_out = data.get("usage", {}).get("completion_tokens", 0)
+                usage = data.get("usage", {})
+                tokens_in = usage.get("input_tokens") or usage.get("prompt_tokens") or 0
+                tokens_out = usage.get("output_tokens") or usage.get("completion_tokens") or 0
                 return CliPromptResult(
                     success=True,
                     output_text=output_text,

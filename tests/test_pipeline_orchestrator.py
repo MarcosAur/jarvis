@@ -79,6 +79,30 @@ def test_orchestrator_syncs_cards_and_enqueues_jobs():
         assert job_updated.state == "succeeded"
         assert "[Simulação Dry-Run]" in job_updated.output_summary
 
+    # Test Live execution (dry_run=False) with FakeCliProvider
+    with uow_fact() as uow:
+        live_job = uow.jobs.create(
+            project_id=project_id,
+            card_id=card2.id,
+            flow_column_id=job.flow_column_id,
+            agent_id=job.agent_id,
+            cli_provider_snapshot="fake_cli",
+            model_id_snapshot="fake-model-1",
+            target_column_snapshot="Architected",
+            state="pending",
+        )
+        uow.commit()
+        live_job_id = live_job.id
+
+    res_live = runner.run_job(live_job_id, dry_run=False)
+    assert res_live["success"] is True
+    assert "fake prompt" in res_live["output"]
+
+    with uow_fact() as uow:
+        job_live_db = uow.jobs.get_by_id(live_job_id)
+        assert job_live_db.state == "succeeded"
+        assert "fake prompt" in job_live_db.output_summary
+
 
 def test_rework_detection_when_card_moves_back():
     mem_engine = create_engine("sqlite:///:memory:")

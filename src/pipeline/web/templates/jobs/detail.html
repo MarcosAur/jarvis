@@ -8,10 +8,15 @@
     <h2>Job #{{ job.id }} — Detalhes da Execução</h2>
     <p>Projeto: <strong>{{ project.name }}</strong> &bull; Card: <strong>{{ card.title }}</strong></p>
   </div>
-  <div style="display: flex; gap: 0.5rem;">
+  <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
     {% if job.state in ['pending', 'failed', 'cancelled'] %}
-      <form method="post" action="/jobs/{{ job.id }}/run" style="margin: 0;">
-        <button type="submit" style="margin: 0; background-color: #2e7d32; border-color: #2e7d32; color: #fff;">▶ Executar Agora</button>
+      <form method="post" action="/jobs/{{ job.id }}/run" style="display:inline; margin: 0;">
+        <input type="hidden" name="mode" value="live">
+        <button type="submit" style="margin: 0; background-color: #2e7d32; border-color: #2e7d32; color: #fff;">▶ Executar com IA (Real)</button>
+      </form>
+      <form method="post" action="/jobs/{{ job.id }}/run" style="display:inline; margin: 0;">
+        <input type="hidden" name="mode" value="dry_run">
+        <button type="submit" class="secondary outline" style="margin: 0;">🧪 Simular (Dry-Run)</button>
       </form>
     {% endif %}
     <a href="/jobs" role="button" class="secondary outline" style="margin: 0;">Voltar</a>

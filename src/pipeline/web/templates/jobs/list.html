@@ -8,8 +8,12 @@
     <h2>CRUD 5 — Fila de Jobs & Execuções</h2>
     <p>Tarefas geradas pela pipeline para cada card nas colunas de agentes. Controle total de execução e auditoria.</p>
   </div>
-  <div>
-    <a href="/jobs/new" role="button">＋ Enfileirar Job Manual</a>
+  <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+    <form method="post" action="/jobs/run-all" style="margin: 0;">
+      <input type="hidden" name="mode" value="live">
+      <button type="submit" style="margin: 0; background-color: #2e7d32; border-color: #2e7d32; color: #fff;">▶ Executar Pendentes (IA Real)</button>
+    </form>
+    <a href="/jobs/new" role="button" class="secondary" style="margin: 0;">＋ Enfileirar Job Manual</a>
   </div>
 </div>
 
@@ -91,7 +95,8 @@
 
               {% if j.state in ['pending', 'failed', 'cancelled'] %}
                 <form method="post" action="/jobs/{{ j.id }}/run" style="display:inline; margin:0;">
-                  <button type="submit" style="margin:0; background-color: #2e7d32; border-color: #2e7d32; color: #fff;" title="Executar job (dry-run)">▶ Executar</button>
+                  <input type="hidden" name="mode" value="live">
+                  <button type="submit" style="margin:0; background-color: #2e7d32; border-color: #2e7d32; color: #fff;" title="Executar agora com o modelo de IA real">▶ Executar</button>
                 </form>
               {% endif %}
 

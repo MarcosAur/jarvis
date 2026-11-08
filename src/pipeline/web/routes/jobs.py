@@ -181,13 +181,31 @@ def retry_job(
 @router.post("/jobs/{job_id}/run")
 def execute_job(
     job_id: int,
+    mode: str = Form("live"),
     runner: JobRunnerService = Depends(get_job_runner_service),
 ):
-    res = runner.run_job(job_id, dry_run=True)
+    dry_run = (mode == "dry_run")
+    res = runner.run_job(job_id, dry_run=dry_run)
     if res.get("success"):
-        return RedirectResponse(url=f"/jobs/{job_id}?alert_message=Job+executado+com+sucesso+(Dry-run)", status_code=303)
+        label = "em+modo+simulação+(Dry-run)" if dry_run else "com+sucesso+pela+IA!"
+        return RedirectResponse(url=f"/jobs/{job_id}?alert_message=Job+executado+{label}", status_code=303)
     else:
         return RedirectResponse(url=f"/jobs/{job_id}?alert_message=Falha+na+execução:+{res.get('error')}&alert_type=error", status_code=303)
+
+
+@router.post("/jobs/run-all")
+def execute_all_pending_jobs(
+    mode: str = Form("live"),
+    runner: JobRunnerService = Depends(get_job_runner_service),
+):
+    dry_run = (mode == "dry_run")
+    results = runner.run_all_pending(dry_run=dry_run)
+    successes = sum(1 for r in results if r.get("success"))
+    mode_label = "em+modo+simulação+(dry-run)" if dry_run else "com+IA+real"
+    return RedirectResponse(
+        url=f"/jobs?alert_message=Processados+{len(results)}+job(s)+{mode_label}+(Sucessos:+{successes})",
+        status_code=303,
+    )
 
 
 @router.post("/jobs/{job_id}/delete")

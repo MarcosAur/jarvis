@@ -28,16 +28,22 @@ class JobRunnerService:
 
         # Prepare execution
         provider_key = job.cli_provider_snapshot or (agent.cli_provider if agent else "agy")
-        model_id = job.model_id_snapshot or (agent.model_id if agent else "default")
+        model_id = job.model_id_snapshot or (agent.model_id if agent else "gemini-4-argon-medium")
+        if not model_id or model_id == "default":
+            model_id = agent.model_id if agent and agent.model_id else "gemini-4-argon-medium"
+
         system_prompt = agent.prompt_markdown if agent else ""
         task_prompt = (
-            f"Título do Card: {card.title}\n"
-            f"Descrição: {card.body}\n"
+            f"# Demanda do Card\n"
+            f"Título: {card.title}\n"
+            f"Descrição:\n{card.body or '(Sem descrição informada)'}\n\n"
             f"Repositório local: {project.local_path}\n"
-            f"Coluna Atual: {card.column_name}\n"
-            f"Próxima Coluna: {job.target_column_snapshot or 'Nenhuma'}\n"
+            f"Coluna Atual no Kanban: {card.column_name}\n"
+            f"Próxima Coluna: {job.target_column_snapshot or 'Nenhuma'}\n\n"
+            f"Por favor, analise a demanda acima e os arquivos do repositório local. "
+            f"Forneça a sua resposta completa de acordo com o seu papel de agente."
         )
-        working_dir = Path(project.local_path) if project and project.local_path else Path.cwd()
+        working_dir = Path(project.local_path) if project and project.local_path and Path(project.local_path).is_dir() else Path.cwd()
 
         if dry_run:
             summary = (
@@ -56,6 +62,18 @@ class JobRunnerService:
             return {"success": True, "job_id": job_id, "summary": summary, "dry_run": True}
 
         # Live execution
+        if not agent:
+            error_msg = "Nenhum agente associado a este job para executar a IA."
+            with self.uow_factory() as uow:
+                uow.jobs.update(
+                    job_id,
+                    state="failed",
+                    error=error_msg,
+                    finished_at=utc_now(),
+                )
+                uow.commit()
+            return {"success": False, "job_id": job_id, "error": error_msg}
+
         cli_provider = cli_registry.get_or_none(provider_key)
         if not cli_provider or not cli_provider.is_installed():
             error_msg = f"Provedor CLI '{provider_key}' não está instalado no sistema."
@@ -95,6 +113,13 @@ class JobRunnerService:
                                 project.project_key,
                                 card.remote_id,
                                 job.target_column_snapshot,
+                                settings.provider_settings,
+                            )
+                            # Add comment with AI response
+                            p_provider.add_comment(
+                                project.project_key,
+                                card.remote_id,
+                                f"🤖 **Agente {agent.name}** ({provider_key}/{model_id}):\n\n{res.output_text}",
                                 settings.provider_settings,
                             )
                             # Update local card column
