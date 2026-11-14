@@ -9,9 +9,16 @@ from pipeline.domain.entities import (
     RemoteCard,
     SettingFieldSpec,
 )
+from pipeline.domain.ports.cli_provider import CliModelProvider
+from pipeline.domain.ports.job_dispatcher import (
+    CeleryTaskStatus,
+    JobDispatcher,
+    WorkerHealthStatus,
+)
+from pipeline.domain.ports.project_provider import ProjectProvider
 
 
-class FakeCliProvider:
+class FakeCliProvider(CliModelProvider):
     provider_key = "fake_cli"
     display_name = "Fake CLI Provider"
     binary_name = "fake_cli"
@@ -39,7 +46,7 @@ class FakeCliProvider:
         )
 
 
-class FakeProjectProvider:
+class FakeProjectProvider(ProjectProvider):
     provider_key = "fake_board"
     display_name = "Fake Board Provider"
 
@@ -94,3 +101,42 @@ class FakeProjectProvider:
         settings: dict[str, Any],
     ) -> None:
         self.comments.append((project_key, remote_card_id, markdown))
+
+
+class FakeJobDispatcher(JobDispatcher):
+    def __init__(self, broker_available: bool = True, workers_online: int = 1):
+        self.dispatched_jobs: list[int] = []
+        self.dispatched_pipelines: list[int | None] = []
+        self.revoked_tasks: list[str] = []
+        self.broker_available = broker_available
+        self.workers_online = workers_online
+        self.task_states: dict[str, str] = {}
+
+    def dispatch_job(self, job_id: int) -> str | None:
+        self.dispatched_jobs.append(job_id)
+        task_id = f"fake-task-{job_id}"
+        self.task_states[task_id] = "PENDING"
+        return task_id
+
+    def dispatch_pipeline(self, project_id: int | None = None) -> str | None:
+        self.dispatched_pipelines.append(project_id)
+        return f"fake-pipeline-{project_id or 'all'}"
+
+    def revoke_job(self, task_id: str) -> bool:
+        self.revoked_tasks.append(task_id)
+        self.task_states[task_id] = "REVOKED"
+        return True
+
+    def get_task_status(self, task_id: str) -> CeleryTaskStatus:
+        return CeleryTaskStatus(
+            task_id=task_id,
+            state=self.task_states.get(task_id, "PENDING"),
+        )
+
+    def get_worker_health(self) -> WorkerHealthStatus:
+        names = [f"celery@worker-{i+1}" for i in range(self.workers_online)] if self.broker_available else []
+        return WorkerHealthStatus(
+            broker_available=self.broker_available,
+            workers_online=self.workers_online if self.broker_available else 0,
+            worker_names=names,
+        )

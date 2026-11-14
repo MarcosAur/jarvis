@@ -170,7 +170,7 @@ def run_project_pipeline(
 ):
     run = orchestrator.run_for_project(project_id, trigger="web_project")
     if run.status == "ok":
-        msg = f"Pipeline executada com sucesso! Cards sincronizados: {run.cards_synced}, Jobs criados: {run.jobs_created}"
+        msg = f"Pipeline executada com sucesso! Cards sincronizados: {run.cards_synced}, Jobs enviados ao Celery: {run.jobs_created}"
         alert_type = "success"
     else:
         msg = f"Execução concluída com alerta/erro: {run.error}"
@@ -189,7 +189,7 @@ def run_all_projects_pipeline(
     runs = orchestrator.run_all_active(trigger="web_all")
     total_cards = sum(r.cards_synced for r in runs)
     total_jobs = sum(r.jobs_created for r in runs)
-    msg = f"Pipeline rodou para {len(runs)} projeto(s). Total cards: {total_cards}, Jobs criados: {total_jobs}"
+    msg = f"Pipeline rodou para {len(runs)} projeto(s). Total cards: {total_cards}, Jobs enviados ao Celery: {total_jobs}"
     return RedirectResponse(url=f"/projects?alert_message={msg}", status_code=303)
 
 

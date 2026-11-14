@@ -3,11 +3,12 @@ import httpx
 from pipeline.config import config
 from pipeline.domain.entities import BoardInfo, RemoteCard, SettingFieldSpec
 from pipeline.domain.exceptions import BoardError
+from pipeline.domain.ports.project_provider import ProjectProvider
 
 TRELLO_BASE_URL = "https://api.trello.com/1"
 
 
-class TrelloProjectProvider:
+class TrelloProjectProvider(ProjectProvider):
     provider_key = "trello"
     display_name = "Trello"
 

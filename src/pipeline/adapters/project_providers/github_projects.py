@@ -4,11 +4,12 @@ import httpx
 from pipeline.config import config
 from pipeline.domain.entities import BoardInfo, RemoteCard, SettingFieldSpec
 from pipeline.domain.exceptions import BoardError
+from pipeline.domain.ports.project_provider import ProjectProvider
 
 GITHUB_GRAPHQL_ENDPOINT = "https://api.github.com/graphql"
 
 
-class GitHubProjectProvider:
+class GitHubProjectProvider(ProjectProvider):
     provider_key = "github"
     display_name = "GitHub Projects (User v2)"
 

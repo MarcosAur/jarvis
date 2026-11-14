@@ -5,14 +5,21 @@ from pipeline.adapters.db.orm_models import PipelineRun, utc_now
 from pipeline.application.sync_service import SyncService
 from pipeline.bootstrap import project_registry
 from pipeline.domain.exceptions import BoardError, EntityNotFoundError
+from pipeline.domain.ports.job_dispatcher import JobDispatcher
 
 logger = logging.getLogger(__name__)
 
 
 class PipelineOrchestrator:
-    def __init__(self, uow_factory, sync_service: SyncService | None = None):
+    def __init__(
+        self,
+        uow_factory,
+        sync_service: SyncService | None = None,
+        job_dispatcher: JobDispatcher | None = None,
+    ):
         self.uow_factory = uow_factory
         self.sync_service = sync_service or SyncService()
+        self.job_dispatcher = job_dispatcher
 
     def run_for_project(self, project_id: int, trigger: str = "web_project") -> PipelineRun:
         with self.uow_factory() as uow:
@@ -47,6 +54,8 @@ class PipelineOrchestrator:
         jobs_created_count = 0
         error_msg: str | None = None
         status = "ok"
+        jobs_to_dispatch: list[int] = []
+        tasks_to_revoke: list[str] = []
 
         try:
             # 1. Fetch cards from external provider
@@ -77,7 +86,7 @@ class PipelineOrchestrator:
 
                         if not existing_job:
                             # Create new pending Job
-                            uow.jobs.create(
+                            new_job = uow.jobs.create(
                                 project_id=project_db_id,
                                 card_id=card.id,
                                 flow_column_id=flow_col.id,
@@ -86,20 +95,66 @@ class PipelineOrchestrator:
                                 model_id_snapshot=agent.model_id if agent else None,
                                 target_column_snapshot=flow_col.next_column_name,
                                 state="pending",
+                                process_status="Aguardando envio ao Celery",
                             )
+                            jobs_to_dispatch.append(new_job.id)
                             jobs_created_count += 1
 
-                # 5. Cancel pending jobs if card moved out of the column
+                # 5. Cancel pending jobs if card moved out of the column, and collect orphaned pending jobs
                 pending_jobs = uow.jobs.list_all(project_id=project_db_id, state="pending")
                 for job in pending_jobs:
                     job_col = uow.columns.get_by_id(job.flow_column_id)
                     job_card = uow.cards.get_by_id(job.card_id)
                     if not job_card or job_card.removed or (job_col and job_card.column_name.strip().lower() != job_col.column_name.strip().lower()):
-                        uow.jobs.update(job.id, state="cancelled")
+                        uow.jobs.update(
+                            job.id,
+                            state="cancelled",
+                            process_status="Cancelado (card movido da coluna)",
+                            finished_at=utc_now(),
+                        )
+                        if job.celery_task_id:
+                            tasks_to_revoke.append(job.celery_task_id)
+                    elif not job.celery_task_id and job.id not in jobs_to_dispatch:
+                        jobs_to_dispatch.append(job.id)
 
                 # Update project last run
                 uow.projects.update(project_db_id, last_run_at=utc_now())
                 uow.commit()
+
+            # 6. Dispatch pending jobs and revoke cancelled tasks via Celery after DB commit
+            if self.job_dispatcher is not None:
+                for task_id in tasks_to_revoke:
+                    try:
+                        self.job_dispatcher.revoke_job(task_id)
+                    except Exception as exc:
+                        logger.warning("Falha ao revogar task Celery %s: %s", task_id, exc)
+
+                for job_id in jobs_to_dispatch:
+                    try:
+                        task_id = self.job_dispatcher.dispatch_job(job_id)
+                        with self.uow_factory() as uow:
+                            current_job = uow.jobs.get_by_id(job_id)
+                            if current_job:
+                                updates: dict[str, Any] = {}
+                                if task_id and not current_job.celery_task_id:
+                                    updates["celery_task_id"] = task_id
+                                if current_job.state == "pending":
+                                    updates["process_status"] = (
+                                        "Na fila do Celery" if task_id else "Pendente (aguardando envio ao Celery)"
+                                    )
+                                if updates:
+                                    uow.jobs.update(job_id, **updates)
+                                    uow.commit()
+                    except Exception as exc:
+                        logger.warning("Falha ao enviar Job #%s para o Celery: %s", job_id, exc)
+                        with self.uow_factory() as uow:
+                            current_job = uow.jobs.get_by_id(job_id)
+                            if current_job and current_job.state == "pending":
+                                uow.jobs.update(
+                                    job_id,
+                                    process_status="Pendente (broker Celery indisponível)",
+                                )
+                                uow.commit()
 
         except Exception as e:
             logger.exception("Erro ao rodar pipeline para o projeto %s: %s", project_name, e)

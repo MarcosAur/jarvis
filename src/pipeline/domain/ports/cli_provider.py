@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from typing import ClassVar, Protocol, runtime_checkable
 from pipeline.domain.entities import CliPromptRequest, CliPromptResult, ModelOption
 
@@ -10,14 +11,17 @@ class CliModelProvider(Protocol):
     display_name: ClassVar[str]
     binary_name: ClassVar[str]
 
+    @abstractmethod
     def is_installed(self) -> bool:
         """Checks if the CLI binary exists in the system PATH."""
         ...
 
+    @abstractmethod
     def list_models(self) -> list[ModelOption]:
         """Lists available models from this CLI."""
         ...
 
+    @abstractmethod
     def execute_prompt(self, req: CliPromptRequest) -> CliPromptResult:
         """Executes a prompt through the CLI binary."""
         ...

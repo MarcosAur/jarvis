@@ -1,8 +1,10 @@
+from pipeline.adapters.celery_dispatcher import CeleryJobDispatcher
 from pipeline.adapters.db.uow import SqlAlchemyUnitOfWork
 from pipeline.application.job_runner_service import JobRunnerService
 from pipeline.application.model_catalog_service import ModelCatalogService
 from pipeline.application.pipeline_orchestrator import PipelineOrchestrator
 from pipeline.application.sync_service import SyncService
+from pipeline.domain.ports.job_dispatcher import JobDispatcher
 
 
 def get_uow() -> SqlAlchemyUnitOfWork:
@@ -21,5 +23,13 @@ def get_job_runner_service() -> JobRunnerService:
     return JobRunnerService(SqlAlchemyUnitOfWork)
 
 
+def get_job_dispatcher() -> JobDispatcher:
+    return CeleryJobDispatcher()
+
+
 def get_orchestrator() -> PipelineOrchestrator:
-    return PipelineOrchestrator(SqlAlchemyUnitOfWork, get_sync_service())
+    return PipelineOrchestrator(
+        SqlAlchemyUnitOfWork,
+        get_sync_service(),
+        job_dispatcher=get_job_dispatcher(),
+    )

@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from typing import Any, ClassVar, Protocol, runtime_checkable
 from pipeline.domain.entities import BoardInfo, RemoteCard, SettingFieldSpec
 
@@ -9,14 +10,17 @@ class ProjectBoardReader(Protocol):
     provider_key: ClassVar[str]
     display_name: ClassVar[str]
 
+    @abstractmethod
     def settings_fields(self) -> list[SettingFieldSpec]:
         """Returns the configuration fields required by this board provider."""
         ...
 
+    @abstractmethod
     def test_connection(self, project_key: str, settings: dict[str, Any]) -> BoardInfo:
         """Validates connection and returns board summary."""
         ...
 
+    @abstractmethod
     def fetch_cards(self, project_key: str, settings: dict[str, Any]) -> list[RemoteCard]:
         """Fetches all cards from the external project board."""
         ...
@@ -26,6 +30,7 @@ class ProjectBoardReader(Protocol):
 class ProjectBoardWriter(Protocol):
     """Port for modifying cards in external project boards."""
 
+    @abstractmethod
     def move_card(
         self,
         project_key: str,
@@ -36,6 +41,7 @@ class ProjectBoardWriter(Protocol):
         """Moves a card to another column in the external board."""
         ...
 
+    @abstractmethod
     def add_comment(
         self,
         project_key: str,

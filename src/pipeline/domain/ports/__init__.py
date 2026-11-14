@@ -1,4 +1,9 @@
 from pipeline.domain.ports.cli_provider import CliModelProvider
+from pipeline.domain.ports.job_dispatcher import (
+    CeleryTaskStatus,
+    JobDispatcher,
+    WorkerHealthStatus,
+)
 from pipeline.domain.ports.project_provider import (
     ProjectBoardReader,
     ProjectBoardWriter,
@@ -19,6 +24,9 @@ from pipeline.domain.ports.uow import UnitOfWork
 
 __all__ = [
     "CliModelProvider",
+    "CeleryTaskStatus",
+    "JobDispatcher",
+    "WorkerHealthStatus",
     "ProjectBoardReader",
     "ProjectBoardWriter",
     "ProjectProvider",

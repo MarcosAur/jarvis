@@ -1,19 +1,28 @@
 from typing import Generic, TypeVar
 
+from pipeline.domain.contract import ensure_contract
+
 T = TypeVar("T")
 
 
 class Registry(Generic[T]):
-    """Generic in-memory registry for pluggable components."""
+    """Generic in-memory registry for pluggable components.
 
-    def __init__(self, name: str = "Registry"):
+    When a ``contract`` (a port) is given, every registered item is validated against it:
+    missing attributes/methods or different signatures raise ``ContractViolationError``.
+    """
+
+    def __init__(self, name: str = "Registry", contract: type | None = None):
         self.name = name
+        self.contract = contract
         self._items: dict[str, T] = {}
 
     def register(self, item: T, key: str | None = None) -> None:
         actual_key = key or getattr(item, "provider_key", None)
         if not actual_key:
             raise ValueError(f"Cannot register item {item}: missing key or provider_key.")
+        if self.contract is not None:
+            ensure_contract(item, self.contract)
         self._items[str(actual_key)] = item
 
     def get(self, key: str) -> T:

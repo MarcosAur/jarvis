@@ -2,16 +2,18 @@ import os
 import shutil
 import subprocess
 from pathlib import Path
+from typing import ClassVar
 from pipeline.config import config
 from pipeline.domain.exceptions import ProviderExecutionError, ProviderNotInstalledError
+from pipeline.domain.ports.cli_provider import CliModelProvider
 
 
-class BaseSubprocessCliProvider:
+class BaseSubprocessCliProvider(CliModelProvider):
     """Base class for CLI model providers executing subprocess commands."""
 
-    provider_key: str = ""
-    display_name: str = ""
-    binary_name: str = ""
+    provider_key: ClassVar[str] = ""
+    display_name: ClassVar[str] = ""
+    binary_name: ClassVar[str] = ""
 
     def is_installed(self) -> bool:
         return shutil.which(self.binary_name) is not None

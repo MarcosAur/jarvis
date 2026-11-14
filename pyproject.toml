@@ -20,12 +20,14 @@ dependencies = [
     "pydantic-settings>=2.2.0",
     "rich>=13.7.0",
     "typer>=0.9.0",
+    "celery[redis]>=5.4.0",
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest>=8.0.0",
     "pytest-asyncio>=0.23.0",
+    "mypy>=1.10.0",
 ]
 
 [project.scripts]
@@ -37,3 +39,16 @@ where = ["src"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src", "."]
+
+[tool.mypy]
+# Verifica estaticamente que os providers cumprem os contratos (ports). Rode: mypy
+mypy_path = "src"
+files = [
+    "src/pipeline/domain",
+    "src/pipeline/adapters/cli_providers",
+    "src/pipeline/adapters/project_providers",
+    "src/pipeline/bootstrap.py",
+    "tests/fakes.py",
+]
+follow_imports = "silent"
+ignore_missing_imports = true

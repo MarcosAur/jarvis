@@ -24,6 +24,8 @@ class RunTrigger(str, Enum):
     WEB_PROJECT = "web_project"
     WEB_ALL = "web_all"
     CLI = "cli"
+    CELERY = "celery"
+    CELERY_BEAT = "celery_beat"
 
 
 class RunStatus(str, Enum):

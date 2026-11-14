@@ -14,8 +14,8 @@ from pipeline.domain.ports.project_provider import ProjectProvider
 from pipeline.domain.registry import Registry
 
 # Global registries for pluggable providers (SOLID OCP)
-cli_registry: Registry[CliModelProvider] = Registry[CliModelProvider]("CliModelProviders")
-project_registry: Registry[ProjectProvider] = Registry[ProjectProvider]("ProjectProviders")
+cli_registry: Registry[CliModelProvider] = Registry[CliModelProvider]("CliModelProviders", contract=CliModelProvider)
+project_registry: Registry[ProjectProvider] = Registry[ProjectProvider]("ProjectProviders", contract=ProjectProvider)
 
 
 def register_defaults() -> None:

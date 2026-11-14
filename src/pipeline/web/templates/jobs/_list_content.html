@@ -1,0 +1,101 @@
+<article style="padding: 0.9rem 1rem; margin-bottom: 1rem;">
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+    <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+      <strong>Status do Celery:</strong>
+      {% if worker_health and worker_health.broker_available %}
+        {% if worker_health.workers_online > 0 %}
+          <span class="badge badge-success">{{ worker_health.workers_online }} worker(s) online</span>
+          <small style="color: var(--pico-muted-color);">{{ worker_health.worker_names|join(', ') }}</small>
+        {% else %}
+          <span class="badge badge-warning">Broker conectado • Nenhum worker ativo</span>
+        {% endif %}
+      {% else %}
+        <span class="badge badge-danger">Broker Celery indisponível</span>
+      {% endif %}
+    </div>
+    <div style="font-size: 0.8rem; color: var(--pico-muted-color);">
+      Agendamento Beat: <strong>{{ pipeline_interval_seconds }}s</strong> &bull;
+      Timeout Agente: <strong>{{ agent_timeout_seconds }}s</strong> &bull;
+      Timeout Celery: <strong>{{ celery_soft_timeout_seconds }}s</strong> (soft) / <strong>{{ celery_hard_timeout_seconds }}s</strong> (hard)
+    </div>
+  </div>
+</article>
+
+<article>
+  <table role="grid">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Projeto</th>
+        <th>Card</th>
+        <th>Etapa / Coluna</th>
+        <th>Agente / Modelo</th>
+        <th>Estado</th>
+        <th>Processo / Celery</th>
+        <th>Criado em</th>
+        <th style="text-align: right;">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for j in jobs %}
+        <tr>
+          <td><strong>#{{ j.id }}</strong></td>
+          <td>{{ j.project_name }}</td>
+          <td>
+            <strong>{{ j.card_title }}</strong>
+            {% if j.card_issue %}<span class="badge badge-info">#{{ j.card_issue }}</span>{% endif %}
+          </td>
+          <td>{{ j.column_name }}</td>
+          <td>
+            <small>{{ j.agent_name }}<br><code>{{ j.cli_provider_snapshot }}/{{ j.model_id_snapshot }}</code></small>
+          </td>
+          <td>
+            {% if j.state == 'pending' %}
+              <span class="badge badge-warning">Pendente</span>
+            {% elif j.state == 'running' %}
+              <span class="badge badge-info">Executando</span>
+            {% elif j.state == 'succeeded' %}
+              <span class="badge badge-success">Sucesso</span>
+            {% elif j.state == 'failed' %}
+              <span class="badge badge-danger">Falhou</span>
+            {% elif j.state == 'cancelled' %}
+              <span class="badge">Cancelado</span>
+            {% endif %}
+          </td>
+          <td>
+            <small>{{ j.process_status }}</small>
+            {% if j.celery_task_id %}
+              <br><small style="color: var(--pico-muted-color);">Task: <code>{{ j.celery_task_id[:8] }}</code>{% if j.celery_state %} ({{ j.celery_state }}){% endif %}</small>
+            {% endif %}
+          </td>
+          <td><small>{{ j.created_at.strftime('%d/%m %H:%M') }}</small></td>
+          <td style="text-align: right;">
+            <div class="table-actions" style="justify-content: flex-end;">
+              <a href="/jobs/{{ j.id }}" role="button" class="secondary outline">Detalhes</a>
+
+              {% if j.state == 'pending' %}
+                <form method="post" action="/jobs/{{ j.id }}/cancel" style="display:inline; margin:0;">
+                  <button type="submit" class="outline" style="margin:0;">Cancelar</button>
+                </form>
+              {% endif %}
+
+              {% if j.state in ['failed', 'cancelled'] %}
+                <form method="post" action="/jobs/{{ j.id }}/retry" style="display:inline; margin:0;">
+                  <button type="submit" class="secondary outline" style="margin:0;" title="Reenviar job para a fila do Celery">Retry (Celery)</button>
+                </form>
+              {% endif %}
+
+              <form method="post" action="/jobs/{{ j.id }}/delete" style="display:inline; margin:0;" onsubmit="return confirm('Remover este job?');">
+                <button type="submit" class="danger outline" style="margin:0;">&times;</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      {% else %}
+        <tr>
+          <td colspan="9" style="text-align: center; color: var(--pico-muted-color);">Nenhum job encontrado.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</article>

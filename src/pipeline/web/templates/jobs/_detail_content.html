@@ -1,0 +1,148 @@
+<div id="job-detail-live"
+     {% if job.id != 'N/A' and job.state in ['pending', 'running'] %}
+       hx-get="/jobs/{{ job.id }}/partials/status"
+       hx-trigger="every 2s"
+       hx-swap="outerHTML"
+     {% endif %}>
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <h2>Job #{{ job.id }} — Detalhes da Execução</h2>
+      <p>Projeto: <strong>{{ project.name }}</strong> &bull; Card: <strong>{{ card.title }}</strong></p>
+    </div>
+    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+      {% if job.id != 'N/A' and job.state == 'pending' %}
+        <form method="post" action="/jobs/{{ job.id }}/cancel" style="display:inline; margin: 0;">
+          <button type="submit" class="outline" style="margin: 0;">Cancelar</button>
+        </form>
+      {% endif %}
+      {% if job.id != 'N/A' and job.state in ['failed', 'cancelled'] %}
+        <form method="post" action="/jobs/{{ job.id }}/retry" style="display:inline; margin: 0;">
+          <button type="submit" class="secondary" style="margin: 0;">↻ Reenviar ao Celery</button>
+        </form>
+      {% endif %}
+      <a href="/jobs" role="button" class="secondary outline" style="margin: 0;">Voltar</a>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div>
+      <article>
+        <header>
+          <h3>Metadados & Status do Processo</h3>
+        </header>
+
+        <table role="grid">
+          <tbody>
+            <tr>
+              <td><strong>Estado</strong></td>
+              <td>
+                {% if job.state == 'pending' %}
+                  <span class="badge badge-warning">Pendente</span>
+                {% elif job.state == 'running' %}
+                  <span class="badge badge-info">Executando</span>
+                {% elif job.state == 'succeeded' %}
+                  <span class="badge badge-success">Sucesso</span>
+                {% elif job.state == 'failed' %}
+                  <span class="badge badge-danger">Falhou</span>
+                {% elif job.state == 'cancelled' %}
+                  <span class="badge">Cancelado</span>
+                {% else %}
+                  <span class="badge">{{ job.state }}</span>
+                {% endif %}
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Etapa do Processo</strong></td>
+              <td>{{ job.process_status or '—' }}</td>
+            </tr>
+            <tr>
+              <td><strong>Celery Task ID</strong></td>
+              <td>
+                {% if job.celery_task_id %}
+                  <code>{{ job.celery_task_id }}</code>
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Estado no Celery</strong></td>
+              <td>
+                {% if celery_status %}
+                  <span class="badge badge-info">{{ celery_status.state }}</span>
+                  {% if celery_status.detail %}
+                    <small style="color: var(--pico-muted-color);">{{ celery_status.detail }}</small>
+                  {% endif %}
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Timeout (Agente / Celery)</strong></td>
+              <td>
+                <small>Agente: <strong>{{ agent_timeout_seconds }}s</strong> &bull; Celery: <strong>{{ celery_soft_timeout_seconds }}s</strong> (soft) / <strong>{{ celery_hard_timeout_seconds }}s</strong> (hard)</small>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Agente</strong></td>
+              <td>{{ agent.name if agent else 'Nenhum' }}</td>
+            </tr>
+            <tr>
+              <td><strong>Provedor CLI Snapshot</strong></td>
+              <td><code>{{ job.cli_provider_snapshot }}</code></td>
+            </tr>
+            <tr>
+              <td><strong>Modelo Snapshot</strong></td>
+              <td><code>{{ job.model_id_snapshot }}</code></td>
+            </tr>
+            <tr>
+              <td><strong>Coluna de Destino</strong></td>
+              <td>{{ job.target_column_snapshot or 'Nenhuma' }}</td>
+            </tr>
+            <tr>
+              <td><strong>Criado em</strong></td>
+              <td>{{ job.created_at.strftime('%d/%m/%Y %H:%M:%S') }}</td>
+            </tr>
+            <tr>
+              <td><strong>Iniciado em</strong></td>
+              <td>{{ job.started_at.strftime('%d/%m/%Y %H:%M:%S') if job.started_at else '—' }}</td>
+            </tr>
+            <tr>
+              <td><strong>Finalizado em</strong></td>
+              <td>{{ job.finished_at.strftime('%d/%m/%Y %H:%M:%S') if job.finished_at else '—' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </article>
+    </div>
+
+    <div>
+      <article>
+        <header>
+          <h3>Resultado da Execução</h3>
+        </header>
+
+        {% if job.output_summary %}
+          <label>Resumo / Saída do Agente:</label>
+          <pre class="agent-prompt-preview">{{ job.output_summary }}</pre>
+        {% endif %}
+        {% if job.error %}
+          <label style="color: #d32f2f;">{% if job.state == 'succeeded' %}Avisos (job concluído, mas com falha ao atualizar o quadro){% else %}Erro de Execução{% endif %}:</label>
+          <pre class="agent-prompt-preview" style="color: #d32f2f;">{{ job.error }}</pre>
+        {% endif %}
+        {% if not job.output_summary and not job.error %}
+          <p style="color: var(--pico-muted-color);">
+            {% if job.state == 'running' %}
+              Job em execução no worker Celery... esta página atualiza automaticamente.
+            {% elif job.state == 'pending' %}
+              Aguardando processamento pelo worker Celery... esta página atualiza automaticamente.
+            {% else %}
+              O job ainda não possui saída registrada.
+            {% endif %}
+          </p>
+        {% endif %}
+      </article>
+    </div>
+  </div>
+</div>

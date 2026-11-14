@@ -1,0 +1,383 @@
+<!DOCTYPE html><html class="dark" lang="pt-BR"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_standard" name="shell-type"><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"inverse-on-surface":"#233143","surface-container":"#122131","on-tertiary-fixed-variant":"#005236","background":"#051424","primary":"#adc6ff","surface-dim":"#051424","secondary-fixed":"#e9ddff","surface-tint":"#adc6ff","on-tertiary":"#003824","on-surface-variant":"#c2c6d6","surface-bright":"#2c3a4c","on-primary-fixed-variant":"#004395","tertiary":"#4edea3","secondary":"#d0bcff","surface-container-high":"#1c2b3c","on-secondary":"#3c0091","on-secondary-fixed-variant":"#5516be","tertiary-fixed":"#6ffbbe","tertiary-fixed-dim":"#4edea3","on-secondary-fixed":"#23005c","surface-variant":"#273647","on-error":"#690005","inverse-surface":"#d4e4fa","on-primary-container":"#00285d","surface":"#051424","on-tertiary-fixed":"#002113","surface-container-low":"#0d1c2d","on-secondary-container":"#c4abff","error-container":"#93000a","on-background":"#d4e4fa","outline-variant":"#424754","primary-fixed-dim":"#adc6ff","secondary-fixed-dim":"#d0bcff","on-primary":"#002e6a","surface-container-highest":"#273647","primary-container":"#4d8eff","on-error-container":"#ffdad6","tertiary-container":"#00a572","on-tertiary-container":"#00311f","secondary-container":"#571bc1","inverse-primary":"#005ac2","on-surface":"#d4e4fa","outline":"#8c909f","error":"#ffb4ab","primary-fixed":"#d8e2ff","on-primary-fixed":"#001a42","surface-container-lowest":"#010f1f"},borderRadius:{DEFAULT:"0.125rem",lg:"0.25rem",xl:"0.5rem",full:"0.75rem"},spacing:{"margin-desktop":"1.5rem","space-sm":"0.5rem","space-lg":"1.25rem","space-md":"0.75rem","space-xl":"2rem",margin:"1rem","space-xs":"0.25rem","gutter-desktop":"1.25rem",gutter:"1rem"},fontFamily:{"body-sm":["Geist"],"label-code-lg":["JetBrains Mono"],"headline-md":["Geist"],"headline-lg":["Geist"],"body-lg":["Geist"],"headline-xl-mobile":["Geist"],"label-code-sm":["JetBrains Mono"],"label-code-md":["JetBrains Mono"],"headline-xl":["Geist"],"headline-sm":["Geist"],"body-md":["Geist"]},fontSize:{"body-sm":["12px",{lineHeight:"18px",fontWeight:"400"}],"label-code-lg":["13px",{lineHeight:"18px",fontWeight:"500"}],"headline-md":["18px",{lineHeight:"26px",letterSpacing:"-0.015em",fontWeight:"500"}],"headline-lg":["24px",{lineHeight:"32px",letterSpacing:"-0.02em",fontWeight:"600"}],"body-lg":["15px",{lineHeight:"24px",fontWeight:"400"}],"headline-xl-mobile":["24px",{lineHeight:"32px",letterSpacing:"-0.02em",fontWeight:"600"}],"label-code-sm":["10px",{lineHeight:"14px",letterSpacing:"0.04em",fontWeight:"500"}],"label-code-md":["11px",{lineHeight:"16px",letterSpacing:"0.02em",fontWeight:"400"}],"headline-xl":["32px",{lineHeight:"40px",letterSpacing:"-0.025em",fontWeight:"600"}],"headline-sm":["15px",{lineHeight:"22px",letterSpacing:"-0.01em",fontWeight:"500"}],"body-md":["13px",{lineHeight:"20px",fontWeight:"400"}]}}}}</script></head><body class="bg-background font-body-md text-on-surface antialiased min-h-screen selection:bg-primary-container selection:text-on-primary-container"><header class="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.35)]"><div class="h-14 w-full px-margin-desktop flex items-center justify-between gap-gutter"><div class="flex items-center gap-space-lg"><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center text-primary shadow-[0_0_12px_rgba(77,142,255,0.2)]"><span class="material-symbols-outlined text-[20px]">smart_toy</span></div><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight font-semibold">AI Pipeline</span></div></div><div class="h-4 w-[1px] bg-surface-variant hidden md:block"></div><div class="hidden md:flex items-center gap-space-xs bg-surface-container px-space-sm py-1 rounded-md text-on-surface-variant font-label-code-sm text-label-code-sm font-mono"><span class="material-symbols-outlined text-primary text-[15px]">folder_code</span><span class="text-on-surface font-medium truncate max-w-xs">Estante Web API e front</span></div></div><nav class="hidden lg:flex items-center gap-1 bg-surface-container-lowest p-1 rounded-xl"><a aria-current="page" class="px-space-md py-1.5 rounded-lg text-on-surface bg-surface-container font-medium shadow-sm font-body-sm text-body-sm" data-path="quadro-kanban" href="#">Quadro Kanban</a><a class="px-space-md py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="projetos" href="#">Projetos</a><a class="px-space-md py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="agentes-de-ia" href="#">Agentes de IA</a><a class="px-space-md py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="jobs-e-execucoes" href="#">Jobs &amp; Execuções</a><a class="px-space-md py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="configuracoes" href="#">Configurações</a></nav><div class="flex items-center gap-space-md"><div class="hidden sm:flex items-center gap-1 px-space-xs py-0.5 rounded bg-surface-container-low text-tertiary font-label-code-sm text-label-code-sm font-mono"><span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse"></span><span>Sync Ativo</span></div><button class="flex items-center gap-space-xs px-space-md py-1.5 rounded-lg bg-primary-container text-on-primary font-headline-sm text-body-sm font-medium hover:brightness-110 shadow-sm transition-all" type="button"><span class="material-symbols-outlined text-[16px]">bolt</span><span class="hidden sm:inline">Rodar Pipeline</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full bg-surface min-h-[calc(100vh-64px)] pt-14"><div class="flex flex-col w-full"><!-- Project Info & Command Sub-header Bar -->
+<div class="w-full bg-[#070d17] border-b border-[#1e293b] px-6 py-3.5 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+  <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+    <div class="flex items-center gap-2.5">
+      <div class="w-7 h-7 rounded-md bg-[#0f172a] border border-[#334155] flex items-center justify-center text-[#60a5fa]">
+        <span class="material-symbols-outlined text-[17px]">view_kanban</span>
+      </div>
+      <h1 class="text-[16px] font-semibold text-white tracking-tight">Estante Web API e front</h1>
+    </div>
+    <div class="flex items-center gap-2 flex-wrap font-mono text-[11px]">
+      <span class="px-2 py-0.5 rounded border border-[#1e293b] bg-[#0c1524] text-[#94a3b8] flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-[13px] text-[#38bdf8]">alt_route</span>
+        GitHub Projects v2
+      </span>
+      <span class="px-2 py-0.5 rounded border border-[#1e293b] bg-[#0c1524] text-[#64748b] hidden md:inline-flex items-center gap-1">
+        <span class="material-symbols-outlined text-[12px] text-[#64748b]">terminal</span>
+        /home/maurelio/Projetos/estante_virtual
+      </span>
+      <span class="px-2 py-0.5 rounded border border-[#059669]/40 bg-[#064e3b]/30 text-[#34d399] flex items-center gap-1.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#10b981] animate-pulse"></span>
+        Sync Ativo
+      </span>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-3 flex-wrap justify-between xl:justify-end">
+    <div class="flex items-center gap-2 font-mono text-[11px] text-[#94a3b8] bg-[#0c1524] px-3 py-1 rounded-md border border-[#1e293b]">
+      <span class="flex items-center gap-1 text-[#cbd5e1]"><strong class="text-white font-semibold">4</strong> homolog</span>
+      <span class="text-[#475569]">•</span>
+      <span class="flex items-center gap-1 text-[#38bdf8]"><strong class="text-[#38bdf8] font-semibold">1</strong> rodando</span>
+      <span class="text-[#475569]">•</span>
+      <span class="text-[#64748b]">0 gargalos</span>
+    </div>
+
+    <div class="flex items-center gap-1.5 bg-[#0c1524] px-2.5 py-1 rounded-md border border-[#1e293b] focus-within:border-[#3b82f6] transition-colors">
+      <span class="material-symbols-outlined text-[15px] text-[#64748b]">search</span>
+      <input class="bg-transparent text-[12px] text-[#e2e8f0] placeholder-[#64748b] focus:outline-none w-36 lg:w-48 font-body-md" placeholder="Filtrar issues ou tags..." type="text">
+    </div>
+
+    <button type="button" class="flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-[#334155] bg-[#0f172a] hover:bg-[#1e293b] text-[#cbd5e1] hover:text-white text-[12px] font-medium transition-all shadow-sm">
+      <span class="material-symbols-outlined text-[15px] text-[#38bdf8]">sync</span>
+      <span>Sincronizar</span>
+    </button>
+
+    <button type="button" class="flex items-center gap-1.5 px-3 py-1 rounded-md bg-[#059669] hover:bg-[#10b981] text-white text-[12px] font-semibold shadow-[0_0_15px_rgba(16,185,129,0.35)] transition-all hover:scale-[1.02] active:scale-[0.98]">
+      <span class="material-symbols-outlined text-[16px]">play_arrow</span>
+      <span>Rodar Pipeline Agora</span>
+    </button>
+  </div>
+</div>
+
+<!-- 5-Column Kanban Board Workspace -->
+<div class="w-full p-6 overflow-x-auto min-h-[calc(100vh-140px)] bg-[#070d17]">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 min-w-[1340px] items-start pb-12">
+
+    <!-- COL 1: Todo -->
+    <div class="flex flex-col bg-[#0b1322] border border-[#1e293b] rounded-lg p-3 min-h-[640px]">
+      <div class="flex items-center justify-between pb-3 mb-3 border-b border-[#1e293b]">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-[#64748b]"></span>
+          <h2 class="text-[13px] font-semibold text-[#f1f5f9] tracking-tight">Todo</h2>
+          <span class="px-1.5 py-0.2 rounded text-[10px] font-mono font-medium bg-[#1e293b] text-[#94a3b8]">0</span>
+        </div>
+        <button type="button" class="text-[#64748b] hover:text-[#cbd5e1] p-0.5 rounded hover:bg-[#1e293b]">
+          <span class="material-symbols-outlined text-[16px]">more_horiz</span>
+        </button>
+      </div>
+
+      <div class="flex-1 flex flex-col items-center justify-center p-6 border border-dashed border-[#1e293b] rounded-md bg-[#080e1a]/60 text-center">
+        <div class="w-9 h-9 rounded-full bg-[#111c30] flex items-center justify-center text-[#475569] mb-2">
+          <span class="material-symbols-outlined text-[18px]">inbox</span>
+        </div>
+        <span class="text-[12px] font-medium text-[#94a3b8]">Nenhum card nesta etapa</span>
+        <p class="text-[11px] text-[#475569] mt-0.5 font-mono">Aguardando sincronização de backlog</p>
+      </div>
+    </div>
+
+    <!-- COL 2: To architect -->
+    <div class="flex flex-col bg-[#0b1322] border border-[#1e293b] rounded-lg p-3 min-h-[640px]">
+      <div class="flex items-center justify-between pb-2 mb-2 border-b border-[#1e293b]">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-[#818cf8]"></span>
+          <h2 class="text-[13px] font-semibold text-[#f1f5f9] tracking-tight">To architect</h2>
+          <span class="px-1.5 py-0.2 rounded text-[10px] font-mono font-medium bg-[#1e293b] text-[#94a3b8]">0</span>
+        </div>
+        <button type="button" class="text-[#64748b] hover:text-[#cbd5e1] p-0.5 rounded hover:bg-[#1e293b]">
+          <span class="material-symbols-outlined text-[16px]">more_horiz</span>
+        </button>
+      </div>
+
+      <div class="mb-3">
+        <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded border border-[#4338ca]/50 bg-[#312e81]/30 text-[#a5b4fc] text-[10px] font-mono font-medium">
+          <span>🤖 Arquiteto Gemini</span>
+          <span class="text-[#818cf8]/70">(claude-sonnet-3.5)</span>
+        </span>
+      </div>
+
+      <div class="flex-1 flex flex-col items-center justify-center p-6 border border-dashed border-[#1e293b] rounded-md bg-[#080e1a]/60 text-center">
+        <div class="w-9 h-9 rounded-full bg-[#111c30] flex items-center justify-center text-[#475569] mb-2">
+          <span class="material-symbols-outlined text-[18px]">architecture</span>
+        </div>
+        <span class="text-[12px] font-medium text-[#94a3b8]">Nenhum card em arquitetura</span>
+        <p class="text-[11px] text-[#475569] mt-0.5 font-mono">Pronto para decompor novas specs</p>
+      </div>
+    </div>
+
+    <!-- COL 3: Architected -->
+    <div class="flex flex-col bg-[#0b1322] border border-[#1e293b] rounded-lg p-3 min-h-[640px]">
+      <div class="flex items-center justify-between pb-3 mb-3 border-b border-[#1e293b]">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-[#38bdf8]"></span>
+          <h2 class="text-[13px] font-semibold text-[#f1f5f9] tracking-tight">Architected</h2>
+          <span class="px-1.5 py-0.2 rounded text-[10px] font-mono font-medium bg-[#1e293b] text-[#94a3b8]">0</span>
+        </div>
+        <button type="button" class="text-[#64748b] hover:text-[#cbd5e1] p-0.5 rounded hover:bg-[#1e293b]">
+          <span class="material-symbols-outlined text-[16px]">more_horiz</span>
+        </button>
+      </div>
+
+      <div class="flex-1 flex flex-col items-center justify-center p-6 border border-dashed border-[#1e293b] rounded-md bg-[#080e1a]/60 text-center">
+        <div class="w-9 h-9 rounded-full bg-[#111c30] flex items-center justify-center text-[#475569] mb-2">
+          <span class="material-symbols-outlined text-[18px]">schema</span>
+        </div>
+        <span class="text-[12px] font-medium text-[#94a3b8]">Nenhum card arquiteto</span>
+        <p class="text-[11px] text-[#475569] mt-0.5 font-mono">Cards prontos para desenvolvimento</p>
+      </div>
+    </div>
+
+    <!-- COL 4: In Progress (Live AI Execution) -->
+    <div class="flex flex-col bg-[#0b1322] border border-[#1e293b] rounded-lg p-3 min-h-[640px]">
+      <div class="flex items-center justify-between pb-2 mb-2 border-b border-[#1e293b]">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-[#eab308] animate-pulse"></span>
+          <h2 class="text-[13px] font-semibold text-[#f1f5f9] tracking-tight">In Progress</h2>
+          <span class="px-1.5 py-0.2 rounded text-[10px] font-mono font-medium bg-[#854d0e]/40 text-[#fde047] border border-[#eab308]/40">1</span>
+        </div>
+        <button type="button" class="text-[#64748b] hover:text-[#cbd5e1] p-0.5 rounded hover:bg-[#1e293b]">
+          <span class="material-symbols-outlined text-[16px]">more_horiz</span>
+        </button>
+      </div>
+
+      <div class="mb-3">
+        <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded border border-[#0284c7]/50 bg-[#0369a1]/20 text-[#38bdf8] text-[10px] font-mono font-medium">
+          <span>🤖 Desenvolvedor</span>
+          <span class="text-[#7dd3fc]/80">(gemini-2.5-flash)</span>
+        </span>
+      </div>
+
+      <!-- Active Processing Card -->
+      <div class="group relative rounded-lg bg-[#0e192d] border border-[#2563eb]/60 shadow-[0_0_18px_rgba(37,99,235,0.22)] p-3.5 flex flex-col gap-2.5 transition-all hover:border-[#3b82f6]">
+        <div class="flex items-center justify-between">
+          <span class="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-[#1d4ed8]/30 border border-[#3b82f6]/50 text-[#93c5fd] flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#60a5fa] animate-ping"></span>
+            Gerando PR #20...
+          </span>
+          <span class="text-[10px] font-mono text-[#60a5fa] flex items-center gap-1">
+            <span class="material-symbols-outlined text-[12px]">timer</span>
+            01m 42s
+          </span>
+        </div>
+
+        <div class="flex items-start gap-2">
+          <span class="text-[11px] font-mono text-[#64748b] font-semibold mt-0.5">#20</span>
+          <h3 class="text-[13px] font-medium text-white leading-snug group-hover:text-[#93c5fd] transition-colors">
+            Criar endpoints REST para listagem paginada e filtros dinâmicos de autores
+          </h3>
+        </div>
+
+        <p class="text-[11px] text-[#94a3b8] leading-relaxed line-clamp-2">
+          Implementando paginação via cursor no repositório Prisma com validação Zod no payload da requisição...
+        </p>
+
+        <!-- Progress Bar Pulse -->
+        <div class="w-full bg-[#1e293b] h-1.5 rounded-full overflow-hidden mt-1">
+          <div class="bg-gradient-to-r from-[#2563eb] via-[#38bdf8] to-[#10b981] h-full w-2/3 rounded-full animate-pulse"></div>
+        </div>
+
+        <div class="pt-2 border-t border-[#1e293b] flex items-center justify-between text-[10px] font-mono text-[#64748b]">
+          <span class="flex items-center gap-1 text-[#38bdf8]">
+            <span class="material-symbols-outlined text-[12px]">terminal</span>
+            executando testes unitários
+          </span>
+          <span class="hover:text-[#94a3b8] cursor-pointer flex items-center gap-0.5">Logs →</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- COL 5: Homolog (4 Cards) -->
+    <div class="flex flex-col bg-[#0b1322] border border-[#1e293b] rounded-lg p-3 min-h-[640px]">
+      <div class="flex items-center justify-between pb-3 mb-3 border-b border-[#1e293b]">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-[#10b981]"></span>
+          <h2 class="text-[13px] font-semibold text-[#f1f5f9] tracking-tight">Homolog</h2>
+          <span class="px-1.5 py-0.2 rounded text-[10px] font-mono font-medium bg-[#064e3b]/50 text-[#34d399] border border-[#059669]/40">4</span>
+        </div>
+        <button type="button" class="text-[#64748b] hover:text-[#cbd5e1] p-0.5 rounded hover:bg-[#1e293b]">
+          <span class="material-symbols-outlined text-[16px]">more_horiz</span>
+        </button>
+      </div>
+
+      <div class="flex flex-col gap-3">
+
+        <!-- Card #3 -->
+        <div class="group rounded-lg bg-[#0e1726] border border-[#1e293b] hover:border-[#334155] p-3 flex flex-col gap-2 transition-all hover:bg-[#111c2e] hover:shadow-lg">
+          <div class="flex items-center justify-between gap-1">
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <span class="text-[11px] font-mono font-semibold text-[#60a5fa]">#3</span>
+              <span class="px-1.5 py-0.2 rounded text-[9px] font-mono bg-[#1e293b] text-[#93c5fd]">Backend API</span>
+              <span class="px-1.5 py-0.2 rounded text-[9px] font-mono bg-[#1e293b] text-[#cbd5e1]">Auth</span>
+            </div>
+            <span class="material-symbols-outlined text-[14px] text-[#475569] group-hover:text-[#94a3b8]">open_in_new</span>
+          </div>
+
+          <h3 class="text-[12.5px] font-medium text-[#f1f5f9] leading-snug group-hover:text-[#60a5fa] transition-colors">
+            Adicionar expiração do token na API e retornar a tela de login quando ele tiver expirado (front)
+          </h3>
+
+          <p class="text-[11px] text-[#94a3b8] leading-relaxed line-clamp-2">
+            Durante o uso verifiquei que ao passar muito tempo sem logar o token ainda continua válido no storage local sem provocar o redirect para autenticação...
+          </p>
+
+          <div class="pt-2 border-t border-[#1e293b] flex items-center justify-between text-[10px] font-mono text-[#64748b]">
+            <span class="flex items-center gap-1">
+              <span class="material-symbols-outlined text-[11px]">schedule</span>
+              Visto: 13/11 00:30
+            </span>
+            <div class="flex items-center gap-2">
+              <span class="text-[#60a5fa] hover:underline cursor-pointer flex items-center gap-0.5">Histórico →</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-[#10b981]"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card #4 -->
+        <div class="group rounded-lg bg-[#0e1726] border border-[#1e293b] hover:border-[#b45309]/50 p-3 flex flex-col gap-2 transition-all hover:bg-[#111c2e] hover:shadow-lg">
+          <div class="flex items-center justify-between gap-1">
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <span class="text-[11px] font-mono font-semibold text-[#60a5fa]">#4</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-[#78350f]/50 border border-[#d97706]/40 text-[#fcd34d] flex items-center gap-1">
+                <span class="material-symbols-outlined text-[11px]">replay</span>
+                Retrabalho (3)
+              </span>
+            </div>
+            <span class="material-symbols-outlined text-[14px] text-[#475569] group-hover:text-[#94a3b8]">open_in_new</span>
+          </div>
+
+          <h3 class="text-[12.5px] font-medium text-[#f1f5f9] leading-snug group-hover:text-[#fbbf24] transition-colors">
+            Modificar granularidade de avaliação de livros e filmes
+          </h3>
+
+          <p class="text-[11px] text-[#94a3b8] leading-relaxed line-clamp-2">
+            Eu como usuário percebi que a avaliação está sendo de 0 a 5. Quero que mude o formato permitindo 0 a 10 ou 0 a 5 com meias estrelas no componente interativo...
+          </p>
+
+          <div class="pt-2 border-t border-[#1e293b] flex items-center justify-between text-[10px] font-mono text-[#64748b]">
+            <span class="flex items-center gap-1">
+              <span class="material-symbols-outlined text-[11px]">schedule</span>
+              Visto: 13/11 01:26
+            </span>
+            <div class="flex items-center gap-2">
+              <span class="text-[#fbbf24] hover:underline cursor-pointer flex items-center gap-0.5">Histórico →</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-[#f59e0b]"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card #5 -->
+        <div class="group rounded-lg bg-[#0e1726] border border-[#1e293b] hover:border-[#7c3aed]/50 p-3 flex flex-col gap-2 transition-all hover:bg-[#111c2e] hover:shadow-lg">
+          <div class="flex items-center justify-between gap-1">
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <span class="text-[11px] font-mono font-semibold text-[#60a5fa]">#5</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-[#4c1d95]/50 border border-[#8b5cf6]/40 text-[#c4b5fd] flex items-center gap-1">
+                <span class="material-symbols-outlined text-[11px]">replay</span>
+                Retrabalho (1)
+              </span>
+            </div>
+            <span class="material-symbols-outlined text-[14px] text-[#475569] group-hover:text-[#94a3b8]">open_in_new</span>
+          </div>
+
+          <h3 class="text-[12.5px] font-medium text-[#f1f5f9] leading-snug group-hover:text-[#c4b5fd] transition-colors">
+            Modificar modelo de sugestão de filmes
+          </h3>
+
+          <p class="text-[11px] text-[#94a3b8] leading-relaxed line-clamp-2">
+            Atualmente o modelo de sugestão de filmes está sugerindo os mesmos filmes (se eu rejeitar o filme volta) e filmes que já foram categorizados anteriormente...
+          </p>
+
+          <div class="pt-2 border-t border-[#1e293b] flex items-center justify-between text-[10px] font-mono text-[#64748b]">
+            <span class="flex items-center gap-1">
+              <span class="material-symbols-outlined text-[11px]">schedule</span>
+              Visto: 13/11 01:47
+            </span>
+            <div class="flex items-center gap-2">
+              <span class="text-[#c4b5fd] hover:underline cursor-pointer flex items-center gap-0.5">Histórico →</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-[#a855f7]"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card #2 -->
+        <div class="group rounded-lg bg-[#0e1726] border border-[#1e293b] hover:border-[#1e293b] p-3 flex flex-col gap-2 transition-all hover:bg-[#111c2e] hover:shadow-lg">
+          <div class="flex items-center justify-between gap-1">
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <span class="text-[11px] font-mono font-semibold text-[#60a5fa]">#2</span>
+              <span class="px-1.5 py-0.2 rounded text-[9px] font-mono bg-[#1e293b] text-[#93c5fd]">Frontend</span>
+              <span class="px-1.5 py-0.2 rounded text-[9px] font-mono bg-[#1e293b] text-[#cbd5e1]">UI</span>
+            </div>
+            <span class="material-symbols-outlined text-[14px] text-[#475569] group-hover:text-[#94a3b8]">open_in_new</span>
+          </div>
+
+          <h3 class="text-[12.5px] font-medium text-[#f1f5f9] leading-snug group-hover:text-[#60a5fa] transition-colors">
+            Retirar livros da aba de sugestões
+          </h3>
+
+          <p class="text-[11px] text-[#94a3b8] leading-relaxed line-clamp-2">
+            Eu como usuário solicito que seja retirada da aba de sugestões as sugestões voltadas a livros. Verifiquei com o uso que a preferência deve ser estritamente multimídia...
+          </p>
+
+          <div class="pt-2 border-t border-[#1e293b] flex items-center justify-between text-[10px] font-mono text-[#64748b]">
+            <span class="flex items-center gap-1">
+              <span class="material-symbols-outlined text-[11px]">schedule</span>
+              Visto: 13/11 00:47
+            </span>
+            <div class="flex items-center gap-2">
+              <span class="text-[#60a5fa] hover:underline cursor-pointer flex items-center gap-0.5">Histórico →</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-[#10b981]"></span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Bottom Dock Daemon Bar -->
+<div class="sticky bottom-0 w-full bg-[#070d17]/95 backdrop-blur-md border-t border-[#1e293b] px-6 py-2.5 flex items-center justify-between z-40">
+  <div class="flex items-center gap-4">
+    <div class="flex items-center gap-2">
+      <span class="w-2 h-2 rounded-full bg-[#10b981] animate-pulse"></span>
+      <span class="font-mono text-[11px] text-[#34d399] font-semibold">DAEMON CONECTADO</span>
+    </div>
+    <div class="hidden md:flex items-center gap-2 text-[11px] font-mono">
+      <span class="text-[#64748b]">Último evento:</span>
+      <span class="text-[#93c5fd]">[gemini-2.5-flash] Compilando schema Prisma e rodando migrações de teste... OK (0.42s)</span>
+    </div>
+  </div>
+  <div class="flex items-center gap-2">
+    <button type="button" class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#0f172a] hover:bg-[#1e293b] text-[#cbd5e1] hover:text-white font-mono text-[11px] transition-colors border border-[#1e293b]">
+      <span class="material-symbols-outlined text-[14px] text-[#60a5fa]">terminal</span>
+      <span>Expandir Console</span>
+    </button>
+    <button type="button" class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#0f172a] hover:bg-[#1e293b] text-[#94a3b8] hover:text-[#cbd5e1] font-mono text-[11px] transition-colors border border-[#1e293b]">
+      <span class="material-symbols-outlined text-[14px]">settings_ethernet</span>
+      <span>Webhooks</span>
+    </button>
+  </div>
+</div></div>
+<script>
+  // Simple quick-filter micro-interaction
+  document.addEventListener('DOMContentLoaded', () => {
+    const filterInput = document.querySelector('input[placeholder*="Filtrar"]');
+    if (!filterInput) return;
+
+    filterInput.addEventListener('input', (e) => {
+      const term = e.target.value.toLowerCase().trim();
+      const cards = document.querySelectorAll('article');
+      
+      cards.forEach(card => {
+        const text = card.textContent.toLowerCase();
+        if (!term || text.includes(term)) {
+          card.classList.remove('hidden');
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+    });
+  });
+</script></main><footer class="w-full bg-surface-container-lowest py-space-md shadow-[0_-1px_6px_rgba(0,0,0,0.2)]"><div class="w-full px-margin-desktop flex flex-col md:flex-row items-center justify-between gap-space-sm"><div class="flex items-center gap-space-md font-label-code-sm text-label-code-sm text-outline font-mono"><span>AI Pipeline Nexus Engine</span><span>•</span><span>Protocol 2.4.0-rc</span><span>•</span><span class="text-tertiary">Nexus Fleet Healthy (99.98% SLA)</span></div><div class="font-label-code-sm text-label-code-sm text-on-surface-variant font-mono">© 2025 Autonomous Software Fleet. High-Velocity Dispatch.</div></div></footer>
+
+</body></html>

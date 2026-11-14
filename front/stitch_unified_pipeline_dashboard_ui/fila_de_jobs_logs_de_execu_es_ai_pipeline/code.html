@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"inverse-on-surface":"#233143","surface-container":"#122131","on-tertiary-fixed-variant":"#005236","background":"#051424","primary":"#adc6ff","surface-dim":"#051424","secondary-fixed":"#e9ddff","surface-tint":"#adc6ff","on-tertiary":"#003824","on-surface-variant":"#c2c6d6","surface-bright":"#2c3a4c","on-primary-fixed-variant":"#004395","tertiary":"#4edea3","secondary":"#d0bcff","surface-container-high":"#1c2b3c","on-secondary":"#3c0091","on-secondary-fixed-variant":"#5516be","tertiary-fixed":"#6ffbbe","tertiary-fixed-dim":"#4edea3","on-secondary-fixed":"#23005c","surface-variant":"#273647","on-error":"#690005","inverse-surface":"#d4e4fa","on-primary-container":"#00285d","surface":"#051424","on-tertiary-fixed":"#002113","surface-container-low":"#0d1c2d","on-secondary-container":"#c4abff","error-container":"#93000a","on-background":"#d4e4fa","outline-variant":"#424754","primary-fixed-dim":"#adc6ff","secondary-fixed-dim":"#d0bcff","on-primary":"#002e6a","surface-container-highest":"#273647","primary-container":"#4d8eff","on-error-container":"#ffdad6","tertiary-container":"#00a572","on-tertiary-container":"#00311f","secondary-container":"#571bc1","inverse-primary":"#005ac2","on-surface":"#d4e4fa","outline":"#8c909f","error":"#ffb4ab","primary-fixed":"#d8e2ff","on-primary-fixed":"#001a42","surface-container-lowest":"#010f1f"},borderRadius:{DEFAULT:"0.125rem",lg:"0.25rem",xl:"0.5rem",full:"0.75rem"},spacing:{"margin-desktop":"1.5rem","space-sm":"0.5rem","space-lg":"1.25rem","space-md":"0.75rem","space-xl":"2rem",margin:"1rem","space-xs":"0.25rem","gutter-desktop":"1.25rem",gutter:"1rem"},fontFamily:{"body-sm":["Geist"],"label-code-lg":["JetBrains Mono"],"headline-md":["Geist"],"headline-lg":["Geist"],"body-lg":["Geist"],"headline-xl-mobile":["Geist"],"label-code-sm":["JetBrains Mono"],"label-code-md":["JetBrains Mono"],"headline-xl":["Geist"],"headline-sm":["Geist"],"body-md":["Geist"]},fontSize:{"body-sm":["12px",{lineHeight:"18px",fontWeight:"400"}],"label-code-lg":["13px",{lineHeight:"18px",fontWeight:"500"}],"headline-md":["18px",{lineHeight:"26px",letterSpacing:"-0.015em",fontWeight:"500"}],"headline-lg":["24px",{lineHeight:"32px",letterSpacing:"-0.02em",fontWeight:"600"}],"body-lg":["15px",{lineHeight:"24px",fontWeight:"400"}],"headline-xl-mobile":["24px",{lineHeight:"32px",letterSpacing:"-0.02em",fontWeight:"600"}],"label-code-sm":["10px",{lineHeight:"14px",letterSpacing:"0.04em",fontWeight:"500"}],"label-code-md":["11px",{lineHeight:"16px",letterSpacing:"0.02em",fontWeight:"400"}],"headline-xl":["32px",{lineHeight:"40px",letterSpacing:"-0.025em",fontWeight:"600"}],"headline-sm":["15px",{lineHeight:"22px",letterSpacing:"-0.01em",fontWeight:"500"}],"body-md":["13px",{lineHeight:"20px",fontWeight:"400"}]}}}}</script></head><body class="bg-background font-body-md text-on-surface antialiased min-h-screen selection:bg-primary-container selection:text-on-primary-container"><header class="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.35)]"><div class="h-14 w-full px-margin-desktop flex items-center justify-between gap-gutter"><div class="flex items-center gap-space-lg"><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center text-primary shadow-[0_0_12px_rgba(77,142,255,0.2)]"><span class="material-symbols-outlined text-[20px]">smart_toy</span></div><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight font-semibold">AI Pipeline</span></div></div><div class="h-4 w-[1px] bg-surface-variant hidden md:block"></div><div class="hidden md:flex items-center gap-space-xs bg-surface-container px-space-sm py-1 rounded-md text-on-surface-variant font-label-code-sm text-label-code-sm font-mono"><span class="material-symbols-outlined text-primary text-[15px]">folder_code</span><span class="text-on-surface font-medium truncate max-w-xs">Estante Web API e front</span></div></div><nav class="hidden lg:flex items-center gap-1 bg-surface-container-lowest p-1 rounded-xl"><a class="px-space-md py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="quadro-kanban" href="#">Quadro Kanban</a><a class="px-space-md py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="projetos" href="#">Projetos</a><a class="px-space-md py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="agentes-de-ia" href="#">Agentes de IA</a><a class="px-space-md py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="jobs-e-execucoes" href="#">Jobs &amp; Execuções</a><a class="px-space-md py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="configuracoes" href="#">Configurações</a></nav><div class="flex items-center gap-space-md"><div class="hidden sm:flex items-center gap-1 px-space-xs py-0.5 rounded bg-surface-container-low text-tertiary font-label-code-sm text-label-code-sm font-mono"><span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse"></span><span>Sync Ativo</span></div><button class="flex items-center gap-space-xs px-space-md py-1.5 rounded-lg bg-primary-container text-on-primary font-headline-sm text-body-sm font-medium hover:brightness-110 shadow-sm transition-all" type="button"><span class="material-symbols-outlined text-[16px]">bolt</span><span class="hidden sm:inline">Rodar Pipeline</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full bg-surface min-h-[calc(100vh-64px)] pt-14"><div class="flex flex-col w-full">
+<!-- Sub-header Operacional: Daemon Watchdog & Telemetria em Tempo Real -->
+<section class="w-full bg-surface-container-lowest px-margin-desktop py-space-sm shadow-[0_1px_4px_rgba(0,0,0,0.4)]">
+<div class="max-w-[1720px] mx-auto flex flex-col xl:flex-row items-start xl:items-center justify-between gap-space-md">
+<!-- Status do Daemon e Scheduler -->
+<div class="flex flex-wrap items-center gap-space-md">
+<div class="flex items-center gap-space-xs px-space-sm py-1 rounded bg-surface-container-low text-tertiary">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-tertiary"></span>
+</span>
+<span class="font-label-code-sm text-label-code-sm font-mono tracking-tight font-medium">Daemon Ativo</span>
+<span class="text-outline font-label-code-sm text-label-code-sm font-mono">• PID 4821</span>
+</div>
+<div class="flex items-center gap-space-xs text-on-surface-variant font-label-code-sm text-label-code-sm font-mono">
+<span class="material-symbols-outlined text-[15px] text-outline">schedule</span>
+<span>Polling: 30s</span>
+<span class="text-outline">/</span>
+<span>Próxima varredura:</span>
+<span class="text-primary font-medium font-mono tabular-nums" id="daemon-timer">00:18</span>
+</div>
+<div class="hidden sm:flex items-center w-28 h-1.5 rounded-full bg-surface-container-high overflow-hidden">
+<div class="h-full bg-primary rounded-full transition-all duration-1000 ease-linear" id="polling-progress" style="width: 40%;"></div>
+</div>
+<!-- Toggle Passivo de Auto-refresh -->
+<div class="flex items-center gap-1.5 px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-code-sm text-label-code-sm font-mono">
+<button class="flex items-center gap-1 text-tertiary hover:brightness-125 transition-all" id="toggle-autorefresh" title="Alternar cadência de auto-refresh">
+<span class="material-symbols-outlined text-[14px]">sync</span>
+<span>Auto-refresh: 10s</span>
+</button>
+</div>
+</div>
+<!-- Quick Telemetry Kpis (Passivos) -->
+<div class="flex flex-wrap items-center gap-space-lg font-label-code-sm text-label-code-sm font-mono">
+<div class="flex items-center gap-space-xs">
+<span class="text-outline uppercase">Janela 24h:</span>
+<span class="text-on-surface font-semibold tabular-nums">48 Jobs</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="text-outline uppercase">Taxa de Sucesso:</span>
+<span class="text-tertiary font-semibold tabular-nums">95.8%</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="text-outline uppercase">Tempo Médio:</span>
+<span class="text-on-surface font-semibold tabular-nums">1m 24s</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="text-outline uppercase">Retrabalhos:</span>
+<span class="text-error font-semibold tabular-nums">2</span>
+</div>
+<div class="hidden md:flex items-center gap-space-xs px-2 py-0.5 rounded bg-surface-container-high text-secondary">
+<span class="material-symbols-outlined text-[14px]">terminal</span>
+<span class="text-on-surface">agy CLI</span>
+<span class="text-outline">(Gemini)</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Barra de Filtros Passivos e Contexto da Fila -->
+<section class="w-full bg-surface px-margin-desktop py-space-md shadow-[0_1px_2px_rgba(0,0,0,0.2)]">
+<div class="max-w-[1720px] mx-auto flex flex-col md:flex-row items-stretch md:items-center justify-between gap-space-md">
+<div class="flex flex-wrap items-center gap-space-sm flex-1">
+<!-- Seletor de Projeto Passivo -->
+<div class="relative min-w-[220px]">
+<label class="sr-only">Filtrar por Projeto</label>
+<div class="flex items-center justify-between bg-surface-container-low px-space-sm py-1.5 rounded-lg text-on-surface font-body-sm text-body-sm cursor-pointer hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-space-xs truncate">
+<span class="material-symbols-outlined text-[16px] text-primary">folder_open</span>
+<span class="truncate font-medium">Estante Web API e front</span>
+</div>
+<span class="material-symbols-outlined text-[16px] text-outline">expand_more</span>
+</div>
+</div>
+<!-- Filtro de Estado -->
+<div class="flex items-center bg-surface-container-lowest p-0.5 rounded-lg overflow-x-auto text-on-surface-variant font-label-code-sm text-label-code-sm font-mono">
+<button class="px-space-sm py-1 rounded bg-surface-container-high text-on-surface font-medium shadow-sm">Todos (48)</button>
+<button class="px-space-sm py-1 rounded hover:text-on-surface transition-colors flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container animate-pulse"></span>
+            Em Execução (1)
+          </button>
+<button class="px-space-sm py-1 rounded hover:text-on-surface transition-colors text-tertiary">Sucesso (42)</button>
+<button class="px-space-sm py-1 rounded hover:text-on-surface transition-colors text-error">Falhas (1)</button>
+<button class="px-space-sm py-1 rounded hover:text-on-surface transition-colors text-secondary">Retrabalhos (4)</button>
+</div>
+<!-- Filtro Agente / Modelo -->
+<div class="hidden lg:flex items-center bg-surface-container-low px-space-sm py-1.5 rounded-lg text-on-surface-variant font-label-code-sm text-label-code-sm font-mono gap-space-xs">
+<span class="material-symbols-outlined text-[14px] text-outline">smart_toy</span>
+<span>Agente:</span>
+<span class="text-on-surface font-medium">Todos</span>
+<span class="material-symbols-outlined text-[14px] text-outline">unfold_more</span>
+</div>
+</div>
+<!-- Busca Rápida Técnica -->
+<div class="flex items-center gap-space-sm">
+<div class="relative w-full md:w-64">
+<span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-[16px] text-outline">search</span>
+<input class="w-full bg-surface-container-low text-on-surface font-label-code-sm text-label-code-sm font-mono pl-8 pr-3 py-1.5 rounded-lg placeholder:text-outline focus:outline-none focus:bg-surface-container transition-all" placeholder="Buscar #Job, #Card ou tag..." type="text" value=""/>
+</div>
+<div class="hidden xl:flex items-center gap-1 px-2 py-1.5 rounded bg-surface-container-lowest text-outline font-label-code-sm text-label-code-sm font-mono" title="Registro em modo somente leitura (auditoria pura)">
+<span class="material-symbols-outlined text-[14px]">lock</span>
+<span class="hidden 2xl:inline">Auditoria Imutável</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Workspace Principal: Master-Detail Telemetry View -->
+<section class="w-full max-w-[1720px] mx-auto px-margin-desktop py-space-md">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter-desktop items-start">
+<!-- COLUNA ESQUERDA (Master): Fila Histórica de Jobs Escalonados -->
+<div class="lg:col-span-5 flex flex-col gap-space-sm">
+<div class="flex items-center justify-between px-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[18px] text-primary">view_timeline</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-semibold tracking-tight">Fila de Execuções</h2>
+</div>
+<span class="font-label-code-sm text-label-code-sm font-mono text-outline">Snapshot Daemon #2.4</span>
+</div>
+<div class="flex flex-col gap-1.5">
+<!-- Job Item #20: Em Execução Ativo -->
+<div class="group relative p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container transition-all duration-150 cursor-pointer shadow-sm">
+<div class="flex items-start justify-between gap-space-sm mb-1.5">
+<div class="flex items-center gap-space-xs font-label-code-sm text-label-code-sm font-mono">
+<span class="text-primary font-semibold">#20</span>
+<span class="text-outline">•</span>
+<span class="px-1.5 py-0.2 rounded bg-surface-container-high text-on-surface-variant font-mono">Card #20</span>
+</div>
+<div class="flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary-container/20 text-primary font-label-code-sm text-label-code-sm font-mono shadow-[0_0_12px_rgba(77,142,255,0.25)]">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-ping"></span>
+<span>Em Execução</span>
+<span class="text-primary-fixed-dim tabular-nums">01:42</span>
+</div>
+</div>
+<div class="font-body-sm text-body-sm text-on-surface font-medium line-clamp-1 mb-2">
+              Criar endpoints REST para listagem paginada de coleções
+            </div>
+<div class="flex items-center justify-between text-on-surface-variant font-label-code-sm text-label-code-sm font-mono pt-1">
+<div class="flex items-center gap-1 truncate max-w-[230px]">
+<span class="material-symbols-outlined text-[13px] text-secondary">psychology</span>
+<span class="truncate">Dev</span>
+<span class="text-outline">/</span>
+<span class="text-secondary-fixed-dim truncate">gemini-2.5-flash</span>
+</div>
+<div class="flex items-center gap-1 text-outline">
+<span class="material-symbols-outlined text-[12px]">timer</span>
+<span>Iniciado agora</span>
+</div>
+</div>
+</div>
+<!-- Job Item #19: SELECIONADO (Foco do Detail) -->
+<div class="relative p-space-sm rounded-xl bg-surface-container-high ring-1 ring-primary/40 shadow-md transition-all duration-150 cursor-pointer">
+<div class="absolute -left-1 top-3 bottom-3 w-1 bg-primary rounded-r"></div>
+<div class="flex items-start justify-between gap-space-sm mb-1.5">
+<div class="flex items-center gap-space-xs font-label-code-sm text-label-code-sm font-mono">
+<span class="text-primary font-bold">#19</span>
+<span class="text-outline">•</span>
+<span class="px-1.5 py-0.2 rounded bg-surface-container-highest text-primary-fixed-dim font-mono font-medium">Card #5</span>
+<span class="text-outline hidden sm:inline">•</span>
+<span class="text-on-surface-variant hidden sm:inline truncate max-w-[120px]">Estante Web</span>
+</div>
+<div class="flex items-center gap-1 px-2 py-0.5 rounded-full bg-tertiary-container/30 text-tertiary font-label-code-sm text-label-code-sm font-mono shadow-[0_0_12px_rgba(78,222,163,0.15)]">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+<span>Sucesso</span>
+</div>
+</div>
+<div class="font-body-sm text-body-sm text-on-surface font-semibold line-clamp-1 mb-2">
+              Modificar modelo de sugestão de filmes
+            </div>
+<div class="flex items-center justify-between text-on-surface-variant font-label-code-sm text-label-code-sm font-mono pt-1">
+<div class="flex items-center gap-1 truncate max-w-[240px]">
+<span class="material-symbols-outlined text-[13px] text-tertiary">code</span>
+<span class="text-on-surface">Desenvolvedor</span>
+<span class="text-outline">/</span>
+<span class="text-outline truncate">gemini-3.8-flash-m</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant tabular-nums">
+<span class="material-symbols-outlined text-[12px] text-tertiary">done_all</span>
+<span>11m 16s</span>
+</div>
+</div>
+</div>
+<!-- Job Item #18: Sucesso -->
+<div class="group relative p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container transition-all duration-150 cursor-pointer shadow-sm">
+<div class="flex items-start justify-between gap-space-sm mb-1.5">
+<div class="flex items-center gap-space-xs font-label-code-sm text-label-code-sm font-mono">
+<span class="text-on-surface-variant font-medium">#18</span>
+<span class="text-outline">•</span>
+<span class="px-1.5 py-0.2 rounded bg-surface-container-high text-on-surface-variant font-mono">Card #5</span>
+</div>
+<div class="flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-tertiary font-label-code-sm text-label-code-sm font-mono">
+<span>Sucesso</span>
+</div>
+</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant group-hover:text-on-surface line-clamp-1 mb-2 font-medium">
+              Modificar modelo de sugestão de filmes
+            </div>
+<div class="flex items-center justify-between text-outline font-label-code-sm text-label-code-sm font-mono pt-1">
+<div class="flex items-center gap-1 truncate max-w-[240px]">
+<span class="material-symbols-outlined text-[13px] text-secondary">architecture</span>
+<span>Arquiteto Gemini</span>
+<span>/</span>
+<span>claude-sonnet-5-5</span>
+</div>
+<span class="tabular-nums">13/11 01:42</span>
+</div>
+</div>
+<!-- Job Item #17: Sucesso -->
+<div class="group relative p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container transition-all duration-150 cursor-pointer shadow-sm">
+<div class="flex items-start justify-between gap-space-sm mb-1.5">
+<div class="flex items-center gap-space-xs font-label-code-sm text-label-code-sm font-mono">
+<span class="text-on-surface-variant font-medium">#17</span>
+<span class="text-outline">•</span>
+<span class="px-1.5 py-0.2 rounded bg-surface-container-high text-on-surface-variant font-mono">Card #4</span>
+</div>
+<div class="flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-tertiary font-label-code-sm text-label-code-sm font-mono">
+<span>Sucesso</span>
+</div>
+</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant group-hover:text-on-surface line-clamp-1 mb-2">
+              Modificar granularidade de avaliação de livros e filmes
+            </div>
+<div class="flex items-center justify-between text-outline font-label-code-sm text-label-code-sm font-mono pt-1">
+<div class="flex items-center gap-1 truncate">
+<span class="material-symbols-outlined text-[13px]">code</span>
+<span>Desenvolvedor</span>
+<span>/</span>
+<span>gemini-3.8-flash</span>
+</div>
+<span class="tabular-nums">13/11 01:26</span>
+</div>
+</div>
+<!-- Job Item #16: Sucesso -->
+<div class="group relative p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container transition-all duration-150 cursor-pointer shadow-sm">
+<div class="flex items-start justify-between gap-space-sm mb-1.5">
+<div class="flex items-center gap-space-xs font-label-code-sm text-label-code-sm font-mono">
+<span class="text-on-surface-variant font-medium">#16</span>
+<span class="text-outline">•</span>
+<span class="px-1.5 py-0.2 rounded bg-surface-container-high text-on-surface-variant font-mono">Card #4</span>
+</div>
+<div class="flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-tertiary font-label-code-sm text-label-code-sm font-mono">
+<span>Sucesso</span>
+</div>
+</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant group-hover:text-on-surface line-clamp-1 mb-2">
+              Modificar granularidade de avaliação de livros e filmes
+            </div>
+<div class="flex items-center justify-between text-outline font-label-code-sm text-label-code-sm font-mono pt-1">
+<div class="flex items-center gap-1 truncate">
+<span class="material-symbols-outlined text-[13px] text-secondary">architecture</span>
+<span>Arquiteto Gemini</span>
+<span>/</span>
+<span>claude-sonnet-5</span>
+</div>
+<span class="tabular-nums">13/11 01:22</span>
+</div>
+</div>
+<!-- Job Item #15: Retrabalho Detectado -->
+<div class="group relative p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container transition-all duration-150 cursor-pointer shadow-sm">
+<div class="flex items-start justify-between gap-space-sm mb-1.5">
+<div class="flex items-center gap-space-xs font-label-code-sm text-label-code-sm font-mono">
+<span class="text-on-surface-variant font-medium">#15</span>
+<span class="text-outline">•</span>
+<span class="px-1.5 py-0.2 rounded bg-surface-container-high text-on-surface-variant font-mono">Card #4</span>
+</div>
+<div class="flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-highest text-secondary font-label-code-sm text-label-code-sm font-mono">
+<span class="material-symbols-outlined text-[12px]">replay</span>
+<span>Retrabalho (1x)</span>
+</div>
+</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant group-hover:text-on-surface line-clamp-1 mb-2">
+              Modificar granularidade de avaliação de livros e filmes
+            </div>
+<div class="flex items-center justify-between text-outline font-label-code-sm text-label-code-sm font-mono pt-1">
+<div class="flex items-center gap-1 truncate">
+<span class="material-symbols-outlined text-[13px]">architecture</span>
+<span>Arquiteto Gemini</span>
+</div>
+<span class="tabular-nums">13/11 01:20</span>
+</div>
+</div>
+<!-- Job Item #14: Sucesso -->
+<div class="group relative p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container transition-all duration-150 cursor-pointer shadow-sm">
+<div class="flex items-start justify-between gap-space-sm mb-1.5">
+<div class="flex items-center gap-space-xs font-label-code-sm text-label-code-sm font-mono">
+<span class="text-on-surface-variant font-medium">#14</span>
+<span class="text-outline">•</span>
+<span class="px-1.5 py-0.2 rounded bg-surface-container-high text-on-surface-variant font-mono">Card #4</span>
+</div>
+<div class="flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-tertiary font-label-code-sm text-label-code-sm font-mono">
+<span>Sucesso</span>
+</div>
+</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant group-hover:text-on-surface line-clamp-1 mb-2">
+              Modificar granularidade de avaliação de livros e filmes
+            </div>
+<div class="flex items-center justify-between text-outline font-label-code-sm text-label-code-sm font-mono pt-1">
+<div class="flex items-center gap-1 truncate">
+<span class="material-symbols-outlined text-[13px]">architecture</span>
+<span>Arquiteto Gemini</span>
+</div>
+<span class="tabular-nums">13/11 01:05</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between px-space-sm py-space-xs text-outline font-label-code-sm text-label-code-sm font-mono">
+<span>Exibindo 7 de 48 jobs</span>
+<span class="text-primary hover:underline cursor-pointer">Carregar mais históricos...</span>
+</div>
+</div>
+<!-- COLUNA DIREITA (Detail): Inspeção Completa do Job #19 -->
+<div class="lg:col-span-7 flex flex-col gap-space-md">
+<!-- Job Inspector Header -->
+<div class="p-space-lg rounded-2xl bg-surface-container-low shadow-md relative overflow-hidden">
+<div class="absolute -right-16 -top-16 w-56 h-56 rounded-full bg-primary/5 blur-3xl pointer-events-none"></div>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-md pb-space-md">
+<div>
+<div class="flex items-center gap-space-xs mb-1">
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-primary font-label-code-sm text-label-code-sm font-mono font-semibold">JOB #19</span>
+<span class="text-outline font-label-code-sm text-label-code-sm font-mono">•</span>
+<span class="font-label-code-sm text-label-code-sm font-mono text-on-surface-variant">Snapshot ID: 19_exec_gemini</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface font-semibold tracking-tight">
+                Detalhes da Execução
+              </h1>
+</div>
+<!-- Context Badge & Link -->
+<div class="flex flex-col sm:items-end gap-1 font-label-code-sm text-label-code-sm font-mono">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="text-outline">Projeto:</span>
+<span class="text-on-surface font-medium">Estante Web API e front</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="text-outline">Card:</span>
+<span class="text-primary font-medium">#5 Modificar modelo de sugestão de filmes</span>
+</div>
+</div>
+</div>
+<!-- Grid de Metadados Críticos (Réplica fiel da imagem 6 com acabamento refinado) -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-space-xs p-space-sm rounded-xl bg-surface-container-lowest font-label-code-sm text-label-code-sm font-mono">
+<div class="p-2 rounded bg-surface-container-low flex flex-col gap-1">
+<span class="text-outline uppercase text-[9px] tracking-wider">Estado</span>
+<div class="flex items-center gap-1 text-tertiary font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+<span>Sucesso</span>
+</div>
+</div>
+<div class="p-2 rounded bg-surface-container-low flex flex-col gap-1">
+<span class="text-outline uppercase text-[9px] tracking-wider">Agente</span>
+<div class="text-on-surface font-medium truncate">Desenvolvedor</div>
+</div>
+<div class="p-2 rounded bg-surface-container-low flex flex-col gap-1">
+<span class="text-outline uppercase text-[9px] tracking-wider">Provedor CLI</span>
+<div class="text-primary font-medium flex items-center gap-1">
+<span>agy</span>
+<span class="text-[9px] text-outline font-normal">(Antigravity)</span>
+</div>
+</div>
+<div class="p-2 rounded bg-surface-container-low flex flex-col gap-1">
+<span class="text-outline uppercase text-[9px] tracking-wider">Coluna Destino</span>
+<div class="text-secondary font-medium">Homolog</div>
+</div>
+<div class="p-2 rounded bg-surface-container-low flex flex-col gap-1 sm:col-span-2">
+<span class="text-outline uppercase text-[9px] tracking-wider">Modelo Snapshot</span>
+<div class="text-secondary-fixed-dim font-medium truncate">gemini-3.8-flash-medium</div>
+</div>
+<div class="p-2 rounded bg-surface-container-low flex flex-col gap-1">
+<span class="text-outline uppercase text-[9px] tracking-wider">Início / Término</span>
+<div class="text-on-surface tabular-nums">01:47:40 → 01:58:52</div>
+</div>
+<div class="p-2 rounded bg-surface-container-low flex flex-col gap-1">
+<span class="text-outline uppercase text-[9px] tracking-wider">Duração Total</span>
+<div class="text-tertiary font-semibold tabular-nums">11m 12s</div>
+</div>
+</div>
+</div>
+<!-- Abas de Inspeção de Output -->
+<div class="flex flex-col rounded-2xl bg-surface-container-low shadow-md overflow-hidden">
+<!-- Tab Navigation -->
+<div class="flex items-center justify-between px-space-md pt-space-md bg-surface-container-low">
+<div class="flex items-center gap-1" id="tab-buttons">
+<button class="tab-btn px-space-md py-2 rounded-t-lg bg-surface-container text-primary font-headline-sm text-body-sm font-semibold flex items-center gap-1.5 transition-colors" data-tab="resumo">
+<span class="material-symbols-outlined text-[16px]">description</span>
+<span>Resumo / Saída do Agente</span>
+</button>
+<button class="tab-btn px-space-md py-2 rounded-t-lg text-on-surface-variant hover:text-on-surface font-headline-sm text-body-sm font-medium flex items-center gap-1.5 transition-colors" data-tab="logs">
+<span class="material-symbols-outlined text-[16px]">terminal</span>
+<span>Logs CLI &amp; Daemon</span>
+</button>
+<button class="tab-btn px-space-md py-2 rounded-t-lg text-on-surface-variant hover:text-on-surface font-headline-sm text-body-sm font-medium flex items-center gap-1.5 transition-colors" data-tab="diff">
+<span class="material-symbols-outlined text-[16px]">difference</span>
+<span>Diff Git (+142 -28)</span>
+</button>
+</div>
+<!-- Ações Passivas de Cópia / Visualização -->
+<div class="hidden sm:flex items-center gap-1 text-on-surface-variant font-label-code-sm text-label-code-sm font-mono pb-2">
+<button class="p-1.5 rounded hover:bg-surface-container text-outline hover:text-on-surface transition-colors" id="btn-copy-raw" title="Copiar saída em formato raw Markdown">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+<span class="text-outline">|</span>
+<span class="text-outline">Exit Code: <strong class="text-tertiary">0</strong></span>
+</div>
+</div>
+<!-- Conteúdo da Aba 1: Markdown Renderizado do Agente (Fiel à imagem de referência 6) -->
+<div class="p-space-lg bg-surface-container-lowest overflow-y-auto max-h-[620px] font-mono text-[13px] leading-relaxed text-on-surface-variant select-text" id="tab-content-resumo">
+<div class="flex items-center gap-2 text-on-surface font-headline-sm text-headline-sm font-semibold mb-space-sm">
+<span class="text-[18px]">🚀</span>
+<span class="text-on-surface font-headline-md text-headline-md tracking-tight">Pull Request: Sugestão de Filmes com Filtro de Streaming, Cache de Rejeitados (FIFO 30) e Modelo Gemini 3.5 Flash</span>
+</div>
+<div class="h-2"></div>
+<div class="text-primary font-semibold text-[14px] flex items-center gap-1.5 mb- space-xs">
+<span>📄</span>
+<span>Descrição</span>
+</div>
+<div class="mt-space-sm pl- space-sm flex flex-col gap-space-sm">
+<div>
+<h4 class="text-on-surface font-semibold text-[13px] mb-1">### Contexto &amp; Problema</h4>
+<p class="text-on-surface-variant text-[12px] leading-5">
+                  O subsistema de sugestão com IA para filmes apresentava três limitações principais relatadas pelos usuários:
+                </p>
+<ol class="list-decimal list-inside text-[12px] leading-5 text-on-surface-variant mt-1.5 space-y-1 pl-1">
+<li><strong class="text-on-surface">Recomendação de obras fora de catálogo:</strong> O modelo gerava sugestões de títulos sem verificar disponibilidade nos serviços de streaming do usuário.</li>
+<li><strong class="text-on-surface">Repetição de filmes rejeitados:</strong> O ciclo de geração apagava as sugestões anteriores da tabela relacional sem manter histórico do que não fora importado. Obras descartadas ou rejeitadas voltavam a aparecer em requisições subsequentes.</li>
+<li><strong class="text-on-surface">Repertório limitado e volume restrito:</strong> O modelo anterior (<code class="bg-surface-container px-1 py-0.5 rounded text-primary">google/gemini-2.5-flash</code> / <code class="bg-surface-container px-1 py-0.5 rounded text-primary">gemini-3.1-flash-lite</code>) gerava volumes variáveis entre 5 e 10 obras, sem o repertório expandido necessário para diversidade cinematográfica.</li>
+</ol>
+</div>
+<div class="py-1">
+<div class="h-[1px] w-full bg-surface-container-high"></div>
+</div>
+<div>
+<h4 class="text-on-surface font-semibold text-[13px] mb-1">### Solução Arquitetural ([Agente Arquiteto])</h4>
+<div class="space-y-3 mt-2 text-[12px] leading-5">
+<div>
+<p class="text-on-surface font-medium">1. **Atualização do Modelo &amp; Volume de Recomendações**:</p>
+<p class="text-on-surface-variant pl-4">
+                      - Atualização do modelo padrão no OpenRouter para <code class="text-secondary bg-surface-container px-1 rounded font-mono">google/gemini-3.5-flash</code> (configurado em <span class="text-primary underline">backend/config/services.php#L38-L43</span> e <span class="text-primary underline">.env.example#L72-L73</span>).
+                    </p>
+<p class="text-on-surface-variant pl-4">
+                      - Ajuste das diretivas de sistema e do prompt para gerar <strong class="text-on-surface">exatamente 10 recomendações originais por lista</strong>, garantindo previsibilidade e densidade de catálogo.
+                    </p>
+</div>
+<div>
+<p class="text-on-surface font-medium">2. **Filtro Multi-seleção de Serviços de Streaming**:</p>
+<p class="text-on-surface-variant pl-4">
+                      - Adicionada a seleção na interface (<span class="text-primary underline">frontend/src/views/SuggestionsView.vue</span>) permitindo marcar plataformas (Netflix, Prime Video, Disney+, Max, Apple TV+, Paramount+, Globoplay).
+                    </p>
+<p class="text-on-surface-variant pl-4">
+                      - O payload da requisição passa a enviar <code class="text-tertiary bg-surface-container px-1 rounded font-mono">streaming_services: string[]</code>, validado no backend (<span class="text-primary underline">backend/app/Http/Requests/GenerateSuggestionRequest.php</span>).
+                    </p>
+</div>
+<div>
+<p class="text-on-surface font-medium">3. **Cache de Rejeições Recentes (FIFO 30)**:</p>
+<p class="text-on-surface-variant pl-4">
+                      - Implementação de tabela de descarte transitório em Redis com retenção LRU/FIFO para até 30 IDs de filmes descartados pelo usuário nos últimos 14 dias, evitando reciclagem repetitiva no pipeline.
+                    </p>
+</div>
+</div>
+</div>
+<div class="mt-2 p- space-sm rounded-lg bg-surface-container-high/50 text-[11px] font-mono text-outline flex items-center justify-between">
+<span>Relatório gerado automaticamente pelo Agente Desenvolvedor via Antigravity Daemon</span>
+<span class="text-tertiary">Hash de Validação: sha256:8f4c2e9b11</span>
+</div>
+</div>
+</div>
+<!-- Conteúdo da Aba 2: Terminal & Logs CLI (Oculto por default) -->
+<div class="hidden p-space-lg bg-surface-container-lowest font-mono text-[11px] leading-5 text-on-surface-variant overflow-y-auto max-h-[620px]" id="tab-content-logs">
+<div class="flex items-center justify-between pb-2 mb-2 border-b border-surface-container text-outline">
+<span>daemon-worker-pool-1 :: /var/log/nexus/jobs/job_19.stdout</span>
+<span class="text-tertiary">STREAM END (CODE 0)</span>
+</div>
+<div class="space-y-1">
+<p class="text-outline"><span class="text-on-surface-variant">[2026-11-13 01:47:36.102]</span> [DAEMON] Dispatched Job #19 to runner worker-agy-04</p>
+<p class="text-outline"><span class="text-on-surface-variant">[2026-11-13 01:47:40.441]</span> [RUNNER] Initializing agy CLI snapshot sandbox (env: staging-homolog)</p>
+<p class="text-secondary"><span class="text-on-surface-variant">[2026-11-13 01:47:42.019]</span> [MODEL] Handshake established with provider: gemini-3.8-flash-medium</p>
+<p><span class="text-on-surface-variant">[2026-11-13 01:47:44.890]</span> [GIT] Checked out branch: feature/card-5-sugestao-filmes-gemini</p>
+<p><span class="text-on-surface-variant">[2026-11-13 01:49:12.310]</span> [INSPECT] Loading schema context from backend/config/services.php...</p>
+<p><span class="text-on-surface-variant">[2026-11-13 01:52:05.114]</span> [AGENT] Synthesis completed. Generating pull request description and diff payload.</p>
+<p><span class="text-tertiary"><span class="text-on-surface-variant">[2026-11-13 01:56:40.002]</span> [TEST] Running PHPUnit test suites: 18 tests passed, 0 failures, 0 skipped.</span></p>
+<p><span class="text-tertiary"><span class="text-on-surface-variant">[2026-11-13 01:58:30.822]</span> [TEST] Frontend vitest execution: SuggestionsView.spec.ts ✓ (100% assertions)</span></p>
+<p class="text-primary"><span class="text-on-surface-variant">[2026-11-13 01:58:50.198]</span> [GIT] Branch pushed to remote: origin/feature/card-5-sugestao-filmes-gemini</p>
+<p class="text-tertiary font-semibold"><span class="text-on-surface-variant">[2026-11-13 01:58:52.411]</span> [DAEMON] Job #19 transitioned card to column 'Homolog'. Completed successfully.</p>
+</div>
+</div>
+<!-- Conteúdo da Aba 3: Diff Git & Arquivos (Oculto por default) -->
+<div class="hidden p-space-lg bg-surface-container-lowest font-mono text-[12px] leading-5 text-on-surface-variant overflow-y-auto max-h-[620px]" id="tab-content-diff">
+<div class="flex items-center justify-between pb-space-sm mb-space-sm border-b border-surface-container text-outline">
+<span>3 Arquivos Modificados • Total: +142 linhas / -28 linhas</span>
+<span class="text-primary">Commit: 7ab41ec</span>
+</div>
+<!-- File 1 -->
+<div class="mb-4 rounded-lg bg-surface-container-low p-3">
+<div class="flex items-center justify-between text-on-surface font-semibold text-[12px] mb-2">
+<span class="text-primary">backend/config/services.php</span>
+<span class="text-tertiary text-label-code-sm">+18 -4</span>
+</div>
+<div class="text-[11px] space-y-0.5 text-on-surface-variant bg-surface-container-lowest p-2 rounded">
+<p class="text-outline">@@ -38,7 +38,10 @@</p>
+<p class="text-error bg-error-container/20 line-through">- 'model' =&gt; env('GEMINI_DEFAULT_MODEL', 'gemini-2.5-flash'),</p>
+<p class="text-tertiary bg-tertiary-container/20">+ 'model' =&gt; env('GEMINI_DEFAULT_MODEL', 'google/gemini-3.5-flash'),</p>
+<p class="text-tertiary bg-tertiary-container/20">+ 'suggestion_cache_ttl' =&gt; 1209600, // 14 dias em segundos</p>
+<p class="text-tertiary bg-tertiary-container/20">+ 'suggestion_fifo_limit' =&gt; 30,</p>
+</div>
+</div>
+<!-- File 2 -->
+<div class="mb-4 rounded-lg bg-surface-container-low p-3">
+<div class="flex items-center justify-between text-on-surface font-semibold text-[12px] mb-2">
+<span class="text-primary">frontend/src/views/SuggestionsView.vue</span>
+<span class="text-tertiary text-label-code-sm">+94 -16</span>
+</div>
+<div class="text-[11px] space-y-0.5 text-on-surface-variant bg-surface-container-lowest p-2 rounded">
+<p class="text-outline">@@ -112,6 +112,14 @@</p>
+<p class="text-tertiary bg-tertiary-container/20">+ &lt;StreamingSelector v-model="selectedProviders" :options="streamingPlatforms" /&gt;</p>
+<p class="text-tertiary bg-tertiary-container/20">+ &lt;RejectionHistoryBadge :count="rejectedTitlesCount" /&gt;</p>
+</div>
+</div>
+<!-- File 3 -->
+<div class="rounded-lg bg-surface-container-low p-3">
+<div class="flex items-center justify-between text-on-surface font-semibold text-[12px] mb-2">
+<span class="text-primary">backend/app/Http/Requests/GenerateSuggestionRequest.php</span>
+<span class="text-tertiary text-label-code-sm">+30 -8</span>
+</div>
+<div class="text-[11px] space-y-0.5 text-on-surface-variant bg-surface-container-lowest p-2 rounded">
+<p class="text-outline">@@ -22,4 +22,12 @@</p>
+<p class="text-tertiary bg-tertiary-container/20">+ 'streaming_services' =&gt; ['sometimes', 'array'],</p>
+<p class="text-tertiary bg-tertiary-container/20">+ 'streaming_services.*' =&gt; ['string', 'in:netflix,prime,disney,max,apple,paramount,globoplay'],</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Barra de Rodapé / Observabilidade Passiva do Daemon -->
+<section class="w-full mt-space-lg bg-surface-container-lowest border-t border-surface-container-high py-space-sm px-margin-desktop">
+<div class="max-w-[1720px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-space-sm text-outline font-label-code-sm text-label-code-sm font-mono">
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+<span class="text-on-surface">Queue Daemon: IDLE (Aguardando disparo agendado)</span>
+</div>
+<span class="hidden md:inline">•</span>
+<span class="hidden md:inline">Memory Footprint: 84.2 MB</span>
+<span class="hidden md:inline">•</span>
+<span class="hidden md:inline">Uptime: 14d 08h 12m</span>
+</div>
+<div class="flex items-center gap-space-md text-on-surface-variant">
+<span>Logs Retidos: 30 dias</span>
+<span>•</span>
+<span class="text-tertiary">Cluster Sincronizado</span>
+</div>
+</div>
+</section>
+</div>
+<script>
+  // Script para controle das abas de inspeção e simulação do daemon timer passivo
+  (function initObservabilityUI() {
+    // 1. Controle das Abas do Inspector
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabContents = {
+      resumo: document.getElementById('tab-content-resumo'),
+      logs: document.getElementById('tab-content-logs'),
+      diff: document.getElementById('tab-content-diff')
+    };
+
+    tabButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tabKey = btn.getAttribute('data-tab');
+        
+        // Reset classes nos botões
+        tabButtons.forEach(b => {
+          b.classList.remove('bg-surface-container', 'text-primary', 'font-semibold');
+          b.classList.add('text-on-surface-variant', 'font-medium');
+        });
+
+        // Ativa o botão selecionado
+        btn.classList.add('bg-surface-container', 'text-primary', 'font-semibold');
+        btn.classList.remove('text-on-surface-variant', 'font-medium');
+
+        // Alterna conteúdos
+        Object.keys(tabContents).forEach(key => {
+          if (tabContents[key]) {
+            if (key === tabKey) {
+              tabContents[key].classList.remove('hidden');
+            } else {
+              tabContents[key].classList.add('hidden');
+            }
+          }
+        });
+      });
+    });
+
+    // 2. Simulação Passiva do Timer do Daemon
+    let remainingSeconds = 18;
+    const totalCycle = 30;
+    const timerEl = document.getElementById('daemon-timer');
+    const progressEl = document.getElementById('polling-progress');
+    const toggleBtn = document.getElementById('toggle-autorefresh');
+    let isPaused = false;
+
+    setInterval(() => {
+      if (isPaused) return;
+
+      remainingSeconds--;
+      if (remainingSeconds < 0) {
+        remainingSeconds = totalCycle;
+      }
+
+      if (timerEl) {
+        const formatted = remainingSeconds < 10 ? `00:0${remainingSeconds}` : `00:${remainingSeconds}`;
+        timerEl.textContent = formatted;
+      }
+
+      if (progressEl) {
+        const pct = ((totalCycle - remainingSeconds) / totalCycle) * 100;
+        progressEl.style.width = `${pct}%`;
+      }
+    }, 1000);
+
+    // Toggle de auto-refresh passivo
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', () => {
+        isPaused = !isPaused;
+        if (isPaused) {
+          toggleBtn.innerHTML = '<span class="material-symbols-outlined text-[14px]">pause</span><span>Auto-refresh: Pausado</span>';
+          toggleBtn.classList.remove('text-tertiary');
+          toggleBtn.classList.add('text-outline');
+        } else {
+          toggleBtn.innerHTML = '<span class="material-symbols-outlined text-[14px]">sync</span><span>Auto-refresh: 10s</span>';
+          toggleBtn.classList.add('text-tertiary');
+          toggleBtn.classList.remove('text-outline');
+        }
+      });
+    }
+
+    // Copiar conteúdo bruto
+    const btnCopy = document.getElementById('btn-copy-raw');
+    if (btnCopy) {
+      btnCopy.addEventListener('click', () => {
+        const content = document.getElementById('tab-content-resumo')?.innerText || '';
+        navigator.clipboard.writeText(content).then(() => {
+          const original = btnCopy.innerHTML;
+          btnCopy.innerHTML = '<span class="material-symbols-outlined text-[16px] text-tertiary">check</span>';
+          setTimeout(() => {
+            btnCopy.innerHTML = original;
+          }, 1500);
+        });
+      });
+    }
+  })();
+</script></main><footer class="w-full bg-surface-container-lowest py-space-md shadow-[0_-1px_6px_rgba(0,0,0,0.2)]"><div class="w-full px-margin-desktop flex flex-col md:flex-row items-center justify-between gap-space-sm"><div class="flex items-center gap-space-md font-label-code-sm text-label-code-sm text-outline font-mono"><span>AI Pipeline Nexus Engine</span><span>•</span><span>Protocol 2.4.0-rc</span><span>•</span><span class="text-tertiary">Nexus Fleet Healthy (99.98% SLA)</span></div><div class="font-label-code-sm text-label-code-sm text-on-surface-variant font-mono">© 2025 Autonomous Software Fleet. High-Velocity Dispatch.</div></div></footer>
+</body></html>

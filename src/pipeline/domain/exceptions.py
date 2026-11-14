@@ -26,3 +26,8 @@ class EntityNotFoundError(DomainError):
 class ValidationError(DomainError):
     """Raised when domain validation fails."""
     pass
+
+
+class ContractViolationError(DomainError):
+    """Raised when a provider does not fulfill the contract (port) it must implement."""
+    pass

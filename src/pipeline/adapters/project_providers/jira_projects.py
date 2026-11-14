@@ -4,9 +4,10 @@ import httpx
 from pipeline.config import config
 from pipeline.domain.entities import BoardInfo, RemoteCard, SettingFieldSpec
 from pipeline.domain.exceptions import BoardError
+from pipeline.domain.ports.project_provider import ProjectProvider
 
 
-class JiraProjectProvider:
+class JiraProjectProvider(ProjectProvider):
     provider_key = "jira"
     display_name = "Atlassian Jira"
 

@@ -273,7 +273,12 @@ class SqlJobRepository:
         target_column_snapshot: str | None,
         state: str = "pending",
         iteration: int = 1,
+        celery_task_id: str | None = None,
+        process_status: str | None = None,
     ) -> Job:
+        default_status = process_status if process_status is not None else (
+            "Aguardando envio ao Celery" if state == "pending" else None
+        )
         job = Job(
             project_id=project_id,
             card_id=card_id,
@@ -284,6 +289,8 @@ class SqlJobRepository:
             target_column_snapshot=target_column_snapshot,
             state=state,
             iteration=iteration,
+            celery_task_id=celery_task_id,
+            process_status=default_status,
             created_at=utc_now(),
         )
         self.session.add(job)

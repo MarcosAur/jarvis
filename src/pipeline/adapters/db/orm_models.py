@@ -113,6 +113,8 @@ class Job(SQLModel, table=True):
     target_column_snapshot: str | None = Field(default=None)
     iteration: int = Field(default=1)
     state: str = Field(default="pending", index=True)
+    celery_task_id: str | None = Field(default=None, index=True)
+    process_status: str | None = Field(default=None)
     output_summary: str | None = Field(default=None)
     error: str | None = Field(default=None)
     created_at: datetime = Field(default_factory=utc_now)
