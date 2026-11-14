@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"inverse-on-surface":"#233143","surface-container":"#122131","on-tertiary-fixed-variant":"#005236","background":"#051424","primary":"#adc6ff","surface-dim":"#051424","secondary-fixed":"#e9ddff","surface-tint":"#adc6ff","on-tertiary":"#003824","on-surface-variant":"#c2c6d6","surface-bright":"#2c3a4c","on-primary-fixed-variant":"#004395","tertiary":"#4edea3","secondary":"#d0bcff","surface-container-high":"#1c2b3c","on-secondary":"#3c0091","on-secondary-fixed-variant":"#5516be","tertiary-fixed":"#6ffbbe","tertiary-fixed-dim":"#4edea3","on-secondary-fixed":"#23005c","surface-variant":"#273647","on-error":"#690005","inverse-surface":"#d4e4fa","on-primary-container":"#00285d","surface":"#051424","on-tertiary-fixed":"#002113","surface-container-low":"#0d1c2d","on-secondary-container":"#c4abff","error-container":"#93000a","on-background":"#d4e4fa","outline-variant":"#424754","primary-fixed-dim":"#adc6ff","secondary-fixed-dim":"#d0bcff","on-primary":"#002e6a","surface-container-highest":"#273647","primary-container":"#4d8eff","on-error-container":"#ffdad6","tertiary-container":"#00a572","on-tertiary-container":"#00311f","secondary-container":"#571bc1","inverse-primary":"#005ac2","on-surface":"#d4e4fa","outline":"#8c909f","error":"#ffb4ab","primary-fixed":"#d8e2ff","on-primary-fixed":"#001a42","surface-container-lowest":"#010f1f"},borderRadius:{DEFAULT:"0.125rem",lg:"0.25rem",xl:"0.5rem",full:"0.75rem"},spacing:{"margin-desktop":"1.5rem","space-sm":"0.5rem","space-lg":"1.25rem","space-md":"0.75rem","space-xl":"2rem",margin:"1rem","space-xs":"0.25rem","gutter-desktop":"1.25rem",gutter:"1rem"},fontFamily:{"body-sm":["Geist"],"label-code-lg":["JetBrains Mono"],"headline-md":["Geist"],"headline-lg":["Geist"],"body-lg":["Geist"],"headline-xl-mobile":["Geist"],"label-code-sm":["JetBrains Mono"],"label-code-md":["JetBrains Mono"],"headline-xl":["Geist"],"headline-sm":["Geist"],"body-md":["Geist"]},fontSize:{"body-sm":["12px",{lineHeight:"18px",fontWeight:"400"}],"label-code-lg":["13px",{lineHeight:"18px",fontWeight:"500"}],"headline-md":["18px",{lineHeight:"26px",letterSpacing:"-0.015em",fontWeight:"500"}],"headline-lg":["24px",{lineHeight:"32px",letterSpacing:"-0.02em",fontWeight:"600"}],"body-lg":["15px",{lineHeight:"24px",fontWeight:"400"}],"headline-xl-mobile":["24px",{lineHeight:"32px",letterSpacing:"-0.02em",fontWeight:"600"}],"label-code-sm":["10px",{lineHeight:"14px",letterSpacing:"0.04em",fontWeight:"500"}],"label-code-md":["11px",{lineHeight:"16px",letterSpacing:"0.02em",fontWeight:"400"}],"headline-xl":["32px",{lineHeight:"40px",letterSpacing:"-0.025em",fontWeight:"600"}],"headline-sm":["15px",{lineHeight:"22px",letterSpacing:"-0.01em",fontWeight:"500"}],"body-md":["13px",{lineHeight:"20px",fontWeight:"400"}]}}}}</script></head><body class="bg-background font-body-md text-on-surface antialiased min-h-screen selection:bg-primary-container selection:text-on-primary-container"><header class="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.35)]"><div class="h-14 w-full px-margin-desktop flex items-center justify-between gap-gutter"><div class="flex items-center gap-space-lg"><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center text-primary shadow-[0_0_12px_rgba(77,142,255,0.2)]"><span class="material-symbols-outlined text-[20px]">smart_toy</span></div><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight font-semibold">AI Pipeline</span></div></div><div class="h-4 w-[1px] bg-surface-variant hidden md:block"></div><div class="hidden md:flex items-center gap-space-xs bg-surface-container px-space-sm py-1 rounded-md text-on-surface-variant font-label-code-sm text-label-code-sm font-mono"><span class="material-symbols-outlined text-primary text-[15px]">folder_code</span><span class="text-on-surface font-medium truncate max-w-xs">Estante Web API e front</span></div></div><nav class="hidden lg:flex items-center gap-1 bg-surface-container-lowest p-1 rounded-xl"><a class="px-space-md py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="quadro-kanban" href="#">Quadro Kanban</a><a class="px-space-md py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="projetos" href="#">Projetos</a><a class="px-space-md py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="agentes-de-ia" href="#">Agentes de IA</a><a class="px-space-md py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="jobs-e-execucoes" href="#">Jobs &amp; Execuções</a><a class="px-space-md py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="configuracoes" href="#">Configurações</a></nav><div class="flex items-center gap-space-md"><div class="hidden sm:flex items-center gap-1 px-space-xs py-0.5 rounded bg-surface-container-low text-tertiary font-label-code-sm text-label-code-sm font-mono"><span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse"></span><span>Sync Ativo</span></div><button class="flex items-center gap-space-xs px-space-md py-1.5 rounded-lg bg-primary-container text-on-primary font-headline-sm text-body-sm font-medium hover:brightness-110 shadow-sm transition-all" type="button"><span class="material-symbols-outlined text-[16px]">bolt</span><span class="hidden sm:inline">Rodar Pipeline</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full bg-surface min-h-[calc(100vh-64px)] pt-14"><div class="flex flex-col w-full">
+<!-- Script para sincronizar visual da aba ativa no App Shell -->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const activeLink = document.querySelector('nav a[data-path="agentes-de-ia"]');
+      if (activeLink) {
+        activeLink.classList.remove('text-on-surface-variant');
+        activeLink.classList.add('text-on-surface', 'bg-surface-container-high', 'font-medium', 'shadow-sm');
+      }
+    });
+  </script>
+<!-- Container Geral da Tela -->
+<div class="px-margin-desktop py-space-xl flex flex-col gap-space-xl max-w-7xl mx-auto w-full">
+<!-- Top Hero / Subheader Técnico -->
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-lg">
+<div class="flex flex-col gap-space-xs max-w-3xl">
+<div class="flex items-center gap-space-sm flex-wrap">
+<span class="inline-flex items-center gap-1.5 px-space-sm py-0.5 rounded-full bg-surface-container-high text-tertiary font-label-code-sm text-label-code-sm font-mono tracking-wide">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse"></span>
+            CRUD 1 • ORCHESTRATION LAYER
+          </span>
+<span class="text-outline font-label-code-sm text-label-code-sm font-mono">•</span>
+<span class="font-label-code-sm text-label-code-sm text-outline font-mono">SOLID Ports &amp; Adapters</span>
+</div>
+<h1 class="font-headline-xl text-headline-xl text-on-surface font-semibold tracking-tight">
+          Agentes de IA
+        </h1>
+<p class="font-body-md text-body-md text-on-surface-variant">
+          Gerencie agentes autônomos, associe provedores CLI locais e configure modelos e parâmetros para atuação nas etapas do Kanban com despacho de alta velocidade.
+        </p>
+</div>
+<!-- Ações Primárias do Subheader -->
+<div class="flex items-center gap-space-sm self-start lg:self-center shrink-0">
+<button class="flex items-center gap-space-xs px-space-md py-2 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-headline-sm text-body-sm transition-all duration-150 shadow-sm" id="btn-test-cli" type="button">
+<span class="material-symbols-outlined text-[16px] text-tertiary">terminal</span>
+<span>Testar Conexões CLIs</span>
+</button>
+<button class="flex items-center gap-space-xs px-space-lg py-2 rounded-lg bg-primary-container hover:brightness-110 text-on-primary font-headline-sm text-body-sm font-medium shadow-md transition-all duration-150" id="btn-open-modal" type="button">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>Novo Agente</span>
+</button>
+</div>
+</div>
+<!-- Live Telemetry KPI Strip -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md">
+<!-- KPI 1 -->
+<div class="bg-surface-container-low p-space-md rounded-xl flex items-center justify-between shadow-sm">
+<div class="flex flex-col">
+<span class="font-label-code-sm text-label-code-sm text-outline uppercase font-mono tracking-wider">Agentes Ativos</span>
+<div class="flex items-baseline gap-space-xs mt-0.5">
+<span class="font-headline-lg text-headline-lg font-semibold text-on-surface">2</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">/ 2 registrados</span>
+</div>
+</div>
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[22px]">smart_toy</span>
+</div>
+</div>
+<!-- KPI 2 -->
+<div class="bg-surface-container-low p-space-md rounded-xl flex items-center justify-between shadow-sm">
+<div class="flex flex-col">
+<span class="font-label-code-sm text-label-code-sm text-outline uppercase font-mono tracking-wider">Provedor Principal</span>
+<div class="flex items-baseline gap-space-xs mt-0.5">
+<span class="font-headline-lg text-headline-lg font-semibold text-primary">Antigravity</span>
+<span class="font-label-code-sm text-label-code-sm font-mono text-tertiary">CLI (agy)</span>
+</div>
+</div>
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[22px]">deployed_code</span>
+</div>
+</div>
+<!-- KPI 3 -->
+<div class="bg-surface-container-low p-space-md rounded-xl flex items-center justify-between shadow-sm">
+<div class="flex flex-col">
+<span class="font-label-code-sm text-label-code-sm text-outline uppercase font-mono tracking-wider">CLIs no $PATH</span>
+<div class="flex items-baseline gap-space-xs mt-0.5">
+<span class="font-headline-lg text-headline-lg font-semibold text-tertiary">4 Prontas</span>
+<span class="font-label-code-sm text-label-code-sm font-mono text-outline">0 falhas</span>
+</div>
+</div>
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[22px]">dns</span>
+</div>
+</div>
+<!-- KPI 4 -->
+<div class="bg-surface-container-low p-space-md rounded-xl flex items-center justify-between shadow-sm">
+<div class="flex flex-col">
+<span class="font-label-code-sm text-label-code-sm text-outline uppercase font-mono tracking-wider">Taxa de Conclusão</span>
+<div class="flex items-baseline gap-space-xs mt-0.5">
+<span class="font-headline-lg text-headline-lg font-semibold text-on-surface">97.4%</span>
+<span class="font-label-code-sm text-label-code-sm font-mono text-tertiary">↑ 2.1% SLA</span>
+</div>
+</div>
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary-fixed">
+<span class="material-symbols-outlined text-[22px]">trending_up</span>
+</div>
+</div>
+</div>
+<!-- Main Grid: Tabela de Agentes (Coluna Principal) & Inspector de CLIs Locais (Lateral) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter-desktop items-start">
+<!-- Seção Principal: Tabela de Agentes Modernizada (8 colunas) -->
+<div class="lg:col-span-8 flex flex-col gap-space-md">
+<!-- Header da Tabela com Barra de Filtros Rápidos -->
+<div class="bg-surface-container-low p-space-md rounded-xl flex flex-col sm:flex-row items-center justify-between gap-space-sm shadow-sm">
+<div class="flex items-center gap-space-sm w-full sm:w-auto">
+<div class="relative w-full sm:w-64">
+<span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-outline text-[18px]">search</span>
+<input class="w-full bg-surface-container text-on-surface font-body-sm text-body-sm pl-8 pr-space-sm py-1.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary shadow-inner placeholder:text-outline" placeholder="Filtrar por agente, modelo..." type="text"/>
+</div>
+<div class="h-6 w-[1px] bg-surface-variant hidden sm:block"></div>
+<span class="font-label-code-sm text-label-code-sm font-mono text-outline hidden md:inline">2 agentes cadastrados</span>
+</div>
+<div class="flex items-center gap-space-xs self-end sm:self-center">
+<button class="px-space-sm py-1 rounded bg-surface-container text-on-surface-variant hover:text-on-surface font-label-code-sm text-label-code-sm font-mono flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">tune</span>
+<span>Visualização: Densa</span>
+</button>
+</div>
+</div>
+<!-- Cards / Linhas de Agentes (Alta Densidade e Riqueza Visual) -->
+<div class="flex flex-col gap-space-md">
+<!-- AGENTE 1: Arquiteto Gemini -->
+<div class="bg-surface-container-low hover:bg-surface-container transition-all duration-200 p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
+<!-- Header do Card -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm">
+<div class="flex items-center gap-space-md">
+<div class="w-11 h-11 rounded-xl bg-surface-container-high flex items-center justify-center text-primary shadow-[0_0_16px_rgba(77,142,255,0.15)] shrink-0">
+<span class="material-symbols-outlined text-[24px]">architecture</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-space-sm flex-wrap">
+<span class="font-headline-md text-headline-md font-semibold text-on-surface tracking-tight">Arquiteto Gemini</span>
+<span class="inline-flex items-center gap-1 px-space-xs py-0.5 rounded-full bg-tertiary-container/30 text-tertiary font-label-code-sm text-label-code-sm font-mono">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse"></span>
+                      Ativo
+                    </span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">
+                    Especialista em especificações de arquitetura, contratos OpenAPI e validação de requisitos.
+                  </span>
+</div>
+</div>
+<!-- Quick Status de Execução -->
+<div class="flex items-center gap-space-xs self-start sm:self-center shrink-0">
+<span class="font-label-code-sm text-label-code-sm font-mono text-outline">Último job:</span>
+<span class="font-label-code-sm text-label-code-sm font-mono text-tertiary bg-surface-container px-space-xs py-0.5 rounded">#18 (Sucesso há 1h)</span>
+</div>
+</div>
+<!-- Dados Técnicos em Grid Compacto -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-space-sm bg-surface-container-lowest/60 p-space-sm rounded-lg font-mono">
+<!-- CLI Provider -->
+<div class="flex flex-col gap-0.5">
+<span class="font-label-code-sm text-label-code-sm text-outline">PROVEDOR CLI</span>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="px-space-xs py-0.5 rounded bg-primary-container text-on-primary font-label-code-sm text-label-code-sm font-bold tracking-wider">
+                    agy
+                  </span>
+<span class="font-body-sm text-body-sm text-on-surface">Antigravity CLI</span>
+</div>
+</div>
+<!-- AI Model -->
+<div class="flex flex-col gap-0.5">
+<span class="font-label-code-sm text-label-code-sm text-outline">MODELO DE IA</span>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-label-code-md text-label-code-md text-secondary font-medium truncate">
+                    claude-sonnet-5-5-low
+                  </span>
+</div>
+</div>
+<!-- Vínculo com Etapa do Kanban -->
+<div class="flex flex-col gap-0.5">
+<span class="font-label-code-sm text-label-code-sm text-outline">ETAPA NO KANBAN</span>
+<div class="flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[14px] text-primary">view_kanban</span>
+<span class="font-label-code-sm text-label-code-sm text-on-surface truncate">
+                    To architect → Architected
+                  </span>
+</div>
+</div>
+</div>
+<!-- Rodapé do Card: Telemetria & Botões de Ação -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm pt-space-xs">
+<div class="flex items-center gap-space-md text-outline font-label-code-sm text-label-code-sm font-mono">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-tertiary">check_circle</span>
+                  Taxa de Aprovação: 96%
+                </span>
+<span>•</span>
+<span>Tempo Médio: 1.2s</span>
+<span class="hidden md:inline">•</span>
+<span class="hidden md:inline">Tokens: 42.1k</span>
+</div>
+<div class="flex items-center gap-space-xs self-end sm:self-auto">
+<button class="px-space-sm py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-body-sm text-body-sm flex items-center gap-1 transition-colors" title="Editar Agente" type="button">
+<span class="material-symbols-outlined text-[15px]">edit</span>
+<span>Editar</span>
+</button>
+<button class="px-space-sm py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-body-sm text-body-sm flex items-center gap-1 transition-colors" title="Pausar Despacho" type="button">
+<span class="material-symbols-outlined text-[15px]">pause_circle</span>
+<span>Pausar</span>
+</button>
+<button class="px-space-sm py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-body-sm text-body-sm flex items-center gap-1 transition-colors" title="Configurar Regras &amp; Prompts" type="button">
+<span class="material-symbols-outlined text-[15px]">psychology</span>
+<span class="hidden md:inline">Prompts</span>
+</button>
+<button class="p-1.5 rounded-lg bg-surface-container-high hover:bg-error-container hover:text-error text-outline transition-colors" title="Excluir Agente" type="button">
+<span class="material-symbols-outlined text-[16px]">delete</span>
+</button>
+</div>
+</div>
+</div>
+<!-- AGENTE 2: Desenvolvedor -->
+<div class="bg-surface-container-low hover:bg-surface-container transition-all duration-200 p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
+<!-- Header do Card -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm">
+<div class="flex items-center gap-space-md">
+<div class="w-11 h-11 rounded-xl bg-surface-container-high flex items-center justify-center text-tertiary shadow-[0_0_16px_rgba(78,222,163,0.15)] shrink-0">
+<span class="material-symbols-outlined text-[24px]">terminal</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-space-sm flex-wrap">
+<span class="font-headline-md text-headline-md font-semibold text-on-surface tracking-tight">Desenvolvedor</span>
+<span class="inline-flex items-center gap-1 px-space-xs py-0.5 rounded-full bg-primary-container/20 text-primary font-label-code-sm text-label-code-sm font-mono">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-ping"></span>
+                      Em Execução
+                    </span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">
+                    Implementação autônoma de endpoints, componentes React Tailwind e testes unitários.
+                  </span>
+</div>
+</div>
+<!-- Quick Status de Execução -->
+<div class="flex items-center gap-space-xs self-start sm:self-center shrink-0">
+<span class="font-label-code-sm text-label-code-sm font-mono text-outline">Status ativo:</span>
+<span class="font-label-code-sm text-label-code-sm font-mono text-primary bg-surface-container px-space-xs py-0.5 rounded">Job #20 (Compilando)</span>
+</div>
+</div>
+<!-- Dados Técnicos em Grid Compacto -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-space-sm bg-surface-container-lowest/60 p-space-sm rounded-lg font-mono">
+<!-- CLI Provider -->
+<div class="flex flex-col gap-0.5">
+<span class="font-label-code-sm text-label-code-sm text-outline">PROVEDOR CLI</span>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="px-space-xs py-0.5 rounded bg-primary-container text-on-primary font-label-code-sm text-label-code-sm font-bold tracking-wider">
+                    agy
+                  </span>
+<span class="font-body-sm text-body-sm text-on-surface">Antigravity CLI</span>
+</div>
+</div>
+<!-- AI Model -->
+<div class="flex flex-col gap-0.5">
+<span class="font-label-code-sm text-label-code-sm text-outline">MODELO DE IA</span>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="font-label-code-md text-label-code-md text-primary font-medium truncate">
+                    gemini-3.8-flash-medium
+                  </span>
+</div>
+</div>
+<!-- Vínculo com Etapa do Kanban -->
+<div class="flex flex-col gap-0.5">
+<span class="font-label-code-sm text-label-code-sm text-outline">ETAPA NO KANBAN</span>
+<div class="flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[14px] text-tertiary">code</span>
+<span class="font-label-code-sm text-label-code-sm text-on-surface truncate">
+                    In Progress → Homolog
+                  </span>
+</div>
+</div>
+</div>
+<!-- Rodapé do Card: Telemetria & Botões de Ação -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm pt-space-xs">
+<div class="flex items-center gap-space-md text-outline font-label-code-sm text-label-code-sm font-mono">
+<span class="flex items-center gap-1 text-on-surface">
+<span class="material-symbols-outlined text-[14px] text-primary animate-spin">sync</span>
+                  42 jobs concluídos no sprint
+                </span>
+<span>•</span>
+<span>Latência: 840ms</span>
+<span class="hidden md:inline">•</span>
+<span class="hidden md:inline">Tokens: 118.9k</span>
+</div>
+<div class="flex items-center gap-space-xs self-end sm:self-auto">
+<button class="px-space-sm py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-body-sm text-body-sm flex items-center gap-1 transition-colors" title="Editar Agente" type="button">
+<span class="material-symbols-outlined text-[15px]">edit</span>
+<span>Editar</span>
+</button>
+<button class="px-space-sm py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-body-sm text-body-sm flex items-center gap-1 transition-colors" title="Pausar Despacho" type="button">
+<span class="material-symbols-outlined text-[15px]">pause_circle</span>
+<span>Pausar</span>
+</button>
+<button class="px-space-sm py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-body-sm text-body-sm flex items-center gap-1 transition-colors" title="Configurar Regras &amp; Prompts" type="button">
+<span class="material-symbols-outlined text-[15px]">psychology</span>
+<span class="hidden md:inline">Prompts</span>
+</button>
+<button class="p-1.5 rounded-lg bg-surface-container-high hover:bg-error-container hover:text-error text-outline transition-colors" title="Excluir Agente" type="button">
+<span class="material-symbols-outlined text-[16px]">delete</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Card de Informação Arquitetural SOLID -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl flex items-center justify-between gap-space-md shadow-sm">
+<div class="flex items-center gap-space-md">
+<div class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[18px]">hub</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-body-sm font-medium text-on-surface">Arquitetura Aberta (SOLID Ports &amp; Adapters)</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Qualquer CLI local que responda por standard I/O (JSON stream) pode ser conectada como agente autônomo.</span>
+</div>
+</div>
+<a class="hidden sm:flex items-center gap-1 text-primary hover:underline font-label-code-sm text-label-code-sm font-mono shrink-0" href="#">
+<span>Ver Especificação</span>
+<span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</a>
+</div>
+</div>
+<!-- Seção Lateral: Status de CLIs Locais Detectadas ($PATH) (4 colunas) -->
+<div class="lg:col-span-4 flex flex-col gap-space-md">
+<div class="bg-surface-container-low p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">terminal</span>
+<h2 class="font-headline-md text-headline-sm font-semibold text-on-surface">CLIs no Ambiente Local</h2>
+</div>
+<span class="font-label-code-sm text-label-code-sm font-mono px-space-xs py-0.5 rounded bg-tertiary-container/30 text-tertiary">4 Prontas</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+            Binários reconhecidos automaticamente através do caminho de execução do sistema daemon:
+          </p>
+<div class="flex flex-col gap-space-xs">
+<!-- CLI 1 -->
+<div class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container-high hover:bg-surface-bright transition-colors">
+<div class="flex items-center gap-space-sm min-w-0">
+<span class="w-2 h-2 rounded-full bg-tertiary shrink-0"></span>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-sm text-body-sm font-medium text-on-surface truncate">Antigravity CLI</span>
+<span class="font-label-code-sm text-label-code-sm font-mono text-outline truncate">bin/agy • v1.8.2</span>
+</div>
+</div>
+<span class="font-label-code-sm text-label-code-sm font-mono px-space-xs py-0.5 rounded bg-primary-container text-on-primary font-bold shrink-0">Padrão</span>
+</div>
+<!-- CLI 2 -->
+<div class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container-high hover:bg-surface-bright transition-colors">
+<div class="flex items-center gap-space-sm min-w-0">
+<span class="w-2 h-2 rounded-full bg-tertiary shrink-0"></span>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-sm text-body-sm font-medium text-on-surface truncate">Google Gemini CLI</span>
+<span class="font-label-code-sm text-label-code-sm font-mono text-outline truncate">bin/gemini • v2.1.0</span>
+</div>
+</div>
+<span class="font-label-code-sm text-label-code-sm font-mono text-tertiary bg-surface-container px-space-xs py-0.5 rounded shrink-0">Ativo</span>
+</div>
+<!-- CLI 3 -->
+<div class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container-high hover:bg-surface-bright transition-colors">
+<div class="flex items-center gap-space-sm min-w-0">
+<span class="w-2 h-2 rounded-full bg-tertiary shrink-0"></span>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-sm text-body-sm font-medium text-on-surface truncate">Claude Code CLI</span>
+<span class="font-label-code-sm text-label-code-sm font-mono text-outline truncate">bin/claude • v0.4.9</span>
+</div>
+</div>
+<span class="font-label-code-sm text-label-code-sm font-mono text-tertiary bg-surface-container px-space-xs py-0.5 rounded shrink-0">Ativo</span>
+</div>
+<!-- CLI 4 -->
+<div class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container-high hover:bg-surface-bright transition-colors">
+<div class="flex items-center gap-space-sm min-w-0">
+<span class="w-2 h-2 rounded-full bg-outline shrink-0"></span>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-sm text-body-sm font-medium text-on-surface truncate">OpenAI Codex CLI</span>
+<span class="font-label-code-sm text-label-code-sm font-mono text-outline truncate">bin/codex • v1.1.2</span>
+</div>
+</div>
+<span class="font-label-code-sm text-label-code-sm font-mono text-outline bg-surface-container px-space-xs py-0.5 rounded shrink-0">Standby</span>
+</div>
+</div>
+<!-- Ação Rápida de Verificação -->
+<div class="pt-space-xs">
+<button class="w-full flex items-center justify-center gap-1.5 py-2 px-space-sm rounded-lg bg-surface-container hover:bg-surface-bright text-on-surface-variant hover:text-on-surface font-label-code-sm text-label-code-sm font-mono transition-colors">
+<span class="material-symbols-outlined text-[15px]">refresh</span>
+<span>Reescanear binários do PATH</span>
+</button>
+</div>
+</div>
+<!-- Card de Telemetria de Despacho & LLM Usage -->
+<div class="bg-surface-container-low p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-body-sm font-medium text-on-surface">Cotas &amp; Latência de LLMs</span>
+<span class="material-symbols-outlined text-outline text-[18px]">query_stats</span>
+</div>
+<div class="flex flex-col gap-space-sm">
+<div class="flex flex-col gap-1">
+<div class="flex justify-between font-label-code-sm text-label-code-sm font-mono">
+<span class="text-on-surface">Claude 3.5 / 5.5 Sonnet</span>
+<span class="text-tertiary">38% da cota horária</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 38%"></div>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex justify-between font-label-code-sm text-label-code-sm font-mono">
+<span class="text-on-surface">Gemini 3.8 Flash</span>
+<span class="text-tertiary">14% da cota horária</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 14%"></div>
+</div>
+</div>
+</div>
+<div class="p-space-sm bg-surface-container-lowest rounded-lg flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-secondary text-[20px]">bolt</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Modo baixa latência ativo com fallback de chave rotativa local.</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Modal Inline/Overlay de Adição/Edição de Agente (Acessível via botão + Novo Agente) -->
+<div class="hidden fixed inset-0 z-50 bg-surface-container-lowest/80 backdrop-blur-md flex items-center justify-center p-margin" id="modal-novo-agente">
+<div class="bg-surface-container-low max-w-2xl w-full rounded-xl shadow-2xl p-space-xl flex flex-col gap-space-lg max-h-[921px] overflow-y-auto">
+<div class="flex items-center justify-between pb-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-lg bg-surface-container-high flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">smart_toy</span>
+</div>
+<div class="flex flex-col">
+<h3 class="font-headline-md text-headline-md font-semibold text-on-surface">Cadastrar Novo Agente de IA</h3>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Configure a persona, binário local e permissões no Kanban</span>
+</div>
+</div>
+<button class="p-1 rounded-lg text-outline hover:text-on-surface bg-surface-container-high" id="btn-close-modal" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<form class="flex flex-col gap-space-md" onsubmit="event.preventDefault(); document.getElementById('modal-novo-agente').classList.add('hidden');">
+<!-- Nome do Agente -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-code-sm text-label-code-sm font-mono text-on-surface">NOME DO AGENTE</label>
+<input class="bg-surface-container text-on-surface font-body-md text-body-md px-space-md py-2 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary shadow-inner placeholder:text-outline" placeholder="Ex: Engenheiro de QA &amp; Testes" required="" type="text"/>
+</div>
+<!-- Linha Dupla: CLI e Modelo -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+<div class="flex flex-col gap-1.5">
+<label class="font-label-code-sm text-label-code-sm font-mono text-on-surface">PROVEDOR CLI LOCAL ($PATH)</label>
+<select class="bg-surface-container text-on-surface font-label-code-md text-label-code-md font-mono px-space-md py-2 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary">
+<option value="agy">Antigravity CLI (agy)</option>
+<option value="gemini">Google Gemini CLI (gemini)</option>
+<option value="claude">Claude Code CLI (claude)</option>
+<option value="codex">OpenAI Codex CLI (codex)</option>
+</select>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="font-label-code-sm text-label-code-sm font-mono text-on-surface">MODELO DE LINGUAGEM (LLM)</label>
+<select class="bg-surface-container text-on-surface font-label-code-md text-label-code-md font-mono px-space-md py-2 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary">
+<option value="claude-sonnet-5-5-low">claude-sonnet-5-5-low (Raciocínio &amp; Código)</option>
+<option value="gemini-3.8-flash-medium">gemini-3.8-flash-medium (Velocidade &amp; Tool Calling)</option>
+<option value="claude-3-5-haiku">claude-3-5-haiku (Validação Sintática)</option>
+<option value="gpt-4o-code">gpt-4o-code-preview</option>
+</select>
+</div>
+</div>
+<!-- Etapa no Kanban -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-code-sm text-label-code-sm font-mono text-on-surface">ETAPA ASSOCIADA NO KANBAN</label>
+<select class="bg-surface-container text-on-surface font-label-code-md text-label-code-md font-mono px-space-md py-2 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary">
+<option value="backlog-architect">To architect → Architected (Arquitetura)</option>
+<option value="prog-homolog">In Progress → Homolog (Desenvolvimento)</option>
+<option value="homolog-done">Homolog → Done (Testes Automatizados &amp; QA)</option>
+<option value="all">Todas as etapas (Agente Assistente Geral)</option>
+</select>
+</div>
+<!-- Prompt Persona / Instruções de Sistema -->
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<label class="font-label-code-sm text-label-code-sm font-mono text-on-surface">PERSONA &amp; REGRAS DE EXECUÇÃO (SYSTEM PROMPT)</label>
+<span class="font-label-code-sm text-label-code-sm font-mono text-outline">Markdown / JSON schema suportado</span>
+</div>
+<textarea class="bg-surface-container text-on-surface font-body-sm text-body-sm p-space-md rounded-lg focus:outline-none focus:ring-1 focus:ring-primary shadow-inner placeholder:text-outline font-mono" placeholder="Instrua o comportamento do agente, convenções de código limpo, limites de commits e exigência de testes unitários..." rows="4"></textarea>
+</div>
+<!-- Ações do Modal -->
+<div class="flex items-center justify-end gap-space-sm pt-space-sm">
+<button class="px-space-lg py-2 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-body-sm text-body-sm" id="btn-cancel-modal" type="button">
+              Cancelar
+            </button>
+<button class="px-space-xl py-2 rounded-lg bg-primary-container text-on-primary font-headline-sm text-body-sm font-medium hover:brightness-110 shadow-md" type="submit">
+              Salvar e Inicializar Agente
+            </button>
+</div>
+</form>
+</div>
+</div>
+</div>
+<!-- Micro-interações JS para abrir/fechar modal e disparar teste de conexão -->
+<script>
+    const modal = document.getElementById('modal-novo-agente');
+    const openBtn = document.getElementById('btn-open-modal');
+    const closeBtn = document.getElementById('btn-close-modal');
+    const cancelBtn = document.getElementById('btn-cancel-modal');
+    const testBtn = document.getElementById('btn-test-cli');
+
+    if (openBtn && modal) {
+      openBtn.addEventListener('click', () => modal.classList.remove('hidden'));
+    }
+    if (closeBtn && modal) {
+      closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
+    }
+    if (cancelBtn && modal) {
+      cancelBtn.addEventListener('click', () => modal.classList.add('hidden'));
+    }
+
+    if (testBtn) {
+      testBtn.addEventListener('click', () => {
+        const originalContent = testBtn.innerHTML;
+        testBtn.innerHTML = '<span class="material-symbols-outlined text-[16px] animate-spin text-tertiary">sync</span><span>Validando $PATH...</span>';
+        setTimeout(() => {
+          testBtn.innerHTML = '<span class="material-symbols-outlined text-[16px] text-tertiary">check</span><span>4 CLIs Conectadas!</span>';
+          setTimeout(() => {
+            testBtn.innerHTML = originalContent;
+          }, 2400);
+        }, 800);
+      });
+    }
+  </script>
+</div></main><footer class="w-full bg-surface-container-lowest py-space-md shadow-[0_-1px_6px_rgba(0,0,0,0.2)]"><div class="w-full px-margin-desktop flex flex-col md:flex-row items-center justify-between gap-space-sm"><div class="flex items-center gap-space-md font-label-code-sm text-label-code-sm text-outline font-mono"><span>AI Pipeline Nexus Engine</span><span>•</span><span>Protocol 2.4.0-rc</span><span>•</span><span class="text-tertiary">Nexus Fleet Healthy (99.98% SLA)</span></div><div class="font-label-code-sm text-label-code-sm text-on-surface-variant font-mono">© 2025 Autonomous Software Fleet. High-Velocity Dispatch.</div></div></footer>
+</body></html>

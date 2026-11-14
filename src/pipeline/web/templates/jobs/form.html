@@ -2,57 +2,316 @@
 
 {% block title %}Enfileirar Job Manual — AI Pipeline{% endblock %}
 
+{% block main_container_class %}max-w-[1180px] mx-auto px-4 sm:px-6 py-6{% endblock %}
+
 {% block content %}
-<article>
-  <header>
-    <h2>Enfileirar Execução Manual de Agente</h2>
-    <p>Selecione o Card e a Etapa/Coluna para forçar a criação de um Job.</p>
-  </header>
+<!-- Header Contextual & Status do Celery -->
+<div class="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+  <div>
+    <a href="/jobs" class="inline-flex items-center gap-1 font-mono text-[11px] text-on-surface-variant hover:text-primary no-underline mb-1.5 transition-colors">
+      <span class="material-symbols-outlined text-[14px]">arrow_back</span>
+      <span>Voltar para Monitor de Jobs</span>
+    </a>
+    <h1 class="text-2xl font-semibold text-white tracking-tight m-0">
+      Enfileirar Execução Manual de Agente
+    </h1>
+    <p class="text-[13px] text-on-surface-variant/85 mt-1 mb-0">
+      Selecione o projeto, card e etapa do fluxo para despachar uma nova task assíncrona na fila do Celery Worker.
+    </p>
+  </div>
 
-  <form method="post" action="/jobs/new">
-    <div class="grid">
-      <div>
-        <label for="project_id">
-          Projeto
-          <select id="project_id" name="project_id" required>
+  <!-- Watchdog Celery Pill -->
+  <div class="shrink-0">
+    {% if worker_health and worker_health.broker_available %}
+      {% if worker_health.workers_online > 0 %}
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-container-low border border-[#059669]/35 text-tertiary font-mono text-[11px]">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-tertiary"></span>
+          </span>
+          <span class="font-medium">{{ worker_health.workers_online }} worker(s) Celery online</span>
+        </div>
+      {% else %}
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-container-low border border-[#d97706]/35 text-[#fbbf24] font-mono text-[11px]">
+          <span class="w-2 h-2 rounded-full bg-[#f59e0b]"></span>
+          <span>Broker conectado • Nenhum worker ativo</span>
+        </div>
+      {% endif %}
+    {% else %}
+      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-container-low border border-[#ef4444]/35 text-error font-mono text-[11px]">
+        <span class="w-2 h-2 rounded-full bg-[#ef4444]"></span>
+        <span>Broker Celery indisponível</span>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Grid Principal: Formulário (8 cols) + Preview & Telemetria (4 cols) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+  <!-- Coluna Esquerda: Configuração do Job -->
+  <section class="lg:col-span-8 bg-surface-container-low border border-[#1e293b] rounded-xl overflow-hidden shadow-[0_8px_24px_rgba(0,0,0,0.28)]">
+    <div class="px-6 py-4 bg-surface-container-lowest/70 border-b border-[#1e293b] flex items-center justify-between gap-3">
+      <div class="flex items-center gap-2.5">
+        <div class="w-7 h-7 rounded-lg bg-primary/10 border border-primary/25 flex items-center justify-center text-primary">
+          <span class="material-symbols-outlined text-[16px]">playlist_add</span>
+        </div>
+        <div>
+          <h2 class="text-[14px] font-semibold text-white m-0">Parâmetros da Execução</h2>
+          <p class="font-mono text-[10px] text-outline m-0">O snapshot do agente e modelo será congelado no momento do despacho</p>
+        </div>
+      </div>
+      <span class="font-mono text-[10px] uppercase tracking-wider text-outline bg-surface-container px-2 py-0.5 rounded border border-[#222f4c]">
+        POST /jobs/new
+      </span>
+    </div>
+
+    <form method="post" action="/jobs/new" class="p-6 flex flex-col gap-5 m-0">
+      <!-- Projeto -->
+      <div class="flex flex-col gap-1.5">
+        <label for="project_id" class="font-mono text-[10px] uppercase tracking-wider text-on-surface flex items-center justify-between">
+          <span>1. Projeto Alvo</span>
+          <span class="text-outline normal-case font-sans text-[11px]">Carrega os cards sincronizados</span>
+        </label>
+        <div class="relative">
+          <select id="project_id"
+                  name="project_id"
+                  required
+                  hx-get="/jobs/new"
+                  hx-trigger="change"
+                  hx-target="#card-selector-panel"
+                  hx-select="#card-selector-panel"
+                  hx-swap="outerHTML"
+                  onchange="updateDispatchPreview()"
+                  class="w-full bg-surface-container border border-[#222f4c] text-on-surface text-[13px] px-3.5 py-2.5 rounded-lg focus:outline-none focus:border-primary">
             {% for p in projects %}
-              <option value="{{ p.id }}">{{ p.name }} ({{ p.project_key }})</option>
-            {% endfor %}
-          </select>
-        </label>
-      </div>
-
-      <div>
-        <label for="flow_column_id">
-          Etapa / Coluna de Destino
-          <select id="flow_column_id" name="flow_column_id" required>
-            {% for c in columns %}
-              <option value="{{ c.id }}">
-                {{ c.column_name }} {% if c.agent %}(🤖 {{ c.agent.name }}){% else %}(Sem agente){% endif %}
+              <option value="{{ p.id }}"
+                      data-name="{{ p.name }}"
+                      data-key="{{ p.project_key }}"
+                      {% if selected_project_id == p.id %}selected{% endif %}>
+                {{ p.name }} ({{ p.project_key }})
               </option>
+            {% else %}
+              <option value="" disabled selected>Nenhum projeto ativo encontrado</option>
             {% endfor %}
           </select>
-        </label>
+        </div>
       </div>
-    </div>
 
-    <label for="card_id">
-      Card do Projeto
-      <select id="card_id" name="card_id" required>
-        {% for card in cards %}
-          <option value="{{ card.id }}">
-            {% if card.issue_number %}#{{ card.issue_number }} - {% endif %}{{ card.title }} (Coluna atual: {{ card.column_name }})
-          </option>
+      <!-- Card do Projeto (atualizado dinamicamente via HTMX ao trocar projeto) -->
+      <div id="card-selector-panel" class="flex flex-col gap-1.5">
+        <label for="card_id" class="font-mono text-[10px] uppercase tracking-wider text-on-surface flex items-center justify-between">
+          <span>2. Card do Projeto</span>
+          <span class="font-mono text-[10px] text-primary">{{ cards|length }} card(s) disponível(is)</span>
+        </label>
+        <select id="card_id"
+                name="card_id"
+                required
+                onchange="updateDispatchPreview()"
+                class="w-full bg-surface-container border border-[#222f4c] text-on-surface text-[13px] px-3.5 py-2.5 rounded-lg focus:outline-none focus:border-primary">
+          {% for card in cards %}
+            <option value="{{ card.id }}"
+                    data-title="{{ card.title }}"
+                    data-issue="{{ card.issue_number or '' }}"
+                    data-column="{{ card.column_name }}"
+                    {% if selected_card_id == card.id %}selected{% endif %}>
+              {% if card.issue_number %}#{{ card.issue_number }} - {% endif %}{{ card.title }} (Coluna atual: {{ card.column_name }})
+            </option>
+          {% else %}
+            <option value="" disabled selected>Nenhum card sincronizado ainda. Rode a pipeline em um projeto primeiro.</option>
+          {% endfor %}
+        </select>
+
+        {% if not cards %}
+          <div class="mt-1 px-3 py-2.5 rounded-lg bg-[#f59e0b]/10 border border-[#f59e0b]/30 flex items-center justify-between gap-3">
+            <span class="text-[12px] text-[#fbbf24]">
+              Este projeto ainda não possui cards sincronizados localmente.
+            </span>
+            <a href="/projects" class="shrink-0 font-mono text-[11px] text-white bg-surface-container-high hover:bg-surface-container-highest border border-[#222f4c] px-2.5 py-1 rounded no-underline transition-colors">
+              Ir para Projetos →
+            </a>
+          </div>
         {% else %}
-          <option value="" disabled selected>Nenhum card sincronizado ainda. Rode a pipeline em um projeto primeiro.</option>
-        {% endfor %}
-      </select>
-    </label>
+          <small class="text-[11px] text-outline">
+            O agente receberá o título, corpo da issue/card e histórico recente ao iniciar a execução.
+          </small>
+        {% endif %}
+      </div>
 
-    <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
-      <button type="submit">Enfileirar Job</button>
-      <a href="/jobs" role="button" class="secondary outline">Cancelar</a>
+      <!-- Etapa / Coluna de Execução -->
+      <div class="flex flex-col gap-1.5">
+        <label for="flow_column_id" class="font-mono text-[10px] uppercase tracking-wider text-on-surface flex items-center justify-between">
+          <span>3. Etapa / Coluna de Execução</span>
+          <a href="/columns" class="text-[11px] text-primary hover:underline no-underline font-sans normal-case">Configurar colunas</a>
+        </label>
+        <select id="flow_column_id"
+                name="flow_column_id"
+                required
+                onchange="updateDispatchPreview()"
+                class="w-full bg-surface-container border border-[#222f4c] text-on-surface text-[13px] px-3.5 py-2.5 rounded-lg focus:outline-none focus:border-primary">
+          {% for c in columns %}
+            <option value="{{ c.id }}"
+                    data-column="{{ c.column_name }}"
+                    data-next-column="{{ c.next_column_name or 'Manter na coluna' }}"
+                    data-agent-name="{{ c.agent.name if c.agent else 'Sem agente vinculado' }}"
+                    data-cli="{{ c.agent.cli_provider if c.agent else '—' }}"
+                    data-model="{{ c.agent.model_id if c.agent else '—' }}"
+                    {% if selected_column_id == c.id %}selected{% endif %}>
+              {{ c.column_name }} {% if c.agent %}(🤖 {{ c.agent.name }} • {{ c.agent.cli_provider }}){% else %}(Sem agente){% endif %}
+            </option>
+          {% else %}
+            <option value="" disabled selected>Nenhuma coluna ativa configurada</option>
+          {% endfor %}
+        </select>
+        <small class="text-[11px] text-outline">
+          Define qual prompt de agente e qual transição automática de coluna serão aplicados ao finalizar.
+        </small>
+      </div>
+
+      <!-- Aviso de Execução Assíncrona -->
+      <div class="rounded-lg bg-surface-container-lowest border border-[#1a2538] p-3.5 flex items-start gap-3">
+        <span class="material-symbols-outlined text-primary text-[18px] mt-0.5 shrink-0">hub</span>
+        <div class="text-[12px] text-on-surface-variant leading-relaxed">
+          <strong class="text-white font-medium">Execução Exclusiva via Celery Worker:</strong>
+          ao confirmar, o job será criado em estado <code class="font-mono text-[#fbbf24]">pending</code> e imediatamente despachado para o worker em background, com feedback em tempo real na tela de monitoramento.
+        </div>
+      </div>
+
+      <!-- Ações do Formulário -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-end gap-2.5 pt-4 border-t border-[#1e293b]">
+        <a href="/jobs"
+           class="px-4 py-2 rounded-lg bg-surface-container-high hover:bg-surface-container-highest border border-[#222f4c] text-on-surface text-[12px] font-medium text-center no-underline transition-colors">
+          Cancelar
+        </a>
+        <button type="submit"
+                class="inline-flex items-center justify-center gap-2 px-5 py-2 rounded-lg bg-[#2563eb] hover:bg-[#3b82f6] text-white text-[12px] font-medium border border-white/10 shadow-[0_0_14px_rgba(59,130,246,0.3)] cursor-pointer transition-colors">
+          <span class="material-symbols-outlined text-[16px]">send</span>
+          <span>Enfileirar Job</span>
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Coluna Direita: Snapshot Preview + Telemetria de Timeouts -->
+  <aside class="lg:col-span-4 flex flex-col gap-5">
+    <!-- Card: Preview do Snapshot -->
+    <div class="bg-surface-container-low border border-[#1e293b] rounded-xl p-5 shadow-[0_8px_24px_rgba(0,0,0,0.28)]">
+      <div class="flex items-center justify-between gap-2 pb-3 mb-4 border-b border-[#1e293b]">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary text-[18px]">preview</span>
+          <h3 class="text-[13px] font-semibold text-white m-0">Snapshot do Despacho</h3>
+        </div>
+        <span class="font-mono text-[10px] text-tertiary bg-emerald-500/10 border border-emerald-500/25 px-2 py-0.5 rounded">Live</span>
+      </div>
+
+      <dl class="flex flex-col gap-3 m-0 text-[12px]">
+        <div class="flex flex-col gap-0.5">
+          <dt class="font-mono text-[10px] uppercase tracking-wider text-outline">Projeto</dt>
+          <dd id="preview-project" class="text-white font-medium m-0 truncate">—</dd>
+        </div>
+
+        <div class="flex flex-col gap-0.5">
+          <dt class="font-mono text-[10px] uppercase tracking-wider text-outline">Card Selecionado</dt>
+          <dd id="preview-card" class="text-on-surface m-0 break-words">—</dd>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <dt class="font-mono text-[10px] uppercase tracking-wider text-outline">Transição de Coluna</dt>
+          <dd class="m-0 flex items-center gap-1.5 flex-wrap font-mono text-[11px]">
+            <span id="preview-col" class="px-2 py-0.5 rounded bg-surface-container border border-[#222f4c] text-primary">—</span>
+            <span class="material-symbols-outlined text-[14px] text-outline">arrow_forward</span>
+            <span id="preview-next-col" class="px-2 py-0.5 rounded bg-surface-container border border-[#222f4c] text-tertiary">—</span>
+          </dd>
+        </div>
+
+        <div class="pt-3 mt-1 border-t border-[#1e293b] grid grid-cols-2 gap-3">
+          <div class="flex flex-col gap-0.5">
+            <dt class="font-mono text-[10px] uppercase tracking-wider text-outline">Agente</dt>
+            <dd id="preview-agent" class="text-white font-medium m-0 truncate">—</dd>
+          </div>
+          <div class="flex flex-col gap-0.5">
+            <dt class="font-mono text-[10px] uppercase tracking-wider text-outline">CLI / Modelo</dt>
+            <dd id="preview-cli-model" class="font-mono text-[11px] text-primary m-0 truncate">—</dd>
+          </div>
+        </div>
+      </dl>
     </div>
-  </form>
-</article>
+
+    <!-- Card: Contrato de Timeout Celery -->
+    <div class="bg-surface-container-low border border-[#1e293b] rounded-xl p-5">
+      <div class="flex items-center gap-2 pb-3 mb-3 border-b border-[#1e293b]">
+        <span class="material-symbols-outlined text-[#fbbf24] text-[18px]">timer</span>
+        <h3 class="text-[13px] font-semibold text-white m-0">Limites de Execução (SLA)</h3>
+      </div>
+
+      <div class="flex flex-col gap-2.5 font-mono text-[11px]">
+        <div class="flex items-center justify-between py-1.5 px-2.5 rounded bg-surface-container-lowest border border-[#1a2538]">
+          <span class="text-on-surface-variant">Timeout do Agente CLI</span>
+          <span class="text-white font-semibold">{{ agent_timeout_seconds }}s</span>
+        </div>
+        <div class="flex items-center justify-between py-1.5 px-2.5 rounded bg-surface-container-lowest border border-[#1a2538]">
+          <span class="text-on-surface-variant">Celery Soft Limit</span>
+          <span class="text-primary font-semibold">{{ celery_soft_timeout_seconds }}s</span>
+        </div>
+        <div class="flex items-center justify-between py-1.5 px-2.5 rounded bg-surface-container-lowest border border-[#1a2538]">
+          <span class="text-on-surface-variant">Celery Hard Limit</span>
+          <span class="text-tertiary font-semibold">{{ celery_hard_timeout_seconds }}s</span>
+        </div>
+      </div>
+
+      <p class="text-[11px] text-outline mt-3 mb-0 leading-relaxed">
+        Os timeouts do Celery permanecem maiores que o timeout da CLI do agente para cobrir git worktree, leitura de contexto e comentários no board remoto.
+      </p>
+    </div>
+  </aside>
+
+</div>
+
+<script>
+  function updateDispatchPreview() {
+    const projSel = document.getElementById('project_id');
+    const cardSel = document.getElementById('card_id');
+    const colSel = document.getElementById('flow_column_id');
+
+    const projOpt = projSel && projSel.selectedOptions ? projSel.selectedOptions[0] : null;
+    const cardOpt = cardSel && cardSel.selectedOptions ? cardSel.selectedOptions[0] : null;
+    const colOpt = colSel && colSel.selectedOptions ? colSel.selectedOptions[0] : null;
+
+    const previewProj = document.getElementById('preview-project');
+    const previewCard = document.getElementById('preview-card');
+    const previewCol = document.getElementById('preview-col');
+    const previewNextCol = document.getElementById('preview-next-col');
+    const previewAgent = document.getElementById('preview-agent');
+    const previewCliModel = document.getElementById('preview-cli-model');
+
+    if (previewProj) {
+      previewProj.textContent = (projOpt && projOpt.dataset.name) ? projOpt.dataset.name : (projOpt ? projOpt.textContent.trim() : '—');
+    }
+    if (previewCard) {
+      if (cardOpt && cardOpt.value) {
+        const issue = cardOpt.dataset.issue ? '#' + cardOpt.dataset.issue + ' • ' : '';
+        previewCard.textContent = issue + (cardOpt.dataset.title || cardOpt.textContent.trim());
+      } else {
+        previewCard.textContent = 'Nenhum card selecionado';
+      }
+    }
+    if (previewCol) {
+      previewCol.textContent = (colOpt && colOpt.dataset.column) ? colOpt.dataset.column : '—';
+    }
+    if (previewNextCol) {
+      previewNextCol.textContent = (colOpt && colOpt.dataset.nextColumn) ? colOpt.dataset.nextColumn : '—';
+    }
+    if (previewAgent) {
+      previewAgent.textContent = (colOpt && colOpt.dataset.agentName) ? colOpt.dataset.agentName : '—';
+    }
+    if (previewCliModel) {
+      const cli = colOpt && colOpt.dataset.cli ? colOpt.dataset.cli : '—';
+      const model = colOpt && colOpt.dataset.model ? colOpt.dataset.model : '—';
+      previewCliModel.textContent = cli + ' / ' + model;
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', updateDispatchPreview);
+  document.body.addEventListener('htmx:afterSwap', updateDispatchPreview);
+</script>
 {% endblock %}

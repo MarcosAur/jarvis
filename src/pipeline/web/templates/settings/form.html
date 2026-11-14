@@ -2,157 +2,415 @@
 
 {% block title %}Configurações Globais — AI Pipeline{% endblock %}
 
+{% block main_container_class %}w-full{% endblock %}
+
 {% block content %}
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
-  <div>
-    <h2>CRUD 4 — Configurações Globais</h2>
-    <p>Defina o Provedor de Projeto ativo, o Provedor CLI padrão e as credenciais de integração.</p>
+<form id="sync-models-form" method="post" action="/settings/sync-models" class="hidden"></form>
+
+<div class="flex flex-col w-full">
+  <!-- Top Ambient Glow + Subheader -->
+  <div class="relative w-full overflow-hidden border-b border-[#1e293b] bg-surface-container-lowest/60 backdrop-blur-md">
+    <div class="absolute -top-28 left-1/4 w-96 h-96 bg-primary-container/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -top-20 right-1/4 w-80 h-80 bg-secondary-container/15 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="max-w-[1440px] mx-auto px-4 sm:px-6 py-5 flex flex-col xl:flex-row xl:items-end justify-between gap-4 relative">
+      <div class="flex flex-col gap-1.5 max-w-3xl">
+        <div class="flex items-center gap-2 flex-wrap font-mono text-[10px] text-on-surface-variant">
+          <span class="px-2 py-0.5 rounded bg-surface-container-high border border-[#222f4c] text-primary font-medium">CRUD 4</span>
+          <span class="text-outline">•</span>
+          <span class="text-on-surface uppercase tracking-wider font-semibold">Configurações Globais</span>
+          <span class="text-outline">•</span>
+          <span class="text-tertiary">SOLID Ports &amp; Adapters</span>
+          <span class="text-outline">•</span>
+          <span class="text-secondary">Runtime Environment</span>
+        </div>
+
+        <h1 class="text-2xl sm:text-[28px] text-white tracking-tight font-semibold flex items-center gap-3 flex-wrap m-0 mt-0.5">
+          <span>Configurações Globais</span>
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-tertiary font-mono text-[10px]">
+            <span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse"></span>
+            Sync Ativo
+          </span>
+        </h1>
+
+        <p class="text-[13px] text-on-surface-variant/85 m-0">
+          Defina o provedor de projeto ativo, gerencie credenciais de repositórios e configure o provedor CLI padrão de execução.
+        </p>
+      </div>
+
+      <div class="flex items-center gap-2.5 shrink-0 self-start xl:self-auto">
+        <button type="submit"
+                form="sync-models-form"
+                class="group inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-surface-container-high hover:bg-surface-container-highest border border-[#222f4c] text-on-surface text-[12px] font-medium transition-all shadow-sm cursor-pointer">
+          <span class="material-symbols-outlined text-secondary text-[17px] group-hover:rotate-180 transition-transform duration-500">sync</span>
+          <span>Sincronizar Modelos das CLIs</span>
+        </button>
+      </div>
+    </div>
   </div>
-  <div style="display: flex; gap: 0.5rem;">
-    <form method="post" action="/settings/sync-models" style="margin: 0;">
-      <button type="submit" class="secondary outline" style="margin: 0;">↻ Sincronizar Modelos de Todas as CLIs</button>
-    </form>
-  </div>
-</div>
 
-<div class="grid">
-  <div>
-    <article>
-      <header>
-        <h3>Provedores e Integrações</h3>
-      </header>
-
-      <form method="post" action="/settings">
-        <label for="default_cli_provider">
-          Provedor CLI Padrão (sugerido ao criar novos agentes)
-          <select id="default_cli_provider" name="default_cli_provider" required>
-            {% for p in cli_providers %}
-              <option value="{{ p.key }}" {% if settings.default_cli_provider == p.key %}selected{% endif %}>
-                {{ p.name }} {% if p.installed %}(✅ Instalado na máquina){% else %}(⚠️ Não instalado){% endif %}
-              </option>
-            {% endfor %}
-          </select>
-          <small>Cada agente pode escolher livremente qualquer uma das CLIs instaladas.</small>
-        </label>
-
-        <label for="active_project_provider">
-          Provedor de Projetos Ativo
-          <select id="active_project_provider" name="active_project_provider" required>
-            {% for pp in project_providers %}
-              <option value="{{ pp.key }}" {% if settings.active_project_provider == pp.key %}selected{% endif %}>
-                {{ pp.name }} ({{ pp.key }})
-              </option>
-            {% endfor %}
-          </select>
-          <small>Define onde os quadros Kanban e cards serão lidos e atualizados.</small>
-        </label>
-
-        <hr style="margin: 1.5rem 0;">
-
-        <h4>Credenciais do Provedor de Projetos</h4>
-
-        <!-- GitHub Fields -->
-        <fieldset style="margin-bottom: 1.5rem;">
-          <legend><strong>GitHub Projects (v2)</strong></legend>
-          <label for="github_token">
-            GitHub Token (Personal Access Token)
-            <input type="password" id="github_token" name="github_token"
-                   value="{{ provider_settings.get('github_token', '') }}"
-                   placeholder="ghp_... (ou deixe vazio para usar .env)">
-          </label>
-
-          <label for="github_owner">
-            GitHub Owner Padrão (Usuário ou Organização)
-            <input type="text" id="github_owner" name="github_owner"
-                   value="{{ provider_settings.get('github_owner', '') }}"
-                   placeholder="Ex.: maurelio (usado quando a chave do projeto for apenas o número)">
-          </label>
-        </fieldset>
-
-        <!-- Jira Fields -->
-        <fieldset style="margin-bottom: 1.5rem;">
-          <legend><strong>Atlassian Jira</strong></legend>
-          <label for="jira_base_url">
-            Jira Base URL
-            <input type="text" id="jira_base_url" name="jira_base_url"
-                   value="{{ provider_settings.get('jira_base_url', '') }}"
-                   placeholder="https://sua-empresa.atlassian.net">
-          </label>
-          <div class="grid">
-            <div>
-              <label for="jira_email">
-                E-mail Jira
-                <input type="text" id="jira_email" name="jira_email"
-                       value="{{ provider_settings.get('jira_email', '') }}"
-                       placeholder="seu-email@dominio.com">
-              </label>
+  <!-- Operational Workbench -->
+  <div class="w-full px-4 sm:px-6 py-7 flex justify-center">
+    <div class="w-full max-w-4xl flex flex-col gap-6">
+      <form id="settings-form" method="post" action="/settings" class="flex flex-col gap-6 m-0">
+        <!-- Card 1: Provedores & Ambientes Padrão -->
+        <section class="bg-surface-container-low rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.28)] border border-[#1e293b] overflow-hidden">
+          <div class="p-5 border-b border-[#1e293b] flex items-center gap-3">
+            <div class="w-9 h-9 rounded-lg bg-surface-container-high border border-[#222f4c] flex items-center justify-center text-primary shadow-inner shrink-0">
+              <span class="material-symbols-outlined text-[20px]">tune</span>
             </div>
             <div>
-              <label for="jira_api_token">
-                Jira API Token
-                <input type="password" id="jira_api_token" name="jira_api_token"
-                       value="{{ provider_settings.get('jira_api_token', '') }}">
-              </label>
+              <h2 class="text-[16px] text-white font-semibold tracking-tight m-0">Provedores &amp; Ambientes Padrão</h2>
+              <p class="text-[12px] text-on-surface-variant/80 m-0 mt-0.5">Defina o provedor de sincronização de quadros e a CLI padrão utilizada para novos agentes.</p>
             </div>
           </div>
-        </fieldset>
 
-        <!-- Trello Fields -->
-        <fieldset style="margin-bottom: 1.5rem;">
-          <legend><strong>Trello</strong></legend>
-          <div class="grid">
-            <div>
-              <label for="trello_api_key">
-                Trello API Key
-                <input type="text" id="trello_api_key" name="trello_api_key"
-                       value="{{ provider_settings.get('trello_api_key', '') }}">
-              </label>
+          <div class="p-5 flex flex-col gap-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="flex flex-col gap-1.5">
+                <label for="active_project_provider" class="text-[12px] font-medium text-white flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-primary text-[17px]">hub</span>
+                  <span>Provedor de Projetos Ativo</span>
+                  <span class="text-error font-mono">*</span>
+                </label>
+                <div class="relative">
+                  <select id="active_project_provider"
+                          name="active_project_provider"
+                          required
+                          class="w-full appearance-none bg-surface-container border border-[#222f4c] text-on-surface text-[13px] rounded-lg px-3.5 py-2.5 pr-9 focus:outline-none focus:border-primary shadow-inner">
+                    {% for pp in project_providers %}
+                      <option value="{{ pp.key }}" {% if settings.active_project_provider == pp.key %}selected{% endif %}>
+                        {{ pp.name }} ({{ pp.key }})
+                      </option>
+                    {% endfor %}
+                  </select>
+                  <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none text-[18px]">expand_more</span>
+                </div>
+                <p class="font-mono text-[10px] text-on-surface-variant/75 m-0">Define de onde os cartões, colunas e estados Kanban serão lidos e atualizados.</p>
+              </div>
+
+              <div class="flex flex-col gap-1.5">
+                <label for="default_cli_provider" class="text-[12px] font-medium text-white flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-secondary text-[17px]">terminal</span>
+                  <span>Provedor CLI Padrão</span>
+                  <span class="text-error font-mono">*</span>
+                </label>
+                <div class="relative">
+                  <select id="default_cli_provider"
+                          name="default_cli_provider"
+                          required
+                          class="w-full appearance-none bg-surface-container border border-[#222f4c] text-on-surface text-[13px] rounded-lg px-3.5 py-2.5 pr-9 focus:outline-none focus:border-primary shadow-inner">
+                    {% for p in cli_providers %}
+                      <option value="{{ p.key }}" {% if settings.default_cli_provider == p.key %}selected{% endif %}>
+                        {{ p.name }} {% if p.installed %}(Instalado na máquina){% else %}(Não instalado){% endif %}
+                      </option>
+                    {% endfor %}
+                  </select>
+                  <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none text-[18px]">expand_more</span>
+                </div>
+                <p class="font-mono text-[10px] text-on-surface-variant/75 m-0">Sugerido ao criar novos agentes; cada agente pode escolher outra CLI instalada.</p>
+              </div>
             </div>
-            <div>
-              <label for="trello_token">
-                Trello Token
-                <input type="password" id="trello_token" name="trello_token"
-                       value="{{ provider_settings.get('trello_token', '') }}">
-              </label>
+
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 rounded-lg bg-surface-container border border-[#222f4c]">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-surface-container-high border border-[#222f4c] flex items-center justify-center text-secondary shrink-0">
+                  <span class="material-symbols-outlined text-[18px]">sync</span>
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-[12px] font-medium text-white">Modelos &amp; Runtimes das CLIs</span>
+                  <span class="font-mono text-[10px] text-on-surface-variant/80">Sincronize a lista de modelos atualizada detectada nas ferramentas locais.</span>
+                </div>
+              </div>
+              <button type="submit"
+                      form="sync-models-form"
+                      class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-container-highest border border-[#222f4c] text-on-surface text-[12px] transition-all shadow-sm shrink-0 cursor-pointer">
+                <span class="material-symbols-outlined text-secondary text-[16px]">refresh</span>
+                <span>Sincronizar Modelos de Todas as CLIs</span>
+              </button>
             </div>
           </div>
-        </fieldset>
+        </section>
 
-        <button type="submit">Salvar Configurações</button>
-      </form>
-    </article>
-  </div>
+        <!-- Card 2: Credenciais do Provedor Selecionado -->
+        <section class="bg-surface-container-low rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.28)] border border-[#1e293b] overflow-hidden">
+          <div class="p-5 border-b border-[#1e293b] flex items-center justify-between flex-wrap gap-3">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-lg bg-surface-container-high border border-[#222f4c] flex items-center justify-center text-secondary shadow-inner shrink-0">
+                <span class="material-symbols-outlined text-[20px]">key</span>
+              </div>
+              <div>
+                <h2 class="text-[16px] text-white font-semibold tracking-tight m-0">Credenciais dos Provedores de Projetos</h2>
+                <p class="text-[12px] text-on-surface-variant/80 m-0 mt-0.5">Parâmetros de autenticação para GitHub Projects v2, Jira e Trello (fallback via <code class="font-mono text-primary">.env</code> se vazio).</p>
+              </div>
+            </div>
 
-  <div>
-    <article>
-      <header>
-        <h3>Status do Ambiente Local</h3>
-      </header>
+            <span class="font-mono text-[10px] text-tertiary bg-emerald-500/10 border border-emerald-500/25 px-2.5 py-1 rounded inline-flex items-center gap-1">
+              <span class="material-symbols-outlined text-[14px]">verified_user</span>
+              Ativo: {{ settings.active_project_provider | upper }}
+            </span>
+          </div>
 
-      <p>Provedores de CLI detectados no <code>$PATH</code> da sua máquina:</p>
-      <ul>
-        {% for p in cli_providers %}
-          <li style="margin-bottom: 0.5rem;">
-            <strong>{{ p.name }}</strong> (<code>{{ p.binary_name }}</code>):
-            {% if p.installed %}
-              <span class="badge badge-success">Instalado</span>
+          {% set active_proj = settings.active_project_provider or 'github' %}
+
+          {% macro render_github_fields() %}
+            <div class="flex flex-col gap-4">
+              <!-- GitHub Token -->
+              <div class="flex flex-col gap-1.5">
+                <div class="flex items-center justify-between gap-2 flex-wrap">
+                  <label for="github_token" class="text-[12px] font-medium text-white">
+                    GitHub Token (Personal Access Token — GitHub Projects v2)
+                  </label>
+                  {% if provider_settings.get('github_token') %}
+                    <span class="text-tertiary font-mono text-[10px] inline-flex items-center gap-1">
+                      <span class="material-symbols-outlined text-[13px]">check_circle</span>
+                      Token configurado no banco
+                    </span>
+                  {% endif %}
+                </div>
+                <div class="flex items-center gap-1.5 bg-surface-container border border-[#222f4c] focus-within:border-primary rounded-lg p-1.5 shadow-inner">
+                  <span class="material-symbols-outlined text-outline text-[18px] ml-1.5">password</span>
+                  <input id="github_token"
+                         name="github_token"
+                         type="password"
+                         value="{{ provider_settings.get('github_token', '') }}"
+                         placeholder="ghp_... (ou deixe vazio para usar .env)"
+                         class="w-full bg-transparent text-on-surface font-mono text-[12px] px-2 py-1 focus:outline-none placeholder:text-outline" />
+                  <button type="button"
+                          id="btn-toggle-gh-token"
+                          title="Alternar Visibilidade"
+                          class="p-1.5 rounded hover:bg-surface-container-high text-on-surface-variant hover:text-white transition-colors cursor-pointer">
+                    <span class="material-symbols-outlined text-[17px]" id="icon-toggle-gh-token">visibility</span>
+                  </button>
+                </div>
+                <p class="font-mono text-[10px] text-on-surface-variant/75 m-0">
+                  Requer escopos <code class="text-primary">project</code> e <code class="text-primary">repo</code> para sincronização do quadro e comentários/movimentações.
+                </p>
+              </div>
+
+              <!-- GitHub Owner + Projeto Info -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                <div class="flex flex-col gap-1.5">
+                  <label for="github_owner" class="text-[12px] font-medium text-white">
+                    GitHub Owner Padrão (Usuário ou Organização)
+                  </label>
+                  <div class="flex items-center gap-2 bg-surface-container border border-[#222f4c] focus-within:border-primary rounded-lg px-3 py-2 shadow-inner">
+                    <span class="material-symbols-outlined text-outline text-[17px]">person</span>
+                    <input id="github_owner"
+                           name="github_owner"
+                           type="text"
+                           value="{{ provider_settings.get('github_owner', '') }}"
+                           placeholder="Ex.: maurelio (usado quando a chave do projeto for apenas o número)"
+                           class="w-full bg-transparent text-on-surface text-[12px] focus:outline-none placeholder:text-outline" />
+                  </div>
+                </div>
+
+                <div class="flex flex-col gap-1.5">
+                  <span class="text-[12px] font-medium text-white">Chave / Número por Repositório</span>
+                  <a href="/projects" class="flex items-center justify-between gap-2 bg-surface-container border border-[#222f4c] hover:border-primary/40 rounded-lg px-3 py-2 text-[12px] text-on-surface-variant hover:text-white no-underline transition-colors">
+                    <span class="inline-flex items-center gap-1.5">
+                      <span class="material-symbols-outlined text-primary text-[16px]">folder_code</span>
+                      <span>Gerenciar chaves de projeto em Projetos</span>
+                    </span>
+                    <span class="material-symbols-outlined text-[15px]">arrow_forward</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          {% endmacro %}
+
+          {% macro render_jira_fields() %}
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div class="flex flex-col gap-1">
+                <label for="jira_base_url" class="font-mono text-[10px] text-on-surface-variant">Jira Base URL</label>
+                <input id="jira_base_url" name="jira_base_url" type="text" value="{{ provider_settings.get('jira_base_url', '') }}" placeholder="https://sua-empresa.atlassian.net"
+                       class="bg-surface-container-low border border-[#222f4c] text-on-surface text-[12px] rounded px-3 py-1.5 focus:outline-none focus:border-primary" />
+              </div>
+              <div class="flex flex-col gap-1">
+                <label for="jira_email" class="font-mono text-[10px] text-on-surface-variant">E-mail Jira</label>
+                <input id="jira_email" name="jira_email" type="text" value="{{ provider_settings.get('jira_email', '') }}" placeholder="dev@empresa.com"
+                       class="bg-surface-container-low border border-[#222f4c] text-on-surface text-[12px] rounded px-3 py-1.5 focus:outline-none focus:border-primary" />
+              </div>
+              <div class="flex flex-col gap-1">
+                <label for="jira_api_token" class="font-mono text-[10px] text-on-surface-variant">Jira API Token</label>
+                <input id="jira_api_token" name="jira_api_token" type="password" value="{{ provider_settings.get('jira_api_token', '') }}" placeholder="••••••••••••••••"
+                       class="bg-surface-container-low border border-[#222f4c] text-on-surface text-[12px] rounded px-3 py-1.5 focus:outline-none focus:border-primary" />
+              </div>
+            </div>
+          {% endmacro %}
+
+          {% macro render_trello_fields() %}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div class="flex flex-col gap-1">
+                <label for="trello_api_key" class="font-mono text-[10px] text-on-surface-variant">Trello API Key</label>
+                <input id="trello_api_key" name="trello_api_key" type="text" value="{{ provider_settings.get('trello_api_key', '') }}" placeholder="trello_api_key_..."
+                       class="bg-surface-container-low border border-[#222f4c] text-on-surface text-[12px] rounded px-3 py-1.5 focus:outline-none focus:border-primary" />
+              </div>
+              <div class="flex flex-col gap-1">
+                <label for="trello_token" class="font-mono text-[10px] text-on-surface-variant">Trello Token</label>
+                <input id="trello_token" name="trello_token" type="password" value="{{ provider_settings.get('trello_token', '') }}" placeholder="trello_token_..."
+                       class="bg-surface-container-low border border-[#222f4c] text-on-surface text-[12px] rounded px-3 py-1.5 focus:outline-none focus:border-primary" />
+              </div>
+            </div>
+          {% endmacro %}
+
+          <div class="p-5 flex flex-col gap-4">
+            <!-- Provedor Padrão (Fixo) -->
+            {% if active_proj == 'jira' %}
+              {{ render_jira_fields() }}
+            {% elif active_proj == 'trello' %}
+              {{ render_trello_fields() }}
             {% else %}
-              <span class="badge badge-danger">Não encontrado</span>
+              {{ render_github_fields() }}
             {% endif %}
-          </li>
-        {% endfor %}
-      </ul>
 
-      <hr>
+            <!-- Demais Provedores (Expansíveis) -->
+            <div class="mt-1 flex flex-col gap-2.5">
+              {% if active_proj != 'github' %}
+                <details class="group bg-surface-container border border-[#222f4c] rounded-lg overflow-hidden">
+                  <summary class="flex items-center justify-between p-3.5 cursor-pointer select-none hover:bg-surface-container-high transition-colors">
+                    <div class="flex items-center gap-2.5">
+                      <div class="w-6 h-6 rounded bg-surface-container-high border border-[#222f4c] flex items-center justify-center text-primary">
+                        <span class="material-symbols-outlined text-[15px]">code</span>
+                      </div>
+                      <span class="text-[13px] font-medium text-white">Configurações Opcionais: GitHub Projects v2</span>
+                    </div>
+                    <span class="material-symbols-outlined text-outline text-[18px] group-open:rotate-180 transition-transform">expand_more</span>
+                  </summary>
+                  <div class="p-4 pt-3 border-t border-[#1e293b]">
+                    {{ render_github_fields() }}
+                  </div>
+                </details>
+              {% endif %}
 
-      <h4>Provedores de Projeto Plugados (SOLID OCP)</h4>
-      <p>Qualquer novo provedor adicionado via Pull Request em <code>adapters/project_providers/</code> aparece aqui automaticamente:</p>
-      <ul>
-        {% for pp in project_providers %}
-          <li><strong>{{ pp.name }}</strong> (<code>{{ pp.key }}</code>)</li>
-        {% endfor %}
-      </ul>
-    </article>
+              {% if active_proj != 'jira' %}
+                <details class="group bg-surface-container border border-[#222f4c] rounded-lg overflow-hidden">
+                  <summary class="flex items-center justify-between p-3.5 cursor-pointer select-none hover:bg-surface-container-high transition-colors">
+                    <div class="flex items-center gap-2.5">
+                      <div class="w-6 h-6 rounded bg-surface-container-high border border-[#222f4c] flex items-center justify-center text-primary">
+                        <span class="material-symbols-outlined text-[15px]">integration_instructions</span>
+                      </div>
+                      <span class="text-[13px] font-medium text-white">Configurações Opcionais: Atlassian Jira Software</span>
+                    </div>
+                    <span class="material-symbols-outlined text-outline text-[18px] group-open:rotate-180 transition-transform">expand_more</span>
+                  </summary>
+                  <div class="p-4 pt-3 border-t border-[#1e293b]">
+                    {{ render_jira_fields() }}
+                  </div>
+                </details>
+              {% endif %}
+
+              {% if active_proj != 'trello' %}
+                <details class="group bg-surface-container border border-[#222f4c] rounded-lg overflow-hidden">
+                  <summary class="flex items-center justify-between p-3.5 cursor-pointer select-none hover:bg-surface-container-high transition-colors">
+                    <div class="flex items-center gap-2.5">
+                      <div class="w-6 h-6 rounded bg-surface-container-high border border-[#222f4c] flex items-center justify-center text-secondary">
+                        <span class="material-symbols-outlined text-[15px]">dashboard</span>
+                      </div>
+                      <span class="text-[13px] font-medium text-white">Configurações Opcionais: Trello Workspace</span>
+                    </div>
+                    <span class="material-symbols-outlined text-outline text-[18px] group-open:rotate-180 transition-transform">expand_more</span>
+                  </summary>
+                  <div class="p-4 pt-3 border-t border-[#1e293b]">
+                    {{ render_trello_fields() }}
+                  </div>
+                </details>
+              {% endif %}
+            </div>
+          </div>
+        </section>
+
+        <!-- Card 3: Status do Ambiente Local e Provedores OCP -->
+        <section class="bg-surface-container-low rounded-xl border border-[#1e293b] p-5 grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div>
+            <h3 class="text-[13px] font-semibold text-white m-0 mb-2.5 flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[16px] text-tertiary">dns</span>
+              <span>CLIs Detectadas no $PATH</span>
+            </h3>
+            <div class="flex flex-col gap-2">
+              {% for p in cli_providers %}
+                <div class="flex items-center justify-between px-3 py-2 rounded-lg bg-surface-container border border-[#222f4c] text-[12px]">
+                  <span class="text-on-surface">{{ p.name }} <code class="font-mono text-[10px] text-outline">({{ p.binary_name }})</code></span>
+                  {% if p.installed %}
+                    <span class="font-mono text-[10px] px-2 py-0.5 rounded bg-emerald-500/15 text-tertiary border border-emerald-500/30">Instalado</span>
+                  {% else %}
+                    <span class="font-mono text-[10px] px-2 py-0.5 rounded bg-red-500/15 text-error border border-red-500/30">Ausente</span>
+                  {% endif %}
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div>
+            <h3 class="text-[13px] font-semibold text-white m-0 mb-2.5 flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[16px] text-primary">extension</span>
+              <span>Provedores de Projeto Plugados (SOLID OCP)</span>
+            </h3>
+            <div class="flex flex-col gap-2">
+              {% for pp in project_providers %}
+                <div class="flex items-center justify-between px-3 py-2 rounded-lg bg-surface-container border border-[#222f4c] text-[12px]">
+                  <span class="text-on-surface font-medium">{{ pp.name }}</span>
+                  <code class="font-mono text-[10px] px-2 py-0.5 rounded bg-surface-container-high text-primary">{{ pp.key }}</code>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        </section>
+
+        <!-- Form Action Footer -->
+        <div class="flex items-center justify-between gap-3 py-3 border-t border-[#1e293b]">
+          <a href="/projects" class="px-4 py-2 rounded-lg bg-surface-container hover:bg-surface-container-high border border-[#222f4c] text-on-surface-variant hover:text-white text-[12px] font-medium no-underline transition-colors">
+            Cancelar
+          </a>
+          <button type="submit"
+                  class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#2563eb] hover:bg-[#3b82f6] text-white text-[13px] font-medium border border-white/10 shadow-[0_0_20px_rgba(59,130,246,0.35)] transition-all cursor-pointer">
+            <span class="material-symbols-outlined text-[18px]">save</span>
+            <span>Salvar Configurações</span>
+            <span class="hidden sm:inline-block ml-1 font-mono text-[10px] text-white/75 bg-black/25 px-1.5 py-0.5 rounded">Ctrl+S</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Bottom Runtime Status Strip -->
+  <div class="w-full px-4 sm:px-6 py-2.5 border-t border-[#1e293b] bg-surface-container-lowest/80 flex flex-col sm:flex-row items-center justify-between gap-2 font-mono text-[10px] text-outline">
+    <div class="flex items-center gap-2.5 flex-wrap">
+      <span class="text-tertiary inline-flex items-center gap-1.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+        Celery Beat Interval: {{ celery_interval_seconds }}s
+      </span>
+      <span>•</span>
+      <span>CLI Timeout: {{ cli_timeout_seconds }}s</span>
+      <span>•</span>
+      <span>Celery Limits: soft {{ celery_soft_timeout_seconds }}s / hard {{ celery_hard_timeout_seconds }}s</span>
+    </div>
+    <div class="text-on-surface-variant">
+      Provedor Ativo: <span class="text-primary uppercase">{{ settings.active_project_provider }}</span>
+    </div>
   </div>
 </div>
+
+<script>
+  (() => {
+    const toggleBtn = document.getElementById('btn-toggle-gh-token');
+    const tokenInput = document.getElementById('github_token');
+    const icon = document.getElementById('icon-toggle-gh-token');
+    if (toggleBtn && tokenInput && icon) {
+      toggleBtn.addEventListener('click', () => {
+        const isPass = tokenInput.type === 'password';
+        tokenInput.type = isPass ? 'text' : 'password';
+        icon.textContent = isPass ? 'visibility_off' : 'visibility';
+      });
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        const form = document.getElementById('settings-form');
+        if (form) form.requestSubmit();
+      }
+    });
+  })();
+</script>
 {% endblock %}

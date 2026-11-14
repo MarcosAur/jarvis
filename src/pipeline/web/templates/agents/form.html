@@ -2,76 +2,106 @@
 
 {% block title %}{% if agent %}Editar Agente{% else %}Novo Agente{% endif %} — AI Pipeline{% endblock %}
 
+{% block main_container_class %}max-w-[960px] mx-auto px-4 sm:px-6 py-6{% endblock %}
+
 {% block content %}
-<article>
-  <header>
-    <h2>{% if agent %}Editar Agente: {{ agent.name }}{% else %}Novo Agente de IA{% endif %}</h2>
-    <p>Configure o papel do agente, o provedor de CLI e o modelo de IA correspondente.</p>
-  </header>
+<div class="mb-5 flex items-center justify-between gap-3">
+  <div>
+    <a href="/agents" class="inline-flex items-center gap-1 font-mono text-[11px] text-on-surface-variant hover:text-primary no-underline mb-1.5">
+      <span class="material-symbols-outlined text-[14px]">arrow_back</span>
+      <span>Voltar para Agentes de IA</span>
+    </a>
+    <h1 class="text-2xl font-semibold text-white tracking-tight m-0">
+      {% if agent %}Editar Agente: {{ agent.name }}{% else %}Novo Agente de IA{% endif %}
+    </h1>
+    <p class="text-[13px] text-on-surface-variant/85 mt-1 mb-0">
+      Configure o papel do agente, o provedor de CLI local e o modelo de IA correspondente.
+    </p>
+  </div>
+</div>
 
-  <form method="post" action="{% if agent %}/agents/{{ agent.id }}/edit{% else %}/agents/new{% endif %}">
-    <label for="name">
-      Nome do Agente
-      <input type="text" id="name" name="name" value="{{ agent.name if agent else '' }}" required placeholder="Ex.: Arquiteto Gemini, Desenvolvedor Claude, Revisor Codex">
-    </label>
+<div class="bg-surface-container-low border border-[#1e293b] rounded-xl p-6 shadow-[0_8px_24px_rgba(0,0,0,0.28)]">
+  <form method="post" action="{% if agent %}/agents/{{ agent.id }}/edit{% else %}/agents/new{% endif %}" class="flex flex-col gap-5 m-0">
+    <div class="flex flex-col gap-1.5">
+      <label for="name" class="font-mono text-[10px] uppercase tracking-wider text-on-surface">Nome do Agente</label>
+      <input type="text"
+             id="name"
+             name="name"
+             value="{{ agent.name if agent else '' }}"
+             required
+             placeholder="Ex.: Arquiteto Gemini, Desenvolvedor Claude, Revisor Codex"
+             class="w-full bg-surface-container border border-[#222f4c] text-on-surface text-[13px] px-3.5 py-2 rounded-lg focus:outline-none focus:border-primary placeholder:text-outline" />
+    </div>
 
-    <div class="grid">
-      <div>
-        <label for="cli_provider">
-          Provedor de CLI (IA)
-          <select id="cli_provider" name="cli_provider" required
-                  hx-get="/agents/models-options"
-                  hx-target="#model_id_select"
-                  hx-trigger="change">
-            {% for p in cli_providers %}
-              <option value="{{ p.key }}" {% if (agent and agent.cli_provider == p.key) or (not agent and default_cli == p.key) %}selected{% endif %}>
-                {{ p.name }} {% if p.installed %}(✅ Instalado){% else %}(⚠️ Não instalado){% endif %}
-              </option>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="flex flex-col gap-1.5">
+        <label for="cli_provider" class="font-mono text-[10px] uppercase tracking-wider text-on-surface">Provedor de CLI (IA)</label>
+        <select id="cli_provider"
+                name="cli_provider"
+                required
+                hx-get="/agents/models-options"
+                hx-target="#model_id_select"
+                hx-trigger="change"
+                class="w-full bg-surface-container border border-[#222f4c] text-on-surface font-mono text-[12px] px-3 py-2 rounded-lg focus:outline-none focus:border-primary">
+          {% for p in cli_providers %}
+            <option value="{{ p.key }}" {% if (agent and agent.cli_provider == p.key) or (not agent and default_cli == p.key) %}selected{% endif %}>
+              {{ p.name }} {% if p.installed %}(Instalado){% else %}(Não instalado){% endif %}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label for="model_id_select" class="font-mono text-[10px] uppercase tracking-wider text-on-surface">Modelo de IA</label>
+        <div class="flex items-center gap-2">
+          <select id="model_id_select"
+                  name="model_id"
+                  required
+                  class="flex-1 min-w-0 bg-surface-container border border-[#222f4c] text-on-surface font-mono text-[12px] px-3 py-2 rounded-lg focus:outline-none focus:border-primary">
+            {% for m in models %}
+              <option value="{{ m.model_id }}" {% if agent and agent.model_id == m.model_id %}selected{% endif %}>{{ m.label }}</option>
+            {% else %}
+              <option value="" disabled selected>Nenhum modelo disponível</option>
             {% endfor %}
           </select>
-        </label>
-      </div>
-
-      <div>
-        <label for="model_id_select">
-          Modelo de IA
-          <div style="display: flex; gap: 0.5rem;">
-            <select id="model_id_select" name="model_id" required style="flex-grow: 1;">
-              {% for m in models %}
-                <option value="{{ m.model_id }}" {% if agent and agent.model_id == m.model_id %}selected{% endif %}>{{ m.label }}</option>
-              {% else %}
-                <option value="" disabled selected>Nenhum modelo disponível</option>
-              {% endfor %}
-            </select>
-            <button type="button" class="secondary outline" style="width: auto; white-space: nowrap;"
-                    hx-post="/agents/sync-models"
-                    hx-include="#cli_provider"
-                    hx-target="#model_id_select"
-                    hx-swap="innerHTML"
-                    title="Sincronizar modelos deste provedor">
-              ↻ Sincronizar
-            </button>
-          </div>
-        </label>
+          <button type="button"
+                  hx-post="/agents/sync-models"
+                  hx-include="#cli_provider"
+                  hx-target="#model_id_select"
+                  hx-swap="innerHTML"
+                  title="Sincronizar modelos deste provedor"
+                  class="inline-flex items-center gap-1 px-3 py-2 rounded-lg bg-surface-container-high hover:bg-surface-container-highest border border-[#222f4c] text-on-surface font-mono text-[11px] whitespace-nowrap cursor-pointer">
+            <span>↻ Sincronizar</span>
+          </button>
+        </div>
       </div>
     </div>
 
-    <label for="prompt_markdown">
-      Prompt Básico de Atuação (Markdown)
-      <textarea id="prompt_markdown" name="prompt_markdown" rows="10" placeholder="Defina o papel, diretrizes arquiteturais, contexto e formato esperado...">{{ agent.prompt_markdown if agent else '' }}</textarea>
+    <div class="flex flex-col gap-1.5">
+      <div class="flex items-center justify-between">
+        <label for="prompt_markdown" class="font-mono text-[10px] uppercase tracking-wider text-on-surface">Prompt Básico de Atuação (Markdown)</label>
+        <span class="font-mono text-[10px] text-outline">Markdown suportado</span>
+      </div>
+      <textarea id="prompt_markdown"
+                name="prompt_markdown"
+                rows="12"
+                placeholder="Defina o papel, diretrizes arquiteturais, contexto e formato esperado..."
+                class="w-full bg-surface-container border border-[#222f4c] text-on-surface font-mono text-[12px] p-3.5 rounded-lg focus:outline-none focus:border-primary placeholder:text-outline">{{ agent.prompt_markdown if agent else '' }}</textarea>
+    </div>
+
+    <label for="active" class="flex items-center gap-2.5 p-3.5 rounded-lg bg-surface-container-lowest border border-[#1a2538] text-[13px] text-on-surface cursor-pointer">
+      <input type="checkbox" id="active" name="active" value="true" {% if not agent or agent.active %}checked{% endif %} class="accent-[#3b82f6]" />
+      <span>Agente Ativo (disponível para vincular a colunas do Kanban)</span>
     </label>
 
-    <fieldset>
-      <label for="active">
-        <input type="checkbox" id="active" name="active" value="true" {% if not agent or agent.active %}checked{% endif %}>
-        Agente Ativo (disponível para vincular a colunas do Kanban)
-      </label>
-    </fieldset>
-
-    <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
-      <button type="submit">Salvar Agente</button>
-      <a href="/agents" role="button" class="secondary outline">Cancelar</a>
+    <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-[#1e293b]">
+      <a href="/agents" class="px-4 py-2 rounded-lg bg-surface-container-high hover:bg-surface-container-highest border border-[#222f4c] text-on-surface text-[12px] font-medium no-underline">
+        Cancelar
+      </a>
+      <button type="submit" class="px-5 py-2 rounded-lg bg-[#2563eb] hover:bg-[#3b82f6] text-white text-[12px] font-medium border border-white/10 shadow-[0_0_12px_rgba(59,130,246,0.3)] cursor-pointer">
+        Salvar Agente
+      </button>
     </div>
   </form>
-</article>
+</div>
 {% endblock %}

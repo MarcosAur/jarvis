@@ -2,76 +2,448 @@
 
 {% block title %}Colunas do Fluxo — AI Pipeline{% endblock %}
 
+{% block main_container_class %}max-w-[1580px] mx-auto px-4 sm:px-6 py-6{% endblock %}
+
 {% block content %}
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-  <div>
-    <h2>CRUD 3 — Colunas do Fluxo (Kanban)</h2>
-    <p>Defina a estrutura do seu quadro Kanban, quais agentes atuam em cada etapa e para onde os cards avançam.</p>
+<div class="flex flex-col gap-6">
+  <!-- 1. Header da Página -->
+  <div class="flex flex-col md:flex-row md:items-end justify-between gap-5 bg-surface-container-lowest/80 border border-[#1e293b] p-5 rounded-xl shadow-sm backdrop-blur-md">
+    <div class="flex flex-col gap-1.5 max-w-3xl">
+      <div class="flex items-center gap-2.5 flex-wrap">
+        <span class="px-2 py-0.5 rounded bg-surface-container-high border border-[#222f4c] text-primary font-mono text-[10px] uppercase tracking-wider">
+          CRUD 3 • Orchestration Pipeline • SOLID Open/Closed
+        </span>
+        <span class="inline-flex items-center gap-1.5 text-tertiary font-mono text-[10px]">
+          <span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse"></span>
+          {{ columns | length }} {{ 'Etapa Mapeada' if (columns | length) == 1 else 'Etapas Mapeadas' }}
+        </span>
+      </div>
+      <h1 class="text-2xl sm:text-[28px] text-white font-semibold tracking-tight m-0 leading-tight">
+        Colunas do Fluxo (Kanban)
+      </h1>
+      <p class="text-[13px] text-on-surface-variant/85 leading-relaxed m-0">
+        Defina a estrutura de etapas do quadro, mapeie agentes de IA autônomos ou gates manuais e estabeleça as rotas de transição e retrabalho entre colunas.
+      </p>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2.5 self-start md:self-auto shrink-0">
+      <button type="button"
+              id="btn-simulate-flow"
+              class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-surface-container hover:bg-surface-container-high border border-[#222f4c] text-on-surface text-[12px] font-medium transition-colors shadow-sm cursor-pointer">
+        <span class="material-symbols-outlined text-[17px] text-primary">route</span>
+        <span>Simular Fluxo da Pipeline</span>
+      </button>
+
+      <button type="button"
+              id="btn-open-col-modal"
+              class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#2563eb] hover:bg-[#3b82f6] text-white text-[12px] font-medium border border-white/10 shadow-[0_0_12px_rgba(59,130,246,0.3)] transition-all cursor-pointer">
+        <span class="material-symbols-outlined text-[17px]">add</span>
+        <span>Nova Coluna</span>
+      </button>
+    </div>
   </div>
-  <a href="/columns/new" role="button">＋ Nova Coluna</a>
+
+  <!-- 2. Visual Stepper da Esteira Autônoma -->
+  <div class="flex flex-col gap-4 bg-surface-container-low border border-[#1e293b] p-5 rounded-xl shadow-sm">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary text-[20px]">account_tree</span>
+        <span class="text-[15px] text-white font-semibold">Visual Stepper da Esteira Autônoma</span>
+      </div>
+
+      <div class="flex items-center gap-4 font-mono text-[11px] text-on-surface-variant">
+        <span class="inline-flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-secondary"></span>
+          {{ ai_columns_count }} {{ 'Agente IA' if ai_columns_count == 1 else 'Agentes IA' }}
+        </span>
+        <span class="inline-flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-outline"></span>
+          {{ manual_columns_count }} {{ 'Gate Manual' if manual_columns_count == 1 else 'Gates Manuais' }}
+        </span>
+      </div>
+    </div>
+
+    {% if columns %}
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-2.5">
+        {% for col in columns %}
+          <div class="flex flex-col p-3.5 rounded-lg transition-all relative {% if not col.active %}opacity-55 bg-surface-container/60 border border-dashed border-[#334155]{% elif col.agent %}bg-surface-container-high border border-secondary/35 shadow-[0_0_16px_rgba(139,92,246,0.12)]{% else %}bg-surface-container border border-[#222f4c] hover:bg-surface-container-high{% endif %}">
+            <div class="flex items-center justify-between mb-1.5 gap-1">
+              <span class="font-mono text-[10px] {% if col.agent %}text-secondary{% elif not col.next_column_name %}text-tertiary{% else %}text-outline{% endif %}">
+                {{ '%02d' % col.order_index }}
+              </span>
+
+              {% if not col.active %}
+                <span class="px-1.5 py-0.5 rounded bg-red-500/15 text-error font-mono text-[9px] uppercase">Pausada</span>
+              {% elif col.agent %}
+                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-secondary-container/40 text-secondary font-mono text-[9px] uppercase">
+                  <span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
+                  Agente IA
+                </span>
+              {% elif not col.next_column_name %}
+                <span class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-tertiary font-mono text-[9px] uppercase">Final</span>
+              {% else %}
+                <span class="px-1.5 py-0.5 rounded bg-surface-container-high text-on-surface-variant font-mono text-[9px] uppercase">Manual</span>
+              {% endif %}
+            </div>
+
+            <span class="text-[14px] text-white font-semibold truncate" title="{{ col.column_name }}">{{ col.column_name }}</span>
+
+            {% if col.agent %}
+              <p class="text-[11px] text-secondary font-mono mt-1 mb-0 truncate" title="{{ col.agent.name }}">
+                {{ col.agent.name }}
+              </p>
+            {% elif not col.next_column_name %}
+              <p class="text-[11px] text-on-surface-variant/80 mt-1 mb-0 truncate">Etapa final do quadro</p>
+            {% else %}
+              <p class="text-[11px] text-on-surface-variant/80 mt-1 mb-0 truncate">Intervenção humana</p>
+            {% endif %}
+
+            <div class="mt-3.5 pt-2 border-t border-[#1e293b]/70 flex items-center justify-between font-mono text-[10px] {% if col.agent or not col.next_column_name %}text-tertiary{% else %}text-primary{% endif %}">
+              {% if col.next_column_name %}
+                <span class="truncate">Para: {{ col.next_column_name }}</span>
+                <span class="material-symbols-outlined text-[15px] shrink-0">{% if col.agent %}bolt{% else %}arrow_forward{% endif %}</span>
+              {% else %}
+                <span>Concluído</span>
+                <span class="material-symbols-outlined text-[15px] shrink-0">check_circle</span>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="p-6 text-center text-[13px] text-on-surface-variant bg-surface-container/40 border border-[#1e293b] rounded-lg">
+        Nenhuma coluna mapeada no fluxo ainda.
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- 3. Tabela de Configuração das Colunas -->
+  <div class="flex flex-col bg-surface-container-lowest border border-[#1e293b] rounded-xl overflow-hidden shadow-[0_8px_24px_rgba(0,0,0,0.28)]">
+    <div class="px-5 py-3.5 bg-surface-container-low border-b border-[#1e293b] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+      <div class="flex items-center gap-2.5">
+        <span class="text-[14px] text-white font-semibold">Mapeamento e Orquestração de Colunas</span>
+        <span class="px-2 py-0.5 rounded-full bg-surface-container border border-[#222f4c] text-primary font-mono text-[10px]">
+          {{ columns | length }} {{ 'Registro' if (columns | length) == 1 else 'Registros' }}
+        </span>
+      </div>
+
+      <div class="flex items-center gap-2 text-on-surface-variant font-mono text-[11px]">
+        <span class="inline-flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[15px] text-tertiary">sync</span>
+          Provedor ativo: <span class="text-on-surface uppercase">{{ active_provider }}</span>
+        </span>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse text-[13px]">
+        <thead>
+          <tr class="bg-surface-container border-b border-[#1e293b] text-on-surface-variant font-mono text-[10px] uppercase tracking-wider">
+            <th class="py-3 px-4 w-14 text-center">#</th>
+            <th class="py-3 px-4">Nome da Coluna</th>
+            <th class="py-3 px-4">Identificador (Slug)</th>
+            <th class="py-3 px-4">Agente Responsável</th>
+            <th class="py-3 px-4">Próxima Coluna</th>
+            <th class="py-3 px-4">Tipo de Etapa</th>
+            <th class="py-3 px-4">Status</th>
+            <th class="py-3 px-4 text-right">Ações</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-[#152236] text-[12px]">
+          {% for col in columns %}
+            <tr class="hover:bg-surface-container/60 transition-colors {% if col.agent %}bg-surface-container-low/40{% endif %}">
+              <td class="py-3.5 px-4 text-center font-mono text-outline font-medium">
+                {{ col.order_index }}
+              </td>
+
+              <td class="py-3.5 px-4 whitespace-nowrap">
+                <div class="flex items-center gap-2 font-medium {% if not col.next_column_name %}text-tertiary{% else %}text-white{% endif %}">
+                  <span class="material-symbols-outlined text-[17px] {% if col.agent %}text-secondary{% elif not col.next_column_name %}text-tertiary{% else %}text-outline{% endif %}">
+                    {% if col.agent %}smart_toy{% elif not col.next_column_name %}task_alt{% else %}view_column{% endif %}
+                  </span>
+                  <span>{{ col.column_name }}</span>
+                </div>
+              </td>
+
+              <td class="py-3.5 px-4 whitespace-nowrap">
+                <code class="px-2 py-0.5 rounded bg-surface-container border border-[#222f4c] text-primary font-mono text-[11px]">{{ col.identifier }}</code>
+              </td>
+
+              <td class="py-3.5 px-4">
+                {% if col.agent %}
+                  <div class="flex flex-col gap-0.5">
+                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-secondary-container/30 border border-secondary/25 text-secondary font-mono text-[11px] w-max">
+                      🤖 {{ col.agent.name }}
+                    </span>
+                    <span class="text-on-surface-variant/75 font-mono text-[10px] pl-0.5">
+                      {{ col.agent.cli_provider }} / {{ col.agent.model_id }}
+                    </span>
+                  </div>
+                {% else %}
+                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface-container border border-[#222f4c] text-on-surface-variant font-mono text-[11px] w-max">
+                    <span class="material-symbols-outlined text-[14px]">person</span>
+                    Manual / Humano
+                  </span>
+                {% endif %}
+              </td>
+
+              <td class="py-3.5 px-4 whitespace-nowrap">
+                {% if col.next_column_name %}
+                  <span class="inline-flex items-center gap-1 font-mono text-[11px] {% if col.agent %}text-tertiary{% else %}text-primary{% endif %}">
+                    <span class="text-outline">→</span>
+                    <strong>{{ col.next_column_name }}</strong>
+                  </span>
+                {% else %}
+                  <span class="font-mono text-[11px] text-outline italic">(Etapa Final)</span>
+                {% endif %}
+              </td>
+
+              <td class="py-3.5 px-4 whitespace-nowrap font-mono text-[11px]">
+                {% if col.agent %}
+                  <span class="text-secondary">Execução Autônoma</span>
+                {% elif not col.next_column_name %}
+                  <span class="text-tertiary">Conclusão do Fluxo</span>
+                {% else %}
+                  <span class="text-on-surface-variant">Gate Manual</span>
+                {% endif %}
+              </td>
+
+              <td class="py-3.5 px-4 whitespace-nowrap">
+                {% if col.active %}
+                  <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/30 text-tertiary font-mono text-[11px]">
+                    <span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                    Ativa
+                  </span>
+                {% else %}
+                  <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-red-500/15 border border-red-500/30 text-error font-mono text-[11px]">
+                    <span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+                    Inativa
+                  </span>
+                {% endif %}
+              </td>
+
+              <td class="py-3.5 px-4 text-right whitespace-nowrap">
+                <div class="inline-flex items-center gap-1">
+                  <a href="/columns/{{ col.id }}/edit"
+                     class="px-2.5 py-1 rounded bg-surface-container hover:bg-surface-container-high border border-[#222f4c] text-on-surface-variant hover:text-white font-mono text-[11px] no-underline transition-colors">
+                    Editar
+                  </a>
+
+                  <form method="post" action="/columns/{{ col.id }}/toggle" class="inline m-0">
+                    <button type="submit"
+                            class="px-2.5 py-1 rounded bg-surface-container hover:bg-surface-container-high border border-[#222f4c] text-on-surface-variant hover:text-primary font-mono text-[11px] transition-colors cursor-pointer">
+                      {% if col.active %}Pausar{% else %}Ativar{% endif %}
+                    </button>
+                  </form>
+
+                  <form method="post" action="/columns/{{ col.id }}/delete" class="inline m-0" onsubmit="return confirm('Excluir esta coluna?');">
+                    <button type="submit"
+                            class="px-2.5 py-1 rounded bg-surface-container hover:bg-red-500/20 border border-[#222f4c] hover:border-red-500/35 text-on-surface-variant hover:text-error font-mono text-[11px] transition-colors cursor-pointer">
+                      Excluir
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="8" class="py-10 px-6 text-center text-on-surface-variant">
+                Nenhuma coluna configurada ainda.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 4. Cards Informativos do Pipeline -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <div class="flex flex-col gap-2.5 p-5 rounded-xl bg-surface-container-low border border-[#1e293b] shadow-sm">
+      <div class="flex items-center gap-2 text-primary">
+        <span class="material-symbols-outlined text-[20px]">restart_alt</span>
+        <span class="text-[14px] font-semibold">Detecção de Retrabalho</span>
+      </div>
+      <p class="text-[12px] text-on-surface-variant/85 leading-relaxed m-0">
+        Quando um card retorna no quadro para uma coluna anterior na ordem (<code class="font-mono text-primary">order_index</code>), o <code class="font-mono text-primary">SyncService</code> incrementa automaticamente o contador de retrabalho e registra o evento.
+      </p>
+      <div class="mt-auto pt-2 flex items-center justify-between font-mono text-[11px] bg-surface-container border border-[#1e293b] px-3 py-1.5 rounded">
+        <span class="text-on-surface-variant">Badge no Kanban:</span>
+        <span class="text-secondary">⚡ Retrabalho</span>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-2.5 p-5 rounded-xl bg-surface-container-low border border-[#1e293b] shadow-sm">
+      <div class="flex items-center gap-2 text-secondary">
+        <span class="material-symbols-outlined text-[20px]">bolt</span>
+        <span class="text-[14px] font-semibold">Disparo Assíncrono via Celery</span>
+      </div>
+      <p class="text-[12px] text-on-surface-variant/85 leading-relaxed m-0">
+        Ao entrar em uma coluna ativa com <strong class="text-white">Agente Responsável</strong>, o orquestrador cria um job e o despacha ao worker Celery. Se o card sair da coluna antes da execução, jobs pendentes são cancelados.
+      </p>
+      <div class="mt-auto pt-2 flex items-center justify-between font-mono text-[11px] bg-surface-container border border-[#1e293b] px-3 py-1.5 rounded">
+        <span class="text-on-surface-variant">Transição Automática:</span>
+        <span class="text-tertiary">Coluna → Próxima Coluna</span>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-2.5 p-5 rounded-xl bg-surface-container-low border border-[#1e293b] shadow-sm">
+      <div class="flex items-center gap-2 text-tertiary">
+        <span class="material-symbols-outlined text-[20px]">hub</span>
+        <span class="text-[14px] font-semibold">SOLID Ports &amp; Adapters</span>
+      </div>
+      <p class="text-[12px] text-on-surface-variant/85 leading-relaxed m-0">
+        A correspondência com o quadro externo usa o campo <strong class="text-white">Nome da Coluna</strong>, mantendo o fluxo desacoplado entre GitHub Projects, Jira e Trello via adaptadores intercambiáveis.
+      </p>
+      <div class="mt-auto pt-2 flex items-center justify-between font-mono text-[11px] bg-surface-container border border-[#1e293b] px-3 py-1.5 rounded">
+        <span class="text-on-surface-variant">Vinculação:</span>
+        <span class="text-primary">FlowColumn ↔ Agent</span>
+      </div>
+    </div>
+  </div>
 </div>
 
-<article>
-  <table role="grid">
-    <thead>
-      <tr>
-        <th style="width: 50px;">#</th>
-        <th>Nome da Coluna</th>
-        <th>Identificador (Slug)</th>
-        <th>Agente Responsável</th>
-        <th>Próxima Coluna</th>
-        <th>Status</th>
-        <th style="text-align: right;">Ações</th>
-      </tr>
-    </thead>
-    <tbody>
+<!-- Modal: Simular Fluxo da Pipeline -->
+<div id="modal-simulate-flow" class="hidden fixed inset-0 z-50 bg-surface-container-lowest/80 backdrop-blur-md flex items-center justify-center p-4">
+  <div class="bg-surface-container-low border border-[#222f4c] max-w-2xl w-full rounded-xl shadow-2xl p-6 flex flex-col gap-4 max-h-[85vh] overflow-y-auto">
+    <div class="flex items-center justify-between pb-3 border-b border-[#1e293b]">
+      <div class="flex items-center gap-2.5">
+        <span class="material-symbols-outlined text-primary text-[22px]">route</span>
+        <div>
+          <h3 class="text-[16px] font-semibold text-white m-0">Simulação do Fluxo Configurado</h3>
+          <span class="text-[11px] text-on-surface-variant">Sequência ativa e transições mapeadas a partir do banco de dados</span>
+        </div>
+      </div>
+      <button type="button" data-close-sim class="p-1.5 rounded-lg text-outline hover:text-white bg-surface-container-high border border-[#222f4c] cursor-pointer">
+        <span class="material-symbols-outlined text-[18px]">close</span>
+      </button>
+    </div>
+
+    <div class="flex flex-col gap-2">
       {% for col in columns %}
-        <tr>
-          <td><strong>{{ col.order_index }}</strong></td>
-          <td><strong>{{ col.column_name }}</strong></td>
-          <td><code>{{ col.identifier }}</code></td>
-          <td>
-            {% if col.agent %}
-              <span class="badge badge-info">🤖 {{ col.agent.name }}</span>
-              <br><small style="color: var(--pico-muted-color);">{{ col.agent.cli_provider }} / {{ col.agent.model_id }}</small>
-            {% else %}
-              <span class="badge">Manual / Humano</span>
-            {% endif %}
-          </td>
-          <td>
-            {% if col.next_column_name %}
-              &rarr; <strong>{{ col.next_column_name }}</strong>
-            {% else %}
-              <small style="color: var(--pico-muted-color);">(Etapa Final)</small>
-            {% endif %}
-          </td>
-          <td>
-            {% if col.active %}
-              <span class="badge badge-success">Ativa</span>
-            {% else %}
-              <span class="badge badge-danger">Inativa</span>
-            {% endif %}
-          </td>
-          <td style="text-align: right;">
-            <div class="table-actions" style="justify-content: flex-end;">
-              <a href="/columns/{{ col.id }}/edit" role="button" class="secondary outline">Editar</a>
-              <form method="post" action="/columns/{{ col.id }}/toggle" style="display:inline; margin:0;">
-                <button type="submit" class="outline" style="margin:0;">
-                  {% if col.active %}Pausar{% else %}Ativar{% endif %}
-                </button>
-              </form>
-              <form method="post" action="/columns/{{ col.id }}/delete" style="display:inline; margin:0;" onsubmit="return confirm('Excluir esta coluna?');">
-                <button type="submit" class="danger outline" style="margin:0;">Excluir</button>
-              </form>
+        <div class="flex items-center justify-between gap-3 p-3 rounded-lg bg-surface-container border border-[#1e293b] {% if not col.active %}opacity-50{% endif %}">
+          <div class="flex items-center gap-3 min-w-0">
+            <span class="font-mono text-[11px] text-outline w-6">{{ '%02d' % col.order_index }}</span>
+            <div class="min-w-0">
+              <div class="text-[13px] font-medium text-white truncate">{{ col.column_name }}</div>
+              <div class="font-mono text-[10px] text-on-surface-variant">
+                {% if col.agent %}🤖 {{ col.agent.name }} ({{ col.agent.cli_provider }} / {{ col.agent.model_id }}){% else %}Intervenção manual{% endif %}
+              </div>
             </div>
-          </td>
-        </tr>
+          </div>
+          <div class="font-mono text-[11px] shrink-0 {% if col.next_column_name %}text-tertiary{% else %}text-outline{% endif %}">
+            {% if col.next_column_name %}→ {{ col.next_column_name }}{% else %}(Final){% endif %}
+          </div>
+        </div>
       {% else %}
-        <tr>
-          <td colspan="7" style="text-align: center; color: var(--pico-muted-color);">Nenhuma coluna configurada ainda.</td>
-        </tr>
+        <div class="text-[12px] text-outline text-center py-4">Nenhuma coluna configurada.</div>
       {% endfor %}
-    </tbody>
-  </table>
-</article>
+    </div>
+
+    <div class="flex justify-end pt-2 border-t border-[#1e293b]">
+      <button type="button" data-close-sim class="px-4 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-container-highest border border-[#222f4c] text-on-surface text-[12px] cursor-pointer">
+        Fechar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Nova Coluna -->
+<div id="modal-nova-coluna" class="hidden fixed inset-0 z-50 bg-surface-container-lowest/80 backdrop-blur-md flex items-center justify-center p-4">
+  <div class="bg-surface-container-low border border-[#222f4c] max-w-2xl w-full rounded-xl shadow-2xl p-6 flex flex-col gap-5 max-h-[90vh] overflow-y-auto">
+    <div class="flex items-center justify-between pb-3 border-b border-[#1e293b]">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-surface-container-high border border-[#222f4c] flex items-center justify-center text-primary">
+          <span class="material-symbols-outlined text-[20px]">view_column</span>
+        </div>
+        <div>
+          <h3 class="text-[17px] font-semibold text-white m-0">Nova Coluna do Fluxo</h3>
+          <span class="text-[12px] text-on-surface-variant">Vincule o nome exato do quadro externo a um agente autônomo</span>
+        </div>
+      </div>
+      <button type="button" data-close-col class="p-1.5 rounded-lg text-outline hover:text-white bg-surface-container-high border border-[#222f4c] cursor-pointer">
+        <span class="material-symbols-outlined text-[18px]">close</span>
+      </button>
+    </div>
+
+    <form method="post" action="/columns/new" class="flex flex-col gap-4 m-0">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="flex flex-col gap-1.5">
+          <label for="modal_col_name" class="font-mono text-[10px] uppercase tracking-wider text-on-surface">Nome da Coluna no Quadro</label>
+          <input id="modal_col_name" name="column_name" type="text" required placeholder="Ex.: To architect, In Progress"
+                 class="w-full bg-surface-container border border-[#222f4c] text-on-surface text-[13px] px-3 py-2 rounded-lg focus:outline-none focus:border-primary" />
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label for="modal_col_id" class="font-mono text-[10px] uppercase tracking-wider text-on-surface">Identificador Único (Slug)</label>
+          <input id="modal_col_id" name="identifier" type="text" required placeholder="Ex.: to_architect, in_progress"
+                 class="w-full bg-surface-container border border-[#222f4c] text-on-surface font-mono text-[12px] px-3 py-2 rounded-lg focus:outline-none focus:border-primary" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="flex flex-col gap-1.5">
+          <label for="modal_col_agent" class="font-mono text-[10px] uppercase tracking-wider text-on-surface">Agente Responsável</label>
+          <select id="modal_col_agent" name="agent_id"
+                  class="w-full bg-surface-container border border-[#222f4c] text-on-surface font-mono text-[12px] px-3 py-2 rounded-lg focus:outline-none focus:border-primary">
+            <option value="" selected>Nenhum — Etapa manual / humana</option>
+            {% for a in agents %}
+              <option value="{{ a.id }}">🤖 {{ a.name }} ({{ a.cli_provider }} / {{ a.model_id }})</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="modal_col_next" class="font-mono text-[10px] uppercase tracking-wider text-on-surface">Próxima Coluna</label>
+          <input id="modal_col_next" name="next_column_name" type="text" placeholder="Ex.: Architected (ou vazio se final)"
+                 class="w-full bg-surface-container border border-[#222f4c] text-on-surface text-[13px] px-3 py-2 rounded-lg focus:outline-none focus:border-primary" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
+        <div class="flex flex-col gap-1.5">
+          <label for="modal_col_order" class="font-mono text-[10px] uppercase tracking-wider text-on-surface">Ordem de Exibição</label>
+          <input id="modal_col_order" name="order_index" type="number" min="1" value="{{ (columns | length) + 1 }}"
+                 class="w-full bg-surface-container border border-[#222f4c] text-on-surface font-mono text-[13px] px-3 py-2 rounded-lg focus:outline-none focus:border-primary" />
+        </div>
+
+        <label for="modal_col_active" class="flex items-center gap-2.5 p-3 mt-4 rounded-lg bg-surface-container-lowest border border-[#1a2538] text-[12px] text-on-surface cursor-pointer">
+          <input type="checkbox" id="modal_col_active" name="active" value="true" checked class="accent-[#3b82f6]" />
+          <span>Coluna Ativa</span>
+        </label>
+      </div>
+
+      <div class="flex items-center justify-between pt-2 border-t border-[#1e293b]">
+        <a href="/columns/new" class="font-mono text-[11px] text-outline hover:text-primary no-underline">Abrir página completa →</a>
+        <div class="flex items-center gap-2">
+          <button type="button" data-close-col class="px-4 py-2 rounded-lg bg-surface-container-high hover:bg-surface-container-highest border border-[#222f4c] text-on-surface text-[12px] cursor-pointer">
+            Cancelar
+          </button>
+          <button type="submit" class="px-5 py-2 rounded-lg bg-[#2563eb] hover:bg-[#3b82f6] text-white text-[12px] font-medium border border-white/10 shadow-[0_0_12px_rgba(59,130,246,0.3)] cursor-pointer">
+            Salvar Coluna
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  (() => {
+    const simModal = document.getElementById('modal-simulate-flow');
+    const simOpen = document.getElementById('btn-simulate-flow');
+    if (simOpen && simModal) {
+      simOpen.addEventListener('click', () => simModal.classList.remove('hidden'));
+      document.querySelectorAll('[data-close-sim]').forEach((b) => b.addEventListener('click', () => simModal.classList.add('hidden')));
+      simModal.addEventListener('click', (e) => { if (e.target === simModal) simModal.classList.add('hidden'); });
+    }
+
+    const colModal = document.getElementById('modal-nova-coluna');
+    const colOpen = document.getElementById('btn-open-col-modal');
+    if (colOpen && colModal) {
+      colOpen.addEventListener('click', () => colModal.classList.remove('hidden'));
+      document.querySelectorAll('[data-close-col]').forEach((b) => b.addEventListener('click', () => colModal.classList.add('hidden')));
+      colModal.addEventListener('click', (e) => { if (e.target === colModal) colModal.classList.add('hidden'); });
+    }
+  })();
+</script>
 {% endblock %}

@@ -2,75 +2,102 @@
 
 {% block title %}{% if column %}Editar Coluna{% else %}Nova Coluna{% endif %} — AI Pipeline{% endblock %}
 
+{% block main_container_class %}max-w-[960px] mx-auto px-4 sm:px-6 py-6{% endblock %}
+
 {% block content %}
-<article>
-  <header>
-    <h2>{% if column %}Editar Coluna: {{ column.column_name }}{% else %}Nova Coluna do Fluxo{% endif %}</h2>
-    <p>Configure a correspondência com a coluna do seu quadro externo e o agente responsável por executar tarefas nela.</p>
-  </header>
+<div class="mb-5">
+  <a href="/columns" class="inline-flex items-center gap-1 font-mono text-[11px] text-on-surface-variant hover:text-primary no-underline mb-1.5">
+    <span class="material-symbols-outlined text-[14px]">arrow_back</span>
+    <span>Voltar para Colunas do Fluxo</span>
+  </a>
+  <h1 class="text-2xl font-semibold text-white tracking-tight m-0">
+    {% if column %}Editar Coluna: {{ column.column_name }}{% else %}Nova Coluna do Fluxo{% endif %}
+  </h1>
+  <p class="text-[13px] text-on-surface-variant/85 mt-1 mb-0">
+    Configure a correspondência com a coluna do seu quadro externo e o agente responsável por executar tarefas nela.
+  </p>
+</div>
 
-  <form method="post" action="{% if column %}/columns/{{ column.id }}/edit{% else %}/columns/new{% endif %}">
-    <div class="grid">
-      <div>
-        <label for="column_name">
-          Nome da Coluna no Quadro
-          <input type="text" id="column_name" name="column_name" value="{{ column.column_name if column else '' }}" required placeholder="Ex.: Todo, To architect, Architected, In Progress">
-          <small>Deve coincidir exatamente com o nome da coluna no GitHub / Jira / Trello.</small>
-        </label>
+<div class="bg-surface-container-low border border-[#1e293b] rounded-xl p-6 shadow-[0_8px_24px_rgba(0,0,0,0.28)]">
+  <form method="post" action="{% if column %}/columns/{{ column.id }}/edit{% else %}/columns/new{% endif %}" class="flex flex-col gap-5 m-0">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="flex flex-col gap-1.5">
+        <label for="column_name" class="font-mono text-[10px] uppercase tracking-wider text-on-surface">Nome da Coluna no Quadro</label>
+        <input type="text"
+               id="column_name"
+               name="column_name"
+               value="{{ column.column_name if column else '' }}"
+               required
+               placeholder="Ex.: Todo, To architect, Architected, In Progress"
+               class="w-full bg-surface-container border border-[#222f4c] text-on-surface text-[13px] px-3.5 py-2 rounded-lg focus:outline-none focus:border-primary" />
+        <small class="text-[11px] text-outline">Deve coincidir exatamente com o nome da coluna no GitHub / Jira / Trello.</small>
       </div>
 
-      <div>
-        <label for="identifier">
-          Identificador Único (Slug)
-          <input type="text" id="identifier" name="identifier" value="{{ column.identifier if column else '' }}" required placeholder="Ex.: todo, to_architect, architected">
-        </label>
-      </div>
-    </div>
-
-    <div class="grid">
-      <div>
-        <label for="agent_id">
-          Agente Responsável
-          <select id="agent_id" name="agent_id">
-            <option value="" {% if not column or not column.agent_id %}selected{% endif %}>Nenhum — Etapa manual / humana</option>
-            {% for a in agents %}
-              <option value="{{ a.id }}" {% if column and column.agent_id == a.id %}selected{% endif %}>
-                🤖 {{ a.name }} ({{ a.cli_provider }} / {{ a.model_id }})
-              </option>
-            {% endfor %}
-          </select>
-          <small>Quando um card entra nesta coluna, este agente será acionado.</small>
-        </label>
-      </div>
-
-      <div>
-        <label for="next_column_name">
-          Próxima Coluna (após conclusão com sucesso)
-          <input type="text" id="next_column_name" name="next_column_name" value="{{ column.next_column_name if column and column.next_column_name else '' }}" placeholder="Ex.: Architected, Done (ou vazio se final)">
-          <small>Para onde o card será movido no quadro externo quando o agente finalizar.</small>
-        </label>
+      <div class="flex flex-col gap-1.5">
+        <label for="identifier" class="font-mono text-[10px] uppercase tracking-wider text-on-surface">Identificador Único (Slug)</label>
+        <input type="text"
+               id="identifier"
+               name="identifier"
+               value="{{ column.identifier if column else '' }}"
+               required
+               placeholder="Ex.: todo, to_architect, architected"
+               class="w-full bg-surface-container border border-[#222f4c] text-on-surface font-mono text-[12px] px-3.5 py-2 rounded-lg focus:outline-none focus:border-primary" />
       </div>
     </div>
 
-    <div class="grid">
-      <div>
-        <label for="order_index">
-          Ordem de Exibição no Quadro
-          <input type="number" id="order_index" name="order_index" value="{{ column.order_index if column else 1 }}" min="1">
-        </label>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="flex flex-col gap-1.5">
+        <label for="agent_id" class="font-mono text-[10px] uppercase tracking-wider text-on-surface">Agente Responsável</label>
+        <select id="agent_id"
+                name="agent_id"
+                class="w-full bg-surface-container border border-[#222f4c] text-on-surface font-mono text-[12px] px-3.5 py-2 rounded-lg focus:outline-none focus:border-primary">
+          <option value="" {% if not column or not column.agent_id %}selected{% endif %}>Nenhum — Etapa manual / humana</option>
+          {% for a in agents %}
+            <option value="{{ a.id }}" {% if column and column.agent_id == a.id %}selected{% endif %}>
+              🤖 {{ a.name }} ({{ a.cli_provider }} / {{ a.model_id }})
+            </option>
+          {% endfor %}
+        </select>
+        <small class="text-[11px] text-outline">Quando um card entra nesta coluna, este agente será acionado via Celery.</small>
       </div>
-      <div>
-        <label for="active" style="margin-top: 2rem;">
-          <input type="checkbox" id="active" name="active" value="true" {% if not column or column.active %}checked{% endif %}>
-          Coluna Ativa
-        </label>
+
+      <div class="flex flex-col gap-1.5">
+        <label for="next_column_name" class="font-mono text-[10px] uppercase tracking-wider text-on-surface">Próxima Coluna (após conclusão)</label>
+        <input type="text"
+               id="next_column_name"
+               name="next_column_name"
+               value="{{ column.next_column_name if column and column.next_column_name else '' }}"
+               placeholder="Ex.: Architected, Done (ou vazio se final)"
+               class="w-full bg-surface-container border border-[#222f4c] text-on-surface text-[13px] px-3.5 py-2 rounded-lg focus:outline-none focus:border-primary" />
+        <small class="text-[11px] text-outline">Para onde o card será movido no quadro externo quando o agente finalizar.</small>
       </div>
     </div>
 
-    <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
-      <button type="submit">Salvar Coluna</button>
-      <a href="/columns" role="button" class="secondary outline">Cancelar</a>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
+      <div class="flex flex-col gap-1.5">
+        <label for="order_index" class="font-mono text-[10px] uppercase tracking-wider text-on-surface">Ordem de Exibição no Quadro</label>
+        <input type="number"
+               id="order_index"
+               name="order_index"
+               value="{{ column.order_index if column else 1 }}"
+               min="1"
+               class="w-full bg-surface-container border border-[#222f4c] text-on-surface font-mono text-[13px] px-3.5 py-2 rounded-lg focus:outline-none focus:border-primary" />
+      </div>
+
+      <label for="active" class="flex items-center gap-2.5 p-3.5 mt-4 rounded-lg bg-surface-container-lowest border border-[#1a2538] text-[13px] text-on-surface cursor-pointer">
+        <input type="checkbox" id="active" name="active" value="true" {% if not column or column.active %}checked{% endif %} class="accent-[#3b82f6]" />
+        <span>Coluna Ativa</span>
+      </label>
+    </div>
+
+    <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-[#1e293b]">
+      <a href="/columns" class="px-4 py-2 rounded-lg bg-surface-container-high hover:bg-surface-container-highest border border-[#222f4c] text-on-surface text-[12px] font-medium no-underline">
+        Cancelar
+      </a>
+      <button type="submit" class="px-5 py-2 rounded-lg bg-[#2563eb] hover:bg-[#3b82f6] text-white text-[12px] font-medium border border-white/10 shadow-[0_0_12px_rgba(59,130,246,0.3)] cursor-pointer">
+        Salvar Coluna
+      </button>
     </div>
   </form>
-</article>
+</div>
 {% endblock %}

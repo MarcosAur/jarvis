@@ -2,45 +2,9 @@
 
 {% block title %}Job #{{ job.id }} — AI Pipeline{% endblock %}
 
+{% block main_container_class %}max-w-[1440px] mx-auto px-6 py-6{% endblock %}
+
 {% block content %}
+{% set standalone_detail = true %}
 {% include "jobs/_detail_content.html" %}
-
-<article>
-  <header>
-    <h3>Histórico de Eventos do Card ({{ card.title }})</h3>
-  </header>
-
-  <table role="grid">
-    <thead>
-      <tr>
-        <th>Data/Hora</th>
-        <th>Tipo do Evento</th>
-        <th>De</th>
-        <th>Para</th>
-        <th>Retrabalho?</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for ev in card_events %}
-        <tr>
-          <td>{{ ev.created_at.strftime('%d/%m/%Y %H:%M:%S') }}</td>
-          <td><span class="badge">{{ ev.event_type }}</span></td>
-          <td>{{ ev.from_column or '—' }}</td>
-          <td><strong>{{ ev.to_column or '—' }}</strong></td>
-          <td>
-            {% if ev.is_rework %}
-              <span class="badge badge-rework">Sim (Retrabalho)</span>
-            {% else %}
-              Não
-            {% endif %}
-          </td>
-        </tr>
-      {% else %}
-        <tr>
-          <td colspan="5" style="text-align: center; color: var(--pico-muted-color);">Nenhum evento registrado ainda.</td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</article>
 {% endblock %}

@@ -16,7 +16,9 @@ def list_columns(
     uow: SqlAlchemyUnitOfWork = Depends(get_uow),
 ):
     with uow:
+        settings = uow.settings.get()
         raw_cols = uow.columns.list_all()
+        active_agents = uow.agents.list_all(active_only=True)
         columns = []
         for c in raw_cols:
             agent = uow.agents.get_by_id(c.agent_id) if c.agent_id else None
@@ -30,12 +32,19 @@ def list_columns(
                 "active": c.active,
             })
 
+    ai_columns_count = sum(1 for col in columns if col["agent"] is not None)
+    manual_columns_count = len(columns) - ai_columns_count
+
     return templates.TemplateResponse(
         request=request,
         name="columns/list.html",
         context={
             "active_page": "columns",
             "columns": columns,
+            "agents": active_agents,
+            "ai_columns_count": ai_columns_count,
+            "manual_columns_count": manual_columns_count,
+            "active_provider": settings.active_project_provider,
             "alert_message": alert_message,
             "alert_type": alert_type,
         },

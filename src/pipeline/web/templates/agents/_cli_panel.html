@@ -1,0 +1,55 @@
+<div id="cli-status-panel" class="bg-surface-container-low border border-[#1e293b] p-5 rounded-xl shadow-[0_6px_20px_rgba(0,0,0,0.25)] flex flex-col gap-4">
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <span class="material-symbols-outlined text-primary text-[20px]">terminal</span>
+      <h2 class="text-[15px] font-semibold text-on-surface m-0">CLIs no Ambiente Local</h2>
+    </div>
+    <span class="font-mono text-[10px] font-medium px-2 py-0.5 rounded bg-emerald-500/15 text-tertiary border border-emerald-500/30">
+      {{ installed_clis }} {{ 'Pronta' if installed_clis == 1 else 'Prontas' }}
+    </span>
+  </div>
+
+  <p class="text-[12px] text-on-surface-variant/85 m-0 leading-relaxed">
+    Binários reconhecidos automaticamente através do <code class="font-mono text-[11px] text-primary bg-surface-container px-1 py-0.5 rounded">$PATH</code> do ambiente local:
+  </p>
+
+  <div class="flex flex-col gap-2">
+    {% for cli in cli_providers %}
+      <div class="flex items-center justify-between gap-2 p-2.5 rounded-lg bg-surface-container-high/80 hover:bg-surface-container-highest/80 border border-[#222f4c]/70 transition-colors">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <span class="w-2 h-2 rounded-full shrink-0 {% if cli.installed %}bg-tertiary shadow-[0_0_8px_rgba(78,222,163,0.6)]{% else %}bg-outline{% endif %}"></span>
+          <div class="flex flex-col min-w-0">
+            <span class="text-[12px] font-medium text-on-surface truncate">{{ cli.name }}</span>
+            <span class="font-mono text-[10px] text-outline truncate" title="{{ cli.binary_path or ('Binário não encontrado: ' ~ cli.binary_name) }}">
+              {{ cli.binary_path if cli.binary_path else ('bin/' ~ cli.binary_name) }} • {{ cli.models_count }} modelos
+            </span>
+          </div>
+        </div>
+
+        {% if cli.is_default %}
+          <span class="font-mono text-[10px] px-2 py-0.5 rounded bg-[#2563eb] text-white font-semibold shrink-0">Padrão</span>
+        {% elif cli.installed %}
+          <span class="font-mono text-[10px] text-tertiary bg-surface-container border border-emerald-500/25 px-2 py-0.5 rounded shrink-0">Ativo</span>
+        {% else %}
+          <span class="font-mono text-[10px] text-outline bg-surface-container border border-[#273647] px-2 py-0.5 rounded shrink-0">Standby</span>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="pt-1 flex flex-col gap-2">
+    <button type="button"
+            hx-post="/agents/scan-clis"
+            hx-target="#cli-status-panel"
+            hx-swap="outerHTML"
+            class="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-surface-container hover:bg-surface-container-high border border-[#222f4c] text-on-surface-variant hover:text-on-surface font-mono text-[11px] transition-colors cursor-pointer">
+      <span class="material-symbols-outlined text-[15px]">refresh</span>
+      <span>Reescanear binários do PATH</span>
+    </button>
+    {% if scan_completed is defined and scan_completed %}
+      <div class="text-center font-mono text-[10px] text-tertiary">
+        Varredura concluída: {{ installed_clis }} de {{ cli_providers | length }} CLIs disponíveis.
+      </div>
+    {% endif %}
+  </div>
+</div>

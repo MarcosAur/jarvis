@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"inverse-on-surface":"#233143","surface-container":"#122131","on-tertiary-fixed-variant":"#005236","background":"#051424","primary":"#adc6ff","surface-dim":"#051424","secondary-fixed":"#e9ddff","surface-tint":"#adc6ff","on-tertiary":"#003824","on-surface-variant":"#c2c6d6","surface-bright":"#2c3a4c","on-primary-fixed-variant":"#004395","tertiary":"#4edea3","secondary":"#d0bcff","surface-container-high":"#1c2b3c","on-secondary":"#3c0091","on-secondary-fixed-variant":"#5516be","tertiary-fixed":"#6ffbbe","tertiary-fixed-dim":"#4edea3","on-secondary-fixed":"#23005c","surface-variant":"#273647","on-error":"#690005","inverse-surface":"#d4e4fa","on-primary-container":"#00285d","surface":"#051424","on-tertiary-fixed":"#002113","surface-container-low":"#0d1c2d","on-secondary-container":"#c4abff","error-container":"#93000a","on-background":"#d4e4fa","outline-variant":"#424754","primary-fixed-dim":"#adc6ff","secondary-fixed-dim":"#d0bcff","on-primary":"#002e6a","surface-container-highest":"#273647","primary-container":"#4d8eff","on-error-container":"#ffdad6","tertiary-container":"#00a572","on-tertiary-container":"#00311f","secondary-container":"#571bc1","inverse-primary":"#005ac2","on-surface":"#d4e4fa","outline":"#8c909f","error":"#ffb4ab","primary-fixed":"#d8e2ff","on-primary-fixed":"#001a42","surface-container-lowest":"#010f1f"},borderRadius:{DEFAULT:"0.125rem",lg:"0.25rem",xl:"0.5rem",full:"0.75rem"},spacing:{"margin-desktop":"1.5rem","space-sm":"0.5rem","space-lg":"1.25rem","space-md":"0.75rem","space-xl":"2rem",margin:"1rem","space-xs":"0.25rem","gutter-desktop":"1.25rem",gutter:"1rem"},fontFamily:{"body-sm":["Geist"],"label-code-lg":["JetBrains Mono"],"headline-md":["Geist"],"headline-lg":["Geist"],"body-lg":["Geist"],"headline-xl-mobile":["Geist"],"label-code-sm":["JetBrains Mono"],"label-code-md":["JetBrains Mono"],"headline-xl":["Geist"],"headline-sm":["Geist"],"body-md":["Geist"]},fontSize:{"body-sm":["12px",{lineHeight:"18px",fontWeight:"400"}],"label-code-lg":["13px",{lineHeight:"18px",fontWeight:"500"}],"headline-md":["18px",{lineHeight:"26px",letterSpacing:"-0.015em",fontWeight:"500"}],"headline-lg":["24px",{lineHeight:"32px",letterSpacing:"-0.02em",fontWeight:"600"}],"body-lg":["15px",{lineHeight:"24px",fontWeight:"400"}],"headline-xl-mobile":["24px",{lineHeight:"32px",letterSpacing:"-0.02em",fontWeight:"600"}],"label-code-sm":["10px",{lineHeight:"14px",letterSpacing:"0.04em",fontWeight:"500"}],"label-code-md":["11px",{lineHeight:"16px",letterSpacing:"0.02em",fontWeight:"400"}],"headline-xl":["32px",{lineHeight:"40px",letterSpacing:"-0.025em",fontWeight:"600"}],"headline-sm":["15px",{lineHeight:"22px",letterSpacing:"-0.01em",fontWeight:"500"}],"body-md":["13px",{lineHeight:"20px",fontWeight:"400"}]}}}}</script></head><body class="bg-background font-body-md text-on-surface antialiased min-h-screen selection:bg-primary-container selection:text-on-primary-container"><header class="fixed top-0 left-0 right-0 z-50 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.35)]"><div class="h-14 w-full px-margin-desktop flex items-center justify-between gap-gutter"><div class="flex items-center gap-space-lg"><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center text-primary shadow-[0_0_12px_rgba(77,142,255,0.2)]"><span class="material-symbols-outlined text-[20px]">smart_toy</span></div><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight font-semibold">AI Pipeline</span></div></div><div class="h-4 w-[1px] bg-surface-variant hidden md:block"></div><div class="hidden md:flex items-center gap-space-xs bg-surface-container px-space-sm py-1 rounded-md text-on-surface-variant font-label-code-sm text-label-code-sm font-mono"><span class="material-symbols-outlined text-primary text-[15px]">folder_code</span><span class="text-on-surface font-medium truncate max-w-xs">Estante Web API e front</span></div></div><nav class="hidden lg:flex items-center gap-1 bg-surface-container-lowest p-1 rounded-xl"><a class="px-space-md py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="quadro-kanban" href="#">Quadro Kanban</a><a class="px-space-md py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="projetos" href="#">Projetos</a><a class="px-space-md py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="agentes-de-ia" href="#">Agentes de IA</a><a class="px-space-md py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="jobs-e-execucoes" href="#">Jobs &amp; Execuções</a><a class="px-space-md py-1.5 rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="configuracoes" href="#">Configurações</a></nav><div class="flex items-center gap-space-md"><div class="hidden sm:flex items-center gap-1 px-space-xs py-0.5 rounded bg-surface-container-low text-tertiary font-label-code-sm text-label-code-sm font-mono"><span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse"></span><span>Sync Ativo</span></div><button class="flex items-center gap-space-xs px-space-md py-1.5 rounded-lg bg-primary-container text-on-primary font-headline-sm text-body-sm font-medium hover:brightness-110 shadow-sm transition-all" type="button"><span class="material-symbols-outlined text-[16px]">bolt</span><span class="hidden sm:inline">Rodar Pipeline</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full bg-surface min-h-[calc(100vh-64px)] pt-14"><div class="flex flex-col w-full">
+<!-- Content Container with strict spatial scale -->
+<div class="w-full max-w-[1580px] mx-auto px-margin-desktop py-space-xl flex flex-col gap-space-xl">
+<!-- 1. Header da Página -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-lg bg-surface-container-lowest/80 p-space-lg rounded-xl shadow-sm backdrop-blur-md">
+<div class="flex flex-col gap-space-xs max-w-3xl">
+<div class="flex items-center gap-space-sm">
+<span class="px-space-sm py-0.5 rounded bg-surface-container-high text-primary font-label-code-sm text-label-code-sm uppercase tracking-wider font-mono">
+            CRUD 3 • ORCHESTRATION PIPELINE • SOLID Open/Closed Principle
+          </span>
+<span class="inline-flex items-center gap-1 text-tertiary font-label-code-sm text-label-code-sm font-mono">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse"></span>
+            6 Etapas Mapeadas
+          </span>
+</div>
+<h1 class="font-headline-xl text-headline-xl text-on-surface tracking-tight">
+          Colunas do Fluxo (Kanban)
+        </h1>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+          Defina a estrutura de etapas do quadro, mapeie agentes de IA autônomos ou intervenções humanas e estabeleça as rotas de transição e fallbacks de retrabalho com tolerância a falhas.
+        </p>
+</div>
+<div class="flex items-center gap-space-sm self-start md:self-auto shrink-0">
+<button class="flex items-center gap-space-xs px-space-md py-2 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors font-headline-sm text-body-sm font-medium shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px] text-primary">route</span>
+<span>Simular Fluxo da Pipeline</span>
+</button>
+<button class="flex items-center gap-space-xs px-space-md py-2 rounded-lg bg-primary-container text-on-primary hover:brightness-110 transition-all font-headline-sm text-body-sm font-medium shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>Nova Coluna</span>
+</button>
+</div>
+</div>
+<!-- 2. Diagrama Visual / Visual Stepper da Esteira (Workflow Visualizer) -->
+<div class="flex flex-col gap-space-md bg-surface-container-low p-space-lg rounded-xl shadow-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">account_tree</span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold">Visual Stepper da Esteira Autônoma</span>
+</div>
+<div class="flex items-center gap-space-md font-label-code-sm text-label-code-sm font-mono text-on-surface-variant">
+<span class="flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-secondary"></span> 2 Agentes IA
+          </span>
+<span class="flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-outline"></span> 4 Gates Manuais
+          </span>
+</div>
+</div>
+<!-- Linear Stepper Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-space-sm relative">
+<!-- Step 1: Todo -->
+<div class="flex flex-col p-space-md bg-surface-container rounded-lg shadow-sm relative group hover:bg-surface-container-high transition-all">
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-label-code-sm text-label-code-sm text-outline font-mono">01</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-high text-on-surface-variant font-label-code-sm text-label-code-sm font-mono">MANUAL</span>
+</div>
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold">Todo</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Triagem &amp; Backlog</p>
+<div class="mt-space-md pt-space-xs flex items-center justify-between font-label-code-sm text-label-code-sm text-primary font-mono">
+<span>Para: to_architect</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</div>
+</div>
+<!-- Step 2: To architect (AI AGENT) -->
+<div class="flex flex-col p-space-md bg-surface-container-high rounded-lg shadow-sm relative group hover:bg-surface-variant transition-all ring-1 ring-secondary/30">
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-label-code-sm text-label-code-sm text-secondary font-mono">02</span>
+<span class="px-1.5 py-0.5 rounded bg-secondary-container/40 text-secondary font-label-code-sm text-label-code-sm font-mono flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span> AGENTE IA
+            </span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold">To architect</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary font-mono mt-1 truncate">Arquiteto Gemini</p>
+<div class="mt-space-md pt-space-xs flex items-center justify-between font-label-code-sm text-label-code-sm text-tertiary font-mono">
+<span>Para: architected</span>
+<span class="material-symbols-outlined text-[16px]">bolt</span>
+</div>
+</div>
+<!-- Step 3: Architected -->
+<div class="flex flex-col p-space-md bg-surface-container rounded-lg shadow-sm relative group hover:bg-surface-container-high transition-all">
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-label-code-sm text-label-code-sm text-outline font-mono">03</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-high text-on-surface-variant font-label-code-sm text-label-code-sm font-mono">REVISÃO</span>
+</div>
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold">Architected</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Tech Lead Approval</p>
+<div class="mt-space-md pt-space-xs flex items-center justify-between font-label-code-sm text-label-code-sm text-primary font-mono">
+<span>Para: in_progress</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</div>
+</div>
+<!-- Step 4: In Progress (AI AGENT) -->
+<div class="flex flex-col p-space-md bg-surface-container-high rounded-lg shadow-sm relative group hover:bg-surface-variant transition-all ring-1 ring-secondary/30">
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-label-code-sm text-label-code-sm text-secondary font-mono">04</span>
+<span class="px-1.5 py-0.5 rounded bg-secondary-container/40 text-secondary font-label-code-sm text-label-code-sm font-mono flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span> AGENTE IA
+            </span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold">In Progress</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary font-mono mt-1 truncate">Desenvolvedor</p>
+<div class="mt-space-md pt-space-xs flex items-center justify-between font-label-code-sm text-label-code-sm text-tertiary font-mono">
+<span>Para: homolog</span>
+<span class="material-symbols-outlined text-[16px]">bolt</span>
+</div>
+</div>
+<!-- Step 5: Homolog -->
+<div class="flex flex-col p-space-md bg-surface-container rounded-lg shadow-sm relative group hover:bg-surface-container-high transition-all">
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-label-code-sm text-label-code-sm text-outline font-mono">05</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-high text-on-surface-variant font-label-code-sm text-label-code-sm font-mono">QA / E2E</span>
+</div>
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold">Homolog</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Validação Manual</p>
+<div class="mt-space-md pt-space-xs flex items-center justify-between font-label-code-sm text-label-code-sm text-primary font-mono">
+<span>Para: done</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</div>
+</div>
+<!-- Step 6: Done -->
+<div class="flex flex-col p-space-md bg-surface-container rounded-lg shadow-sm relative group hover:bg-surface-container-high transition-all">
+<div class="flex items-center justify-between mb-space-xs">
+<span class="font-label-code-sm text-label-code-sm text-tertiary font-mono">06</span>
+<span class="px-1.5 py-0.5 rounded bg-tertiary-container/30 text-tertiary font-label-code-sm text-label-code-sm font-mono">FINAL</span>
+</div>
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold">Done</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Merge &amp; Deploy</p>
+<div class="mt-space-md pt-space-xs flex items-center justify-between font-label-code-sm text-label-code-sm text-tertiary font-mono">
+<span>Concluído</span>
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+</div>
+</div>
+</div>
+</div>
+<!-- 3. Tabela de Configuração das Colunas -->
+<div class="flex flex-col bg-surface-container-lowest rounded-xl overflow-hidden shadow-md">
+<!-- Table Header Bar -->
+<div class="px-space-lg py-space-md bg-surface-container-low flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold">Mapeamento e Orquestração de Colunas</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container text-primary font-label-code-sm text-label-code-sm font-mono">
+            6 Registros
+          </span>
+</div>
+<div class="flex items-center gap-space-sm text-on-surface-variant font-label-code-sm text-label-code-sm font-mono">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-tertiary">sync</span>
+            Sincronizado com GitHub Project ID: #10842
+          </span>
+</div>
+</div>
+<!-- High Density Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container text-on-surface-variant font-label-code-sm text-label-code-sm font-mono uppercase tracking-wider">
+<th class="py-space-md px-space-md w-12 text-center">#</th>
+<th class="py-space-md px-space-md">Nome da Coluna</th>
+<th class="py-space-md px-space-md">Identificador (Slug)</th>
+<th class="py-space-md px-space-md">Agente Responsável</th>
+<th class="py-space-md px-space-md">Próxima Coluna</th>
+<th class="py-space-md px-space-md">Política de Gate</th>
+<th class="py-space-md px-space-md">Status</th>
+<th class="py-space-md px-space-md text-right">Ações</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-variant/40 font-body-sm text-body-sm">
+<!-- Row 1: Todo -->
+<tr class="hover:bg-surface-container/60 transition-colors group">
+<td class="py-space-md px-space-md text-center font-label-code-md text-label-code-md font-mono text-outline">
+<div class="flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-outline opacity-0 group-hover:opacity-100 cursor-grab">drag_indicator</span>
+<span>1</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-space-xs font-headline-sm text-body-sm font-medium text-on-surface">
+<span class="material-symbols-outlined text-[18px] text-outline">checklist</span>
+<span>Todo</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<code class="px-space-xs py-0.5 rounded bg-surface-container text-primary font-label-code-sm text-label-code-sm font-mono">
+                  todo
+                </code>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1.5 px-space-sm py-1 rounded bg-surface-container text-on-surface-variant font-label-code-sm text-label-code-sm font-mono">
+<span class="material-symbols-outlined text-[14px]">person</span>
+                  Manual / Humano
+                </span>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1 font-label-code-sm text-label-code-sm font-mono text-primary">
+<span class="text-outline">→</span> To architect
+                </span>
+</td>
+<td class="py-space-md px-space-md">
+<span class="text-on-surface-variant font-label-code-sm text-label-code-sm font-mono">
+                  Triagem manual
+                </span>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1 px-space-xs py-0.5 rounded bg-tertiary-container/20 text-tertiary font-label-code-sm text-label-code-sm font-mono">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                  Ativa
+                </span>
+</td>
+<td class="py-space-md px-space-md text-right">
+<div class="inline-flex items-center gap-1">
+<button class="px-space-xs py-1 rounded bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-label-code-sm text-label-code-sm font-mono transition-colors" type="button">
+                    Editar
+                  </button>
+<button class="px-space-xs py-1 rounded bg-surface-container text-on-surface-variant hover:text-primary hover:bg-surface-container-high font-label-code-sm text-label-code-sm font-mono transition-colors" type="button">
+                    Pausar
+                  </button>
+<button class="px-space-xs py-1 rounded bg-surface-container text-on-surface-variant hover:text-error hover:bg-surface-container-high font-label-code-sm text-label-code-sm font-mono transition-colors" type="button">
+                    Excluir
+                  </button>
+</div>
+</td>
+</tr>
+<!-- Row 2: To architect -->
+<tr class="hover:bg-surface-container/60 transition-colors group bg-surface-container-low/30">
+<td class="py-space-md px-space-md text-center font-label-code-md text-label-code-md font-mono text-outline">
+<div class="flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-outline opacity-0 group-hover:opacity-100 cursor-grab">drag_indicator</span>
+<span>2</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-space-xs font-headline-sm text-body-sm font-medium text-on-surface">
+<span class="material-symbols-outlined text-[18px] text-secondary">architecture</span>
+<span>To architect</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<code class="px-space-xs py-0.5 rounded bg-surface-container text-primary font-label-code-sm text-label-code-sm font-mono">
+                  to_architect
+                </code>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col gap-0.5">
+<span class="inline-flex items-center gap-1.5 px-space-sm py-1 rounded bg-secondary-container/30 text-secondary font-label-code-sm text-label-code-sm font-mono w-max">
+<span class="material-symbols-outlined text-[14px]">smart_toy</span>
+                    🤖 Arquiteto Gemini
+                  </span>
+<span class="text-on-surface-variant/80 font-label-code-sm text-label-code-sm font-mono pl-1">
+                    agy / claude-sonnet-5-5-low
+                  </span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1 font-label-code-sm text-label-code-sm font-mono text-tertiary">
+<span class="text-outline">→</span> Architected
+                </span>
+</td>
+<td class="py-space-md px-space-md">
+<span class="text-secondary font-label-code-sm text-label-code-sm font-mono">
+                  Spec OpenAPI + PR
+                </span>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1 px-space-xs py-0.5 rounded bg-tertiary-container/20 text-tertiary font-label-code-sm text-label-code-sm font-mono">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                  Ativa
+                </span>
+</td>
+<td class="py-space-md px-space-md text-right">
+<div class="inline-flex items-center gap-1">
+<button class="px-space-xs py-1 rounded bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-label-code-sm text-label-code-sm font-mono transition-colors" type="button">
+                    Editar
+                  </button>
+<button class="px-space-xs py-1 rounded bg-surface-container text-on-surface-variant hover:text-primary hover:bg-surface-container-high font-label-code-sm text-label-code-sm font-mono transition-colors" type="button">
+                    Pausar
+                  </button>
+<button class="px-space-xs py-1 rounded bg-surface-container text-on-surface-variant hover:text-error hover:bg-surface-container-high font-label-code-sm text-label-code-sm font-mono transition-colors" type="button">
+                    Excluir
+                  </button>
+</div>
+</td>
+</tr>
+<!-- Row 3: Architected -->
+<tr class="hover:bg-surface-container/60 transition-colors group">
+<td class="py-space-md px-space-md text-center font-label-code-md text-label-code-md font-mono text-outline">
+<div class="flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-outline opacity-0 group-hover:opacity-100 cursor-grab">drag_indicator</span>
+<span>3</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-space-xs font-headline-sm text-body-sm font-medium text-on-surface">
+<span class="material-symbols-outlined text-[18px] text-outline">verified_user</span>
+<span>Architected</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<code class="px-space-xs py-0.5 rounded bg-surface-container text-primary font-label-code-sm text-label-code-sm font-mono">
+                  architected
+                </code>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1.5 px-space-sm py-1 rounded bg-surface-container text-on-surface-variant font-label-code-sm text-label-code-sm font-mono">
+<span class="material-symbols-outlined text-[14px]">person</span>
+                  Manual / Humano
+                </span>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1 font-label-code-sm text-label-code-sm font-mono text-primary">
+<span class="text-outline">→</span> In Progress
+                </span>
+</td>
+<td class="py-space-md px-space-md">
+<span class="text-on-surface-variant font-label-code-sm text-label-code-sm font-mono">
+                  Aprovação humana
+                </span>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1 px-space-xs py-0.5 rounded bg-tertiary-container/20 text-tertiary font-label-code-sm text-label-code-sm font-mono">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                  Ativa
+                </span>
+</td>
+<td class="py-space-md px-space-md text-right">
+<div class="inline-flex items-center gap-1">
+<button class="px-space-xs py-1 rounded bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-label-code-sm text-label-code-sm font-mono transition-colors" type="button">
+                    Editar
+                  </button>
+<button class="px-space-xs py-1 rounded bg-surface-container text-on-surface-variant hover:text-primary hover:bg-surface-container-high font-label-code-sm text-label-code-sm font-mono transition-colors" type="button">
+                    Pausar
+                  </button>
+<button class="px-space-xs py-1 rounded bg-surface-container text-on-surface-variant hover:text-error hover:bg-surface-container-high font-label-code-sm text-label-code-sm font-mono transition-colors" type="button">
+                    Excluir
+                  </button>
+</div>
+</td>
+</tr>
+<!-- Row 4: In Progress -->
+<tr class="hover:bg-surface-container/60 transition-colors group bg-surface-container-low/30">
+<td class="py-space-md px-space-md text-center font-label-code-md text-label-code-md font-mono text-outline">
+<div class="flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-outline opacity-0 group-hover:opacity-100 cursor-grab">drag_indicator</span>
+<span>4</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-space-xs font-headline-sm text-body-sm font-medium text-on-surface">
+<span class="material-symbols-outlined text-[18px] text-secondary">terminal</span>
+<span>In Progress</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<code class="px-space-xs py-0.5 rounded bg-surface-container text-primary font-label-code-sm text-label-code-sm font-mono">
+                  in_progress
+                </code>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col gap-0.5">
+<span class="inline-flex items-center gap-1.5 px-space-sm py-1 rounded bg-secondary-container/30 text-secondary font-label-code-sm text-label-code-sm font-mono w-max">
+<span class="material-symbols-outlined text-[14px]">smart_toy</span>
+                    🤖 Desenvolvedor
+                  </span>
+<span class="text-on-surface-variant/80 font-label-code-sm text-label-code-sm font-mono pl-1">
+                    agy / gemini-3.8-flash-medium
+                  </span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1 font-label-code-sm text-label-code-sm font-mono text-tertiary">
+<span class="text-outline">→</span> Homolog
+                </span>
+</td>
+<td class="py-space-md px-space-md">
+<span class="text-tertiary font-label-code-sm text-label-code-sm font-mono">
+                  Build &amp; Testes 100%
+                </span>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1 px-space-xs py-0.5 rounded bg-tertiary-container/20 text-tertiary font-label-code-sm text-label-code-sm font-mono">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                  Ativa
+                </span>
+</td>
+<td class="py-space-md px-space-md text-right">
+<div class="inline-flex items-center gap-1">
+<button class="px-space-xs py-1 rounded bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-label-code-sm text-label-code-sm font-mono transition-colors" type="button">
+                    Editar
+                  </button>
+<button class="px-space-xs py-1 rounded bg-surface-container text-on-surface-variant hover:text-primary hover:bg-surface-container-high font-label-code-sm text-label-code-sm font-mono transition-colors" type="button">
+                    Pausar
+                  </button>
+<button class="px-space-xs py-1 rounded bg-surface-container text-on-surface-variant hover:text-error hover:bg-surface-container-high font-label-code-sm text-label-code-sm font-mono transition-colors" type="button">
+                    Excluir
+                  </button>
+</div>
+</td>
+</tr>
+<!-- Row 5: Homolog -->
+<tr class="hover:bg-surface-container/60 transition-colors group">
+<td class="py-space-md px-space-md text-center font-label-code-md text-label-code-md font-mono text-outline">
+<div class="flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-outline opacity-0 group-hover:opacity-100 cursor-grab">drag_indicator</span>
+<span>5</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-space-xs font-headline-sm text-body-sm font-medium text-on-surface">
+<span class="material-symbols-outlined text-[18px] text-outline">fact_check</span>
+<span>Homolog</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<code class="px-space-xs py-0.5 rounded bg-surface-container text-primary font-label-code-sm text-label-code-sm font-mono">
+                  homolog
+                </code>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1.5 px-space-sm py-1 rounded bg-surface-container text-on-surface-variant font-label-code-sm text-label-code-sm font-mono">
+<span class="material-symbols-outlined text-[14px]">person</span>
+                  Manual / Humano
+                </span>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1 font-label-code-sm text-label-code-sm font-mono text-primary">
+<span class="text-outline">→</span> Done
+                </span>
+</td>
+<td class="py-space-md px-space-md">
+<span class="text-on-surface-variant font-label-code-sm text-label-code-sm font-mono">
+                  Validação do usuário
+                </span>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1 px-space-xs py-0.5 rounded bg-tertiary-container/20 text-tertiary font-label-code-sm text-label-code-sm font-mono">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                  Ativa
+                </span>
+</td>
+<td class="py-space-md px-space-md text-right">
+<div class="inline-flex items-center gap-1">
+<button class="px-space-xs py-1 rounded bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-label-code-sm text-label-code-sm font-mono transition-colors" type="button">
+                    Editar
+                  </button>
+<button class="px-space-xs py-1 rounded bg-surface-container text-on-surface-variant hover:text-primary hover:bg-surface-container-high font-label-code-sm text-label-code-sm font-mono transition-colors" type="button">
+                    Pausar
+                  </button>
+<button class="px-space-xs py-1 rounded bg-surface-container text-on-surface-variant hover:text-error hover:bg-surface-container-high font-label-code-sm text-label-code-sm font-mono transition-colors" type="button">
+                    Excluir
+                  </button>
+</div>
+</td>
+</tr>
+<!-- Row 6: Done -->
+<tr class="hover:bg-surface-container/60 transition-colors group">
+<td class="py-space-md px-space-md text-center font-label-code-md text-label-code-md font-mono text-outline">
+<div class="flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-outline opacity-0 group-hover:opacity-100 cursor-grab">drag_indicator</span>
+<span>6</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-space-xs font-headline-sm text-body-sm font-medium text-tertiary">
+<span class="material-symbols-outlined text-[18px]">task_alt</span>
+<span>Done</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<code class="px-space-xs py-0.5 rounded bg-surface-container text-primary font-label-code-sm text-label-code-sm font-mono">
+                  done
+                </code>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1.5 px-space-sm py-1 rounded bg-surface-container text-on-surface-variant font-label-code-sm text-label-code-sm font-mono">
+<span class="material-symbols-outlined text-[14px]">person</span>
+                  Manual / Humano
+                </span>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1 font-label-code-sm text-label-code-sm font-mono text-outline italic">
+                  (Etapa Final)
+                </span>
+</td>
+<td class="py-space-md px-space-md">
+<span class="text-tertiary font-label-code-sm text-label-code-sm font-mono">
+                  Merge concluído
+                </span>
+</td>
+<td class="py-space-md px-space-md">
+<span class="inline-flex items-center gap-1 px-space-xs py-0.5 rounded bg-tertiary-container/20 text-tertiary font-label-code-sm text-label-code-sm font-mono">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                  Ativa
+                </span>
+</td>
+<td class="py-space-md px-space-md text-right">
+<div class="inline-flex items-center gap-1">
+<button class="px-space-xs py-1 rounded bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-label-code-sm text-label-code-sm font-mono transition-colors" type="button">
+                    Editar
+                  </button>
+<button class="px-space-xs py-1 rounded bg-surface-container text-on-surface-variant hover:text-primary hover:bg-surface-container-high font-label-code-sm text-label-code-sm font-mono transition-colors" type="button">
+                    Pausar
+                  </button>
+<button class="px-space-xs py-1 rounded bg-surface-container text-on-surface-variant hover:text-error hover:bg-surface-container-high font-label-code-sm text-label-code-sm font-mono transition-colors" type="button">
+                    Excluir
+                  </button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- 4. Painel Inferior de Regras de Fallback & Retrabalho -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-space-lg">
+<!-- Card 1: Mecanismo de Loop & Retrabalho -->
+<div class="flex flex-col gap-space-sm p-space-lg rounded-xl bg-surface-container-low shadow-sm">
+<div class="flex items-center gap-space-xs text-primary">
+<span class="material-symbols-outlined text-[20px]">restart_alt</span>
+<span class="font-headline-sm text-headline-sm font-semibold">Fallback &amp; Loop de Retrabalho</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+          Se a validação em <strong class="text-on-surface">Homolog</strong> falhar, o card retrocede automaticamente para <strong class="text-on-surface">In Progress</strong>, acionando o Desenvolvedor com o relatório de erros e diff estruturado.
+        </p>
+<div class="mt-auto pt-space-xs flex items-center justify-between font-label-code-sm text-label-code-sm font-mono bg-surface-container px-space-sm py-1.5 rounded">
+<span class="text-on-surface-variant">Badge Injetado:</span>
+<span class="text-secondary">⚡ Retrabalho (+1x)</span>
+</div>
+</div>
+<!-- Card 2: Tolerância de Falhas & Pausa Automática -->
+<div class="flex flex-col gap-space-sm p-space-lg rounded-xl bg-surface-container-low shadow-sm">
+<div class="flex items-center gap-space-xs text-secondary">
+<span class="material-symbols-outlined text-[20px]">shield</span>
+<span class="font-headline-sm text-headline-sm font-semibold">Tolerância Máxima &amp; Safety Gate</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+          Limite configurado para <strong class="text-on-surface">3 ciclos consecutivos</strong>. Atingido o limite, o orquestrador bloqueia o avanço da pipeline, dispara notificação de SOS e requer intervenção humana imediata.
+        </p>
+<div class="mt-auto pt-space-xs flex items-center justify-between font-label-code-sm text-label-code-sm font-mono bg-surface-container px-space-sm py-1.5 rounded">
+<span class="text-on-surface-variant">Threshold SLA:</span>
+<span class="text-tertiary">3 tentativas máx.</span>
+</div>
+</div>
+<!-- Card 3: Arquitetura SOLID e Extensibilidade -->
+<div class="flex flex-col gap-space-sm p-space-lg rounded-xl bg-surface-container-low shadow-sm">
+<div class="flex items-center gap-space-xs text-tertiary">
+<span class="material-symbols-outlined text-[20px]">hub</span>
+<span class="font-headline-sm text-headline-sm font-semibold">SOLID Ports &amp; Adapters</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+          Cada coluna implementa o contrato <code class="text-primary font-mono font-label-code-sm text-label-code-sm">IPipelineStep</code>. Novos agentes e providers de IA podem ser acoplados sem modificar os manipuladores de estado do Kanban.
+        </p>
+<div class="mt-auto pt-space-xs flex items-center justify-between font-label-code-sm text-label-code-sm font-mono bg-surface-container px-space-sm py-1.5 rounded">
+<span class="text-on-surface-variant">Design Pattern:</span>
+<span class="text-primary">State + Chain of Resp.</span>
+</div>
+</div>
+</div>
+<!-- Micro Rodapé Interno da Tela -->
+<div class="flex flex-col sm:flex-row items-center justify-between gap-space-sm pt-space-md text-on-surface-variant font-label-code-sm text-label-code-sm font-mono">
+<span>Pipeline de Desenvolvimento Automático com IA • Arquitetura Aberta (SOLID Ports &amp; Adapters)</span>
+<span class="text-outline">Schema ID: nex-col-v3.0.4 • Hash: 8f9b21a</span>
+</div>
+</div>
+</div></main><footer class="w-full bg-surface-container-lowest py-space-md shadow-[0_-1px_6px_rgba(0,0,0,0.2)]"><div class="w-full px-margin-desktop flex flex-col md:flex-row items-center justify-between gap-space-sm"><div class="flex items-center gap-space-md font-label-code-sm text-label-code-sm text-outline font-mono"><span>AI Pipeline Nexus Engine</span><span>•</span><span>Protocol 2.4.0-rc</span><span>•</span><span class="text-tertiary">Nexus Fleet Healthy (99.98% SLA)</span></div><div class="font-label-code-sm text-label-code-sm text-on-surface-variant font-mono">© 2025 Autonomous Software Fleet. High-Velocity Dispatch.</div></div></footer>
+</body></html>

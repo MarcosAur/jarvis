@@ -359,3 +359,83 @@ def test_sqlite_init_db_migrates_legacy_jobs_table(tmp_path):
     conn.close()
     assert "celery_task_id" in cols
     assert "process_status" in cols
+
+
+def test_nexus_kanban_board_and_master_detail_logs_ui():
+    uid = uuid.uuid4().hex[:6]
+    fake_dispatcher = FakeJobDispatcher(broker_available=True, workers_online=1)
+    app.dependency_overrides[get_job_dispatcher] = lambda: fake_dispatcher
+
+    try:
+        with SqlAlchemyUnitOfWork() as uow:
+            proj = uow.projects.create(
+                project_key=f"nexus-ui-{uid}",
+                name=f"Projeto Nexus {uid}",
+                local_path="/tmp",
+                active=True,
+            )
+            card = uow.cards.create(
+                project_id=proj.id,
+                remote_id=f"n-{uid}",
+                title=f"Implementar Telemetry {uid}",
+                body="Descrição do card no Kanban",
+                column_name="To architect",
+                issue_number=42,
+            )
+            uow.cards.update(card.id, rework_count=2)
+            col = uow.columns.get_by_identifier("to_architect")
+            job = uow.jobs.create(
+                project_id=proj.id,
+                card_id=card.id,
+                flow_column_id=col.id,
+                agent_id=col.agent_id,
+                cli_provider_snapshot="agy",
+                model_id_snapshot="gemini-4-argon-medium",
+                target_column_snapshot="Architected",
+                state="running",
+                celery_task_id=f"task-nexus-{uid}",
+                process_status="Executando agente 'Arquiteto Gemini'",
+            )
+            uow.events.create(
+                card_id=card.id,
+                event_type="column_changed",
+                from_column="Architected",
+                to_column="To architect",
+                is_rework=True,
+            )
+            uow.commit()
+            proj_id = proj.id
+            card_id = card.id
+            job_id = job.id
+
+        client = TestClient(app)
+
+        # 1. Kanban Board renders Stitch Nexus UI + live partial
+        resp_board = client.get(f"/projects/{proj_id}/board")
+        assert resp_board.status_code == 200
+        assert f"Projeto Nexus {uid}" in resp_board.text
+        assert f"Implementar Telemetry {uid}" in resp_board.text
+        assert f"Executando Job #{job_id}" in resp_board.text
+        assert f"/projects/{proj_id}/board/partial" in resp_board.text
+        assert "CELERY CONECTADO" in resp_board.text
+
+        resp_board_partial = client.get(f"/projects/{proj_id}/board/partial")
+        assert resp_board_partial.status_code == 200
+        assert "Executando agente" in resp_board_partial.text
+
+        # 2. Jobs Master-Detail & Logs Inspector
+        resp_jobs = client.get(f"/jobs?project_id={proj_id}&selected_job_id={job_id}")
+        assert resp_jobs.status_code == 200
+        assert "Fila de Execuções" in resp_jobs.text
+        assert "Detalhes da Execução" in resp_jobs.text
+        assert "Resumo / Saída do Agente" in resp_jobs.text
+        assert "Logs do Processo &amp; Celery" in resp_jobs.text
+        assert "Eventos do Card (1)" in resp_jobs.text
+        assert f"task-nexus-{uid}" in resp_jobs.text
+
+        # 3. Card history view works cleanly
+        resp_card = client.get(f"/cards/{card_id}")
+        assert resp_card.status_code == 200
+        assert "Histórico do Card" in resp_card.text
+    finally:
+        app.dependency_overrides.clear()

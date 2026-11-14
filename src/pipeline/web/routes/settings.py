@@ -4,6 +4,7 @@ from fastapi.templating import Jinja2Templates
 from pipeline.adapters.db.uow import SqlAlchemyUnitOfWork
 from pipeline.application.model_catalog_service import ModelCatalogService
 from pipeline.bootstrap import cli_registry, project_registry
+from pipeline.config import config
 from pipeline.web.dependencies import get_model_catalog_service, get_uow
 
 router = APIRouter(prefix="/settings", tags=["settings"])
@@ -39,6 +40,10 @@ def get_settings(
             "provider_settings": settings.provider_settings or {},
             "cli_providers": cli_providers,
             "project_providers": project_providers,
+            "cli_timeout_seconds": config.CLI_TIMEOUT_SECONDS,
+            "celery_interval_seconds": config.CELERY_PIPELINE_INTERVAL_SECONDS,
+            "celery_soft_timeout_seconds": config.celery_soft_time_limit,
+            "celery_hard_timeout_seconds": config.celery_time_limit,
             "alert_message": alert_message,
             "alert_type": alert_type,
         },

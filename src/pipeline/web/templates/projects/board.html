@@ -2,72 +2,109 @@
 
 {% block title %}Quadro: {{ project.name }} — AI Pipeline{% endblock %}
 
+{% block main_container_class %}w-full{% endblock %}
+
 {% block content %}
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
-  <div>
-    <h2>Quadro Espelhado: {{ project.name }}</h2>
-    <p>Chave: <code>{{ project.project_key }}</code> &bull; Repositório: <code>{{ project.local_path }}</code></p>
-  </div>
-  <div style="display: flex; gap: 0.5rem;">
-    <form method="post" action="/projects/{{ project.id }}/run" style="margin: 0;">
-      <button type="submit" style="margin: 0; background-color: #2e7d32; border-color: #2e7d32; color: #fff;">▶ Rodar Pipeline Agora</button>
-    </form>
-    <a href="/projects" role="button" class="secondary outline" style="margin: 0;">Voltar</a>
-  </div>
-</div>
-
-<div class="kanban-board">
-  {% for col in columns %}
-    {% set col_cards = cards_by_column.get(col.column_name.strip().lower(), []) %}
-    <div class="kanban-col">
-      <div class="kanban-col-header">
-        <div>
-          <span>{{ col.column_name }}</span>
-          {% if col.agent %}
-            <br><small style="font-weight: normal; color: var(--pico-primary);">🤖 {{ col.agent.name }}</small>
-          {% endif %}
+<div class="flex flex-col w-full">
+  <!-- Project Info & Command Sub-header Bar -->
+  <div class="w-full bg-[#070d17] border-b border-[#1e293b] px-6 py-3.5 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+    <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 min-w-0">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <div class="w-7 h-7 rounded-md bg-[#0f172a] border border-[#334155] flex items-center justify-center text-[#60a5fa] shrink-0">
+          <span class="material-symbols-outlined text-[17px]">view_kanban</span>
         </div>
-        <span class="badge">{{ col_cards|length }}</span>
+        <h1 class="text-[16px] font-semibold text-white tracking-tight truncate">{{ project.name }}</h1>
       </div>
-
-      <div class="kanban-col-cards">
-        {% for card in col_cards %}
-          <div class="kanban-card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
-              <span class="badge badge-info">
-                {% if card.issue_number %}#{{ card.issue_number }}{% else %}Card{% endif %}
-              </span>
-              {% if card.rework_count > 0 %}
-                <span class="badge badge-rework" title="Retrabalho: voltou {{ card.rework_count }}x para arquitetura">
-                  ↺ Retrabalho ({{ card.rework_count }})
-                </span>
-              {% endif %}
-            </div>
-
-            <div class="kanban-card-title">
-              {% if card.url %}
-                <a href="{{ card.url }}" target="_blank" rel="noopener">{{ card.title }}</a>
-              {% else %}
-                {{ card.title }}
-              {% endif %}
-            </div>
-
-            {% if card.body %}
-              <div class="kanban-card-body">{{ card.body }}</div>
-            {% endif %}
-
-            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; margin-top: 0.5rem; color: var(--pico-muted-color);">
-              <span>Visto: {{ card.last_seen_at.strftime('%d/%m %H:%M') if card.last_seen_at else '' }}</span>
-              <a href="/cards/{{ card.id }}" style="font-size: 0.75rem;">Histórico &rarr;</a>
-            </div>
-          </div>
+      <div class="flex items-center gap-2 flex-wrap font-mono text-[11px]">
+        <span class="px-2 py-0.5 rounded border border-[#1e293b] bg-[#0c1524] text-[#94a3b8] flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[13px] text-[#38bdf8]">alt_route</span>
+          {{ active_provider_name }}
+        </span>
+        <span class="px-2 py-0.5 rounded border border-[#1e293b] bg-[#0c1524] text-[#64748b] hidden md:inline-flex items-center gap-1 max-w-[300px] truncate" title="{{ project.local_path }}">
+          <span class="material-symbols-outlined text-[12px] text-[#64748b]">terminal</span>
+          <span class="truncate">{{ project.local_path }}</span>
+        </span>
+        {% if worker_health and worker_health.broker_available and worker_health.workers_online > 0 %}
+          <span class="px-2 py-0.5 rounded border border-[#059669]/40 bg-[#064e3b]/30 text-[#34d399] flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#10b981] animate-pulse"></span>
+            Celery Ativo ({{ worker_health.workers_online }})
+          </span>
+        {% elif worker_health and worker_health.broker_available %}
+          <span class="px-2 py-0.5 rounded border border-[#d97706]/40 bg-[#78350f]/30 text-[#fcd34d] flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#f59e0b]"></span>
+            Broker OK • Sem Worker
+          </span>
         {% else %}
-          <div style="text-align: center; color: var(--pico-muted-color); font-size: 0.85rem; padding: 2rem 0;">
-            Vazio
-          </div>
-        {% endfor %}
+          <span class="px-2 py-0.5 rounded border border-[#ef4444]/40 bg-[#7f1d1d]/30 text-[#fca5a5] flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#ef4444]"></span>
+            Celery Offline
+          </span>
+        {% endif %}
       </div>
     </div>
-  {% endfor %}
+
+    <div class="flex items-center gap-3 flex-wrap justify-between xl:justify-end">
+      <div id="board-kpis" class="flex items-center gap-2 font-mono text-[11px] text-[#94a3b8] bg-[#0c1524] px-3 py-1 rounded-md border border-[#1e293b]">
+        <span class="flex items-center gap-1 text-[#cbd5e1]"><strong class="text-white font-semibold">{{ total_cards }}</strong> cards</span>
+        <span class="text-[#475569]">•</span>
+        <span class="flex items-center gap-1 text-[#38bdf8]"><strong class="text-[#38bdf8] font-semibold">{{ running_count }}</strong> rodando</span>
+        <span class="text-[#475569]">•</span>
+        <span class="flex items-center gap-1 text-[#fbbf24]"><strong class="text-[#fbbf24] font-semibold">{{ pending_count }}</strong> na fila</span>
+        <span class="text-[#475569]">•</span>
+        <span class="{% if rework_cards_count > 0 %}text-[#d0bcff]{% else %}text-[#64748b]{% endif %}">{{ rework_cards_count }} retrabalhos</span>
+      </div>
+
+      <div class="flex items-center gap-1.5 bg-[#0c1524] px-2.5 py-1 rounded-md border border-[#1e293b] focus-within:border-[#3b82f6] transition-colors">
+        <span class="material-symbols-outlined text-[15px] text-[#64748b]">search</span>
+        <input id="kanban-search-input" class="bg-transparent text-[12px] text-[#e2e8f0] placeholder-[#64748b] focus:outline-none w-36 lg:w-48" placeholder="Filtrar issues ou tags..." type="text">
+      </div>
+
+      <form method="post" action="/projects/{{ project.id }}/run" class="m-0">
+        <button type="submit" class="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#059669] hover:bg-[#10b981] text-white text-[12px] font-semibold shadow-[0_0_15px_rgba(16,185,129,0.35)] transition-all cursor-pointer border-0">
+          <span class="material-symbols-outlined text-[16px]">sync</span>
+          <span>Sincronizar &amp; Enfileirar</span>
+        </button>
+      </form>
+
+      <a href="/projects" class="flex items-center gap-1 px-2.5 py-1.5 rounded-md border border-[#334155] bg-[#0f172a] hover:bg-[#1e293b] text-[#cbd5e1] hover:text-white text-[12px] font-medium transition-all no-underline">
+        <span class="material-symbols-outlined text-[15px]">arrow_back</span>
+        <span>Voltar</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Live Polled Kanban Board Content -->
+  <div id="kanban-board-live"
+       hx-get="/projects/{{ project.id }}/board/partial"
+       hx-trigger="every 4s"
+       hx-swap="innerHTML">
+    {% include "projects/_board_content.html" %}
+  </div>
 </div>
+
+<script>
+  (function initKanbanFilter() {
+    const filterInput = document.getElementById('kanban-search-input');
+    if (!filterInput) return;
+
+    function applyFilter() {
+      const term = filterInput.value.toLowerCase().trim();
+      document.querySelectorAll('.kanban-card-item').forEach(card => {
+        const text = card.textContent.toLowerCase();
+        if (!term || text.includes(term)) {
+          card.classList.remove('hidden');
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+    }
+
+    filterInput.addEventListener('input', applyFilter);
+    document.body.addEventListener('htmx:afterSwap', (evt) => {
+      if (evt.target && evt.target.id === 'kanban-board-live') {
+        applyFilter();
+      }
+    });
+  })();
+</script>
 {% endblock %}

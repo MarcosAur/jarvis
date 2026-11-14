@@ -3,10 +3,13 @@ from pathlib import Path
 from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
+from pipeline.adapters.db.orm_models import utc_now
 from pipeline.adapters.db.uow import SqlAlchemyUnitOfWork
 from pipeline.application.pipeline_orchestrator import PipelineOrchestrator
 from pipeline.bootstrap import project_registry
-from pipeline.web.dependencies import get_orchestrator, get_uow
+from pipeline.config import config
+from pipeline.domain.ports.job_dispatcher import JobDispatcher
+from pipeline.web.dependencies import get_job_dispatcher, get_orchestrator, get_uow
 
 router = APIRouter(prefix="/projects", tags=["projects"])
 templates = Jinja2Templates(directory="src/pipeline/web/templates")
@@ -193,6 +196,81 @@ def run_all_projects_pipeline(
     return RedirectResponse(url=f"/projects?alert_message={msg}", status_code=303)
 
 
+def _build_board_context(
+    project_id: int,
+    uow: SqlAlchemyUnitOfWork,
+    dispatcher: JobDispatcher,
+) -> dict | None:
+    worker_health = dispatcher.get_worker_health()
+
+    with uow:
+        project = uow.projects.get_by_id(project_id)
+        if not project:
+            return None
+
+        settings = uow.settings.get()
+        p_provider = project_registry.get_or_none(settings.active_project_provider)
+        active_provider_name = p_provider.display_name if p_provider else settings.active_project_provider
+
+        raw_columns = uow.columns.list_all(active_only=True)
+        columns = []
+        for col in raw_columns:
+            agent = uow.agents.get_by_id(col.agent_id) if col.agent_id else None
+            columns.append({
+                "id": col.id,
+                "identifier": col.identifier,
+                "column_name": col.column_name,
+                "agent": agent,
+                "next_column_name": col.next_column_name,
+            })
+
+        cards = uow.cards.list_by_project(project_id, include_removed=False)
+        cards_by_column = defaultdict(list)
+        rework_cards_count = 0
+        for card in cards:
+            cards_by_column[card.column_name.strip().lower()].append(card)
+            if card.rework_count > 0:
+                rework_cards_count += 1
+
+        # Map latest job per card (list_all is ordered by desc(created_at))
+        project_jobs = uow.jobs.list_all(project_id=project_id, limit=300)
+        latest_job_by_card: dict[int, object] = {}
+        running_count = 0
+        pending_count = 0
+        for j in project_jobs:
+            if j.state == "running":
+                running_count += 1
+            elif j.state == "pending":
+                pending_count += 1
+            if j.card_id not in latest_job_by_card:
+                latest_job_by_card[j.card_id] = j
+
+        latest_job = project_jobs[0] if project_jobs else None
+        last_event_text = None
+        if latest_job:
+            model_lbl = latest_job.model_id_snapshot or latest_job.cli_provider_snapshot or "agente"
+            proc_lbl = latest_job.process_status or latest_job.state
+            last_event_text = f"[Job #{latest_job.id} • {model_lbl}] {proc_lbl}"
+
+    return {
+        "active_page": "board",
+        "project": project,
+        "active_provider_name": active_provider_name,
+        "active_provider_key": settings.active_project_provider,
+        "columns": columns,
+        "cards_by_column": cards_by_column,
+        "latest_job_by_card": latest_job_by_card,
+        "total_cards": len(cards),
+        "running_count": running_count,
+        "pending_count": pending_count,
+        "rework_cards_count": rework_cards_count,
+        "worker_health": worker_health,
+        "last_event_text": last_event_text,
+        "pipeline_interval_seconds": config.CELERY_PIPELINE_INTERVAL_SECONDS,
+        "now_utc": utc_now(),
+    }
+
+
 @router.get("/{project_id}/board", response_class=HTMLResponse)
 def view_project_board(
     project_id: int,
@@ -200,33 +278,35 @@ def view_project_board(
     alert_message: str | None = None,
     alert_type: str | None = None,
     uow: SqlAlchemyUnitOfWork = Depends(get_uow),
+    dispatcher: JobDispatcher = Depends(get_job_dispatcher),
 ):
-    with uow:
-        project = uow.projects.get_by_id(project_id)
-        if not project:
-            return RedirectResponse(url="/projects?alert_message=Projeto+não+encontrado&alert_type=error", status_code=303)
+    context = _build_board_context(project_id=project_id, uow=uow, dispatcher=dispatcher)
+    if context is None:
+        return RedirectResponse(url="/projects?alert_message=Projeto+não+encontrado&alert_type=error", status_code=303)
 
-        raw_columns = uow.columns.list_all(active_only=True)
-        # Attach agent objects
-        columns = []
-        for col in raw_columns:
-            agent = uow.agents.get_by_id(col.agent_id) if col.agent_id else None
-            columns.append({"id": col.id, "column_name": col.column_name, "agent": agent, "next_column_name": col.next_column_name})
-
-        cards = uow.cards.list_by_project(project_id, include_removed=False)
-        cards_by_column = defaultdict(list)
-        for card in cards:
-            cards_by_column[card.column_name.strip().lower()].append(card)
+    context["alert_message"] = alert_message
+    context["alert_type"] = alert_type
 
     return templates.TemplateResponse(
         request=request,
         name="projects/board.html",
-        context={
-            "active_page": "projects",
-            "project": project,
-            "columns": columns,
-            "cards_by_column": cards_by_column,
-            "alert_message": alert_message,
-            "alert_type": alert_type,
-        },
+        context=context,
+    )
+
+
+@router.get("/{project_id}/board/partial", response_class=HTMLResponse)
+def view_project_board_partial(
+    project_id: int,
+    request: Request,
+    uow: SqlAlchemyUnitOfWork = Depends(get_uow),
+    dispatcher: JobDispatcher = Depends(get_job_dispatcher),
+):
+    context = _build_board_context(project_id=project_id, uow=uow, dispatcher=dispatcher)
+    if context is None:
+        return HTMLResponse("<p class='p-6 text-error'>Projeto não encontrado.</p>", status_code=404)
+
+    return templates.TemplateResponse(
+        request=request,
+        name="projects/_board_content.html",
+        context=context,
     )

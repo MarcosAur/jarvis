@@ -1,154 +1,348 @@
-/* Custom styles for Pipeline de Desenvolvimento Automático */
+/* Autonomous Engineering Nexus — Custom Styles & CRUD Compatibility */
 :root {
-  --pico-font-size: 92%;
+  --pico-muted-color: #64748b;
 }
 
-header nav {
-  margin-bottom: 1.5rem;
-  border-bottom: 1px solid var(--pico-muted-border-color);
-  padding-bottom: 0.5rem;
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: #051424;
+  color: #d4e4fa;
 }
 
-.brand-title {
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+  vertical-align: middle;
+}
+
+/* Custom subtle scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #051424;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* Flash messages */
+.flash-message {
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  background-color: rgba(16, 185, 129, 0.14);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #6ffbbe;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.flash-message.error {
+  background-color: rgba(239, 68, 68, 0.14);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #ffb4ab;
+}
+
+/* Nexus styling for standard CRUD templates (agents, projects, columns, settings, runs, forms) */
+.nexus-crud h2 {
+  font-size: 1.45rem;
+  font-weight: 600;
+  color: #f8fafc;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.25rem 0;
+}
+
+.nexus-crud h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #f1f5f9;
+  margin: 0;
+}
+
+.nexus-crud h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #adc6ff;
+  margin: 1rem 0 0.5rem 0;
+}
+
+.nexus-crud p {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin: 0.25rem 0 0.75rem 0;
+}
+
+.nexus-crud article {
+  background-color: #0d1c2d;
+  border: 1px solid #1e293b;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  overflow-x: auto;
+}
+
+.nexus-crud article > header {
+  padding-bottom: 0.85rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #1e293b;
+}
+
+.nexus-crud table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+}
+
+.nexus-crud thead th {
+  text-align: left;
+  padding: 0.65rem 0.75rem;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #64748b;
+  background-color: #091322;
+  border-bottom: 1px solid #1e293b;
+}
+
+.nexus-crud tbody td {
+  padding: 0.7rem 0.75rem;
+  border-bottom: 1px solid #152236;
+  color: #d4e4fa;
+  vertical-align: middle;
+}
+
+.nexus-crud tbody tr:hover {
+  background-color: rgba(28, 43, 60, 0.45);
+}
+
+.nexus-crud code {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.78rem;
+  background-color: #122131;
+  color: #adc6ff;
+  padding: 0.12rem 0.4rem;
+  border-radius: 0.25rem;
+  border: 1px solid #222f4c;
+}
+
+.nexus-crud label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #c2c6d6;
+  margin-bottom: 0.85rem;
+}
+
+.nexus-crud small {
+  display: block;
+  font-size: 0.74rem;
+  color: #64748b;
+  margin-top: 0.25rem;
+}
+
+.nexus-crud input[type="text"],
+.nexus-crud input[type="password"],
+.nexus-crud input[type="number"],
+.nexus-crud select,
+.nexus-crud textarea {
+  display: block;
+  width: 100%;
+  margin-top: 0.35rem;
+  padding: 0.55rem 0.75rem;
+  background-color: #051424;
+  border: 1px solid #222f4c;
+  border-radius: 0.5rem;
+  color: #f8fafc;
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.nexus-crud input:focus,
+.nexus-crud select:focus,
+.nexus-crud textarea:focus {
+  border-color: #3b82f6;
+}
+
+.nexus-crud input[type="checkbox"] {
+  margin-right: 0.45rem;
+  accent-color: #3b82f6;
+}
+
+.nexus-crud label:has(input[type="checkbox"]) {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-weight: 700;
-  font-size: 1.25rem;
+  gap: 0.45rem;
+  margin-bottom: 0;
+  cursor: pointer;
+}
+
+.nexus-crud fieldset {
+  border: 1px solid #1e293b;
+  border-radius: 0.5rem;
+  padding: 0.9rem 1rem;
+  margin: 0.75rem 0;
+  background-color: #091322;
+}
+
+.nexus-crud legend {
+  padding: 0 0.4rem;
+  font-size: 0.8rem;
+  color: #adc6ff;
+}
+
+.nexus-crud .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.nexus-crud hr {
+  border: 0;
+  border-top: 1px solid #1e293b;
+  margin: 1.25rem 0;
+}
+
+.nexus-crud a[role="button"],
+.nexus-crud button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 0.45rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  background-color: #3b82f6;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: all 0.15s ease;
+}
+
+.nexus-crud a[role="button"]:hover,
+.nexus-crud button:hover {
+  filter: brightness(1.1);
+}
+
+.nexus-crud a[role="button"].secondary,
+.nexus-crud button.secondary {
+  background-color: #1c2b3c;
+  color: #d4e4fa;
+  border-color: #273647;
+}
+
+.nexus-crud a[role="button"].outline,
+.nexus-crud button.outline {
+  background-color: transparent;
+  color: #c2c6d6;
+  border: 1px solid #334155;
+}
+
+.nexus-crud a[role="button"].outline:hover,
+.nexus-crud button.outline:hover {
+  background-color: #1c2b3c;
+  color: #ffffff;
+}
+
+.nexus-crud button.danger,
+.nexus-crud a[role="button"].danger {
+  background-color: rgba(239, 68, 68, 0.14);
+  color: #ffb4ab;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+}
+
+.nexus-crud button.contrast {
+  background-color: #059669;
+  border-color: rgba(16, 185, 129, 0.4);
+  color: #ffffff;
 }
 
 .badge {
-  display: inline-block;
-  padding: 0.2rem 0.5rem;
-  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.18rem 0.5rem;
+  font-size: 0.72rem;
   font-weight: 600;
-  border-radius: 4px;
-  background-color: var(--pico-secondary-background);
-  color: var(--pico-secondary-inverse);
-  margin-right: 0.25rem;
+  font-family: "JetBrains Mono", monospace;
+  border-radius: 0.3rem;
+  background-color: #1c2b3c;
+  color: #c2c6d6;
+  border: 1px solid #273647;
 }
 
 .badge-success {
-  background-color: #2e7d32;
-  color: #fff;
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #4edea3;
+  border-color: rgba(16, 185, 129, 0.35);
 }
 
 .badge-warning {
-  background-color: #ed6c02;
-  color: #fff;
+  background-color: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border-color: rgba(245, 158, 11, 0.35);
 }
 
 .badge-danger {
-  background-color: #d32f2f;
-  color: #fff;
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #ffb4ab;
+  border-color: rgba(239, 68, 68, 0.35);
 }
 
 .badge-info {
-  background-color: #0288d1;
-  color: #fff;
+  background-color: rgba(77, 142, 255, 0.16);
+  color: #adc6ff;
+  border-color: rgba(77, 142, 255, 0.35);
 }
 
 .badge-rework {
-  background-color: #9c27b0;
-  color: #fff;
+  background-color: rgba(139, 92, 246, 0.18);
+  color: #d0bcff;
+  border-color: rgba(139, 92, 246, 0.35);
 }
 
 .table-actions {
   display: flex;
   gap: 0.35rem;
   align-items: center;
+  flex-wrap: nowrap;
+  white-space: nowrap;
 }
 
-.table-actions a,
+.table-actions a[role="button"],
 .table-actions button {
   padding: 0.25rem 0.6rem;
-  font-size: 0.8rem;
+  font-size: 0.76rem;
   margin-bottom: 0;
 }
 
-/* Kanban Board Layout */
-.kanban-board {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(280px, 1fr);
-  gap: 1rem;
-  overflow-x: auto;
-  padding-bottom: 1.5rem;
-}
-
-.kanban-col {
-  background-color: var(--pico-card-background-color);
-  border: 1px solid var(--pico-card-border-color);
-  border-radius: var(--pico-border-radius);
-  padding: 0.75rem;
-  min-height: 400px;
-  display: flex;
-  flex-direction: column;
-}
-
-.kanban-col-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 0.5rem;
-  margin-bottom: 0.75rem;
-  border-bottom: 2px solid var(--pico-muted-border-color);
-  font-weight: bold;
-}
-
-.kanban-col-cards {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  flex-grow: 1;
-}
-
-.kanban-card {
-  background-color: var(--pico-background-color);
-  border: 1px solid var(--pico-muted-border-color);
-  border-radius: 6px;
-  padding: 0.75rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-}
-
-.kanban-card-title {
-  font-weight: 600;
-  font-size: 0.95rem;
-  margin-bottom: 0.35rem;
-}
-
-.kanban-card-body {
-  font-size: 0.85rem;
-  color: var(--pico-muted-color);
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  margin-bottom: 0.5rem;
-}
-
-.flash-message {
-  padding: 0.75rem 1rem;
-  margin-bottom: 1.5rem;
-  border-radius: var(--pico-border-radius);
-  background-color: #2e7d32;
-  color: #fff;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.flash-message.error {
-  background-color: #d32f2f;
-}
-
 .agent-prompt-preview {
-  background-color: var(--pico-card-background-color);
-  border: 1px solid var(--pico-muted-border-color);
-  border-radius: 6px;
+  background-color: #010f1f;
+  border: 1px solid #1e293b;
+  border-radius: 0.5rem;
   padding: 1rem;
   margin-top: 0.5rem;
   white-space: pre-wrap;
-  font-family: monospace;
-  font-size: 0.85rem;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.8rem;
+  color: #c2c6d6;
 }

@@ -2,76 +2,200 @@
 
 {% block title %}Projetos — AI Pipeline{% endblock %}
 
+{% block main_container_class %}max-w-[1520px] mx-auto px-4 sm:px-6 py-6{% endblock %}
+
 {% block content %}
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+{% set total_projects = projects | length %}
+{% set active_projects = projects | selectattr('active') | list | length %}
+{% set paused_projects = total_projects - active_projects %}
+
+<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
   <div>
-    <h2>CRUD 2 — Projetos</h2>
-    <p>Repositórios locais vinculados ao provedor de projetos ativo.</p>
+    <div class="flex items-center gap-2 font-mono text-[10px] uppercase tracking-wider text-primary mb-1">
+      <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+      <span>Portfólio de Repositórios</span>
+    </div>
+    <h1 class="text-2xl font-semibold text-white tracking-tight m-0">Projetos</h1>
+    <p class="text-[13px] text-on-surface-variant/80 mt-1 mb-0">
+      Repositórios locais vinculados ao provedor de projetos ativo.
+    </p>
   </div>
-  <div style="display: flex; gap: 0.5rem;">
-    <form method="post" action="/projects/run-all" style="margin: 0;">
-      <button type="submit" class="contrast" style="margin: 0;">▶ Rodar Todos os Projetos Ativos</button>
+
+  <div class="flex flex-wrap items-center gap-2.5">
+    <form method="post" action="/projects/run-all" class="m-0">
+      <button type="submit"
+              class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-tertiary-container/90 hover:bg-tertiary-container text-white text-[12px] font-medium border border-tertiary/30 shadow-[0_0_12px_rgba(0,165,114,0.22)] transition-all cursor-pointer">
+        <span class="material-symbols-outlined text-[16px]">play_arrow</span>
+        <span>Rodar Todos os Projetos Ativos</span>
+      </button>
     </form>
-    <a href="/projects/new" role="button" style="margin: 0;">＋ Novo Projeto</a>
+
+    <a href="/projects/new"
+       class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#2563eb] hover:bg-[#3b82f6] text-white text-[12px] font-medium border border-white/10 shadow-[0_0_12px_rgba(59,130,246,0.3)] transition-all no-underline">
+      <span class="material-symbols-outlined text-[16px]">add</span>
+      <span>Novo Projeto</span>
+    </a>
   </div>
 </div>
 
-<article>
-  <table role="grid">
-    <thead>
-      <tr>
-        <th>Nome</th>
-        <th>Chave do Projeto</th>
-        <th>Caminho Local</th>
-        <th>Última Execução</th>
-        <th>Status</th>
-        <th style="text-align: right;">Ações</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for p in projects %}
-        <tr>
-          <td><strong>{{ p.name }}</strong></td>
-          <td><code>{{ p.project_key }}</code></td>
-          <td><small>{{ p.local_path }}</small></td>
-          <td>
-            {% if p.last_run_at %}
-              <small>{{ p.last_run_at.strftime('%d/%m/%Y %H:%M') }}</small>
-            {% else %}
-              <small style="color: var(--pico-muted-color);">Nunca executado</small>
-            {% endif %}
-          </td>
-          <td>
-            {% if p.active %}
-              <span class="badge badge-success">Ativo</span>
-            {% else %}
-              <span class="badge badge-danger">Inativo</span>
-            {% endif %}
-          </td>
-          <td style="text-align: right;">
-            <div class="table-actions" style="justify-content: flex-end;">
-              <form method="post" action="/projects/{{ p.id }}/run" style="display:inline; margin:0;">
-                <button type="submit" style="margin:0; background-color: #2e7d32; border-color: #2e7d32; color: #fff;">▶ Rodar</button>
-              </form>
-              <a href="/projects/{{ p.id }}/board" role="button" class="secondary">Quadro</a>
-              <a href="/projects/{{ p.id }}/edit" role="button" class="secondary outline">Editar</a>
-              <form method="post" action="/projects/{{ p.id }}/toggle" style="display:inline; margin:0;">
-                <button type="submit" class="outline" style="margin:0;">
-                  {% if p.active %}Pausar{% else %}Ativar{% endif %}
-                </button>
-              </form>
-              <form method="post" action="/projects/{{ p.id }}/delete" style="display:inline; margin:0;" onsubmit="return confirm('Excluir este projeto?');">
-                <button type="submit" class="danger outline" style="margin:0;">Excluir</button>
-              </form>
-            </div>
-          </td>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mb-6">
+  <div class="bg-surface-container-low border border-[#1e293b] rounded-xl px-4 py-3.5 flex items-center justify-between">
+    <div>
+      <div class="font-mono text-[10px] uppercase tracking-wider text-outline">Total Cadastrado</div>
+      <div class="text-xl font-semibold text-white mt-0.5 font-mono">{{ total_projects }}</div>
+    </div>
+    <div class="w-9 h-9 rounded-lg bg-surface-container border border-[#222f4c] flex items-center justify-center text-primary">
+      <span class="material-symbols-outlined text-[20px]">workspaces</span>
+    </div>
+  </div>
+
+  <div class="bg-surface-container-low border border-[#1e293b] rounded-xl px-4 py-3.5 flex items-center justify-between">
+    <div>
+      <div class="font-mono text-[10px] uppercase tracking-wider text-outline">Ativos na Pipeline</div>
+      <div class="text-xl font-semibold text-tertiary mt-0.5 font-mono">{{ active_projects }}</div>
+    </div>
+    <div class="w-9 h-9 rounded-lg bg-tertiary/10 border border-tertiary/25 flex items-center justify-center text-tertiary">
+      <span class="material-symbols-outlined text-[20px]">check_circle</span>
+    </div>
+  </div>
+
+  <div class="bg-surface-container-low border border-[#1e293b] rounded-xl px-4 py-3.5 flex items-center justify-between">
+    <div>
+      <div class="font-mono text-[10px] uppercase tracking-wider text-outline">Pausados</div>
+      <div class="text-xl font-semibold text-on-surface-variant mt-0.5 font-mono">{{ paused_projects }}</div>
+    </div>
+    <div class="w-9 h-9 rounded-lg bg-surface-container border border-[#222f4c] flex items-center justify-center text-outline">
+      <span class="material-symbols-outlined text-[20px]">pause_circle</span>
+    </div>
+  </div>
+</div>
+
+<div class="bg-surface-container-low border border-[#1e293b] rounded-xl overflow-hidden shadow-[0_8px_24px_rgba(0,0,0,0.28)]">
+  <div class="px-5 py-3.5 border-b border-[#1e293b] bg-surface-container-lowest/60 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <span class="material-symbols-outlined text-primary text-[18px]">folder_managed</span>
+      <span class="font-mono text-[11px] uppercase tracking-wider text-on-surface font-medium">Repositórios Vinculados</span>
+    </div>
+    <span class="font-mono text-[11px] text-outline">{{ total_projects }} {{ 'projeto' if total_projects == 1 else 'projetos' }}</span>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="w-full text-left border-collapse text-[13px]">
+      <thead>
+        <tr class="bg-[#091322] border-b border-[#1e293b] font-mono text-[10px] uppercase tracking-wider text-[#64748b]">
+          <th class="py-3 px-4 font-semibold">Nome</th>
+          <th class="py-3 px-4 font-semibold">Chave do Projeto</th>
+          <th class="py-3 px-4 font-semibold">Caminho Local</th>
+          <th class="py-3 px-4 font-semibold whitespace-nowrap">Última Execução</th>
+          <th class="py-3 px-4 font-semibold">Status</th>
+          <th class="py-3 px-4 font-semibold text-right">Ações</th>
         </tr>
-      {% else %}
-        <tr>
-          <td colspan="6" style="text-align: center; color: var(--pico-muted-color);">Nenhum projeto cadastrado ainda.</td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</article>
+      </thead>
+      <tbody class="divide-y divide-[#152236]">
+        {% for p in projects %}
+          <tr class="hover:bg-surface-container-high/40 transition-colors">
+            <td class="py-3.5 px-4 whitespace-nowrap">
+              <a href="/projects/{{ p.id }}/board" class="inline-flex items-center gap-2.5 text-white hover:text-primary font-medium no-underline transition-colors">
+                <span class="w-7 h-7 rounded-md bg-surface-container border border-[#222f4c] flex items-center justify-center text-primary shrink-0">
+                  <span class="material-symbols-outlined text-[16px]">folder_code</span>
+                </span>
+                <span>{{ p.name }}</span>
+              </a>
+            </td>
+
+            <td class="py-3.5 px-4 whitespace-nowrap">
+              <code class="font-mono text-[11px] bg-surface-container text-primary px-2 py-0.5 rounded border border-[#222f4c]">{{ p.project_key }}</code>
+            </td>
+
+            <td class="py-3.5 px-4">
+              <div class="font-mono text-[11px] text-on-surface-variant/75 max-w-[280px] xl:max-w-[380px] truncate" title="{{ p.local_path }}">
+                {{ p.local_path }}
+              </div>
+            </td>
+
+            <td class="py-3.5 px-4 whitespace-nowrap">
+              {% if p.last_run_at %}
+                <span class="font-mono text-[11px] text-on-surface-variant">{{ p.last_run_at.strftime('%d/%m/%Y %H:%M') }}</span>
+              {% else %}
+                <span class="font-mono text-[11px] text-[#64748b]">Nunca executado</span>
+              {% endif %}
+            </td>
+
+            <td class="py-3.5 px-4 whitespace-nowrap">
+              {% if p.active %}
+                <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded font-mono text-[11px] font-medium bg-emerald-500/15 text-tertiary border border-emerald-500/30">
+                  <span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                  <span>Ativo</span>
+                </span>
+              {% else %}
+                <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded font-mono text-[11px] font-medium bg-red-500/15 text-error border border-red-500/30">
+                  <span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+                  <span>Inativo</span>
+                </span>
+              {% endif %}
+            </td>
+
+            <td class="py-3.5 px-4 text-right whitespace-nowrap">
+              <div class="inline-flex items-center justify-end gap-1.5">
+                <form method="post" action="/projects/{{ p.id }}/run" class="inline m-0">
+                  <button type="submit"
+                          title="Rodar projeto"
+                          aria-label="Rodar projeto"
+                          class="inline-flex items-center justify-center p-1.5 rounded-md bg-emerald-600/20 hover:bg-emerald-600/35 text-tertiary border border-emerald-500/35 transition-colors cursor-pointer">
+                    <span class="material-symbols-outlined text-[16px]">play_arrow</span>
+                  </button>
+                </form>
+
+                <a href="/projects/{{ p.id }}/board"
+                   title="Abrir Quadro Kanban"
+                   aria-label="Abrir Quadro Kanban"
+                   class="inline-flex items-center justify-center p-1.5 rounded-md bg-primary/15 hover:bg-primary/25 text-primary border border-primary/30 transition-colors no-underline">
+                  <span class="material-symbols-outlined text-[16px]">view_kanban</span>
+                </a>
+
+                <a href="/projects/{{ p.id }}/edit"
+                   title="Editar projeto"
+                   aria-label="Editar projeto"
+                   class="inline-flex items-center justify-center p-1.5 rounded-md bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-white border border-[#273647] transition-colors no-underline">
+                  <span class="material-symbols-outlined text-[16px]">edit</span>
+                </a>
+
+                <form method="post" action="/projects/{{ p.id }}/toggle" class="inline m-0">
+                  <button type="submit"
+                          title="{% if p.active %}Pausar projeto{% else %}Ativar projeto{% endif %}"
+                          aria-label="{% if p.active %}Pausar projeto{% else %}Ativar projeto{% endif %}"
+                          class="inline-flex items-center justify-center p-1.5 rounded-md bg-transparent hover:bg-surface-container-high text-on-surface-variant hover:text-white border border-[#334155] transition-colors cursor-pointer">
+                    <span class="material-symbols-outlined text-[16px]">{% if p.active %}pause{% else %}play_circle{% endif %}</span>
+                  </button>
+                </form>
+
+                <form method="post" action="/projects/{{ p.id }}/delete" class="inline m-0" onsubmit="return confirm('Excluir este projeto?');">
+                  <button type="submit"
+                          title="Excluir projeto"
+                          aria-label="Excluir projeto"
+                          class="inline-flex items-center justify-center p-1.5 rounded-md bg-red-500/10 hover:bg-red-500/25 text-error border border-red-500/30 transition-colors cursor-pointer">
+                    <span class="material-symbols-outlined text-[16px]">delete</span>
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="6" class="py-12 px-6 text-center">
+              <div class="flex flex-col items-center justify-center gap-2 text-[#64748b]">
+                <span class="material-symbols-outlined text-[36px] text-outline/60">folder_off</span>
+                <p class="text-[13px] m-0 text-on-surface-variant">Nenhum projeto cadastrado ainda.</p>
+                <a href="/projects/new" class="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#2563eb] hover:bg-[#3b82f6] text-white text-[12px] font-medium no-underline transition-colors">
+                  <span class="material-symbols-outlined text-[15px]">add</span>
+                  <span>Cadastrar Primeiro Projeto</span>
+                </a>
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
 {% endblock %}

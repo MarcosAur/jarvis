@@ -1,53 +1,138 @@
 {% extends "base.html" %}
 
-{% block title %}Fila de Jobs & Execuções — AI Pipeline{% endblock %}
+{% block title %}Fila de Jobs & Logs — AI Pipeline{% endblock %}
+
+{% block main_container_class %}w-full{% endblock %}
 
 {% block content %}
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
-  <div>
-    <h2>CRUD 5 — Fila de Jobs & Execuções (Celery)</h2>
-    <p>Os jobs são executados exclusivamente pelos workers do Celery em segundo plano. Acompanhe o status do processo em tempo real abaixo.</p>
-  </div>
-  <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-    <a href="/jobs/new" role="button" class="secondary" style="margin: 0;">＋ Enfileirar Job Manual</a>
+<div class="flex flex-col w-full">
+  <!-- Barra de Filtros Passivos e Contexto da Fila -->
+  <section class="w-full bg-surface px-6 py-3 border-b border-[#1e293b]">
+    <div class="max-w-[1720px] mx-auto flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
+      <div class="flex flex-wrap items-center gap-2.5 flex-1">
+        <!-- Seletor de Projeto -->
+        <form method="get" action="/jobs" class="m-0">
+          {% if selected_state %}<input type="hidden" name="state" value="{{ selected_state }}">{% endif %}
+          <select name="project_id" onchange="this.form.submit()" class="bg-surface-container-low border border-[#1e293b] text-on-surface text-[12px] px-3 py-1.5 rounded-lg outline-none focus:border-primary">
+            <option value="">Todos os Projetos</option>
+            {% for p in projects %}
+              <option value="{{ p.id }}" {% if selected_project_id == p.id %}selected{% endif %}>{{ p.name }}</option>
+            {% endfor %}
+          </select>
+        </form>
+
+        <!-- Filtro de Estado (Pills) -->
+        <div class="flex items-center bg-surface-container-lowest p-0.5 rounded-lg border border-[#1e293b] overflow-x-auto font-mono text-[11px]">
+          <a href="/jobs?project_id={{ selected_project_id or '' }}"
+             class="px-2.5 py-1 rounded no-underline transition-colors {% if not selected_state %}bg-surface-container-high text-on-surface font-medium shadow-sm{% else %}text-on-surface-variant hover:text-on-surface{% endif %}">
+            Todos ({{ stats.total }})
+          </a>
+          <a href="/jobs?project_id={{ selected_project_id or '' }}&state=pending"
+             class="px-2.5 py-1 rounded no-underline transition-colors {% if selected_state == 'pending' %}bg-surface-container-high text-[#fbbf24] font-medium{% else %}text-[#fbbf24]/80 hover:text-[#fbbf24]{% endif %}">
+            Pendentes ({{ stats.pending }})
+          </a>
+          <a href="/jobs?project_id={{ selected_project_id or '' }}&state=running"
+             class="px-2.5 py-1 rounded no-underline transition-colors flex items-center gap-1 {% if selected_state == 'running' %}bg-surface-container-high text-primary font-medium{% else %}text-primary/80 hover:text-primary{% endif %}">
+            <span class="w-1.5 h-1.5 rounded-full bg-primary-container animate-pulse"></span>
+            Em Execução ({{ stats.running }})
+          </a>
+          <a href="/jobs?project_id={{ selected_project_id or '' }}&state=succeeded"
+             class="px-2.5 py-1 rounded no-underline transition-colors {% if selected_state == 'succeeded' %}bg-surface-container-high text-tertiary font-medium{% else %}text-tertiary/80 hover:text-tertiary{% endif %}">
+            Sucesso ({{ stats.succeeded }})
+          </a>
+          <a href="/jobs?project_id={{ selected_project_id or '' }}&state=failed"
+             class="px-2.5 py-1 rounded no-underline transition-colors {% if selected_state == 'failed' %}bg-surface-container-high text-error font-medium{% else %}text-error/80 hover:text-error{% endif %}">
+            Falhas ({{ stats.failed }})
+          </a>
+          <a href="/jobs?project_id={{ selected_project_id or '' }}&state=cancelled"
+             class="px-2.5 py-1 rounded no-underline transition-colors {% if selected_state == 'cancelled' %}bg-surface-container-high text-on-surface font-medium{% else %}text-outline hover:text-on-surface{% endif %}">
+            Cancelados ({{ stats.cancelled }})
+          </a>
+        </div>
+      </div>
+
+      <!-- Busca Rápida + Enfileirar Manual + Auto-refresh Toggle -->
+      <div class="flex items-center gap-2.5 flex-wrap">
+        <div class="relative w-full sm:w-56">
+          <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-[16px] text-outline">search</span>
+          <input id="jobs-search-input" class="w-full bg-surface-container-low border border-[#1e293b] text-on-surface font-mono text-[11px] pl-8 pr-3 py-1.5 rounded-lg placeholder:text-outline focus:outline-none focus:border-primary" placeholder="Buscar #Job, #Card ou tag..." type="text">
+        </div>
+
+        <button type="button" id="toggle-jobs-autorefresh" class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-surface-container border border-[#1e293b] text-tertiary font-mono text-[11px] cursor-pointer hover:bg-surface-container-high transition-colors">
+          <span class="material-symbols-outlined text-[14px]">sync</span>
+          <span>Auto-refresh: 3s</span>
+        </button>
+
+        <a href="/jobs/new" class="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-bright border border-[#273647] text-on-surface text-[12px] font-medium no-underline transition-colors">
+          <span>＋ Enfileirar Job Manual</span>
+        </a>
+
+        <div class="hidden xl:flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-surface-container-lowest border border-[#1e293b] text-outline font-mono text-[11px]" title="Jobs são executados exclusivamente pelos workers Celery">
+          <span class="material-symbols-outlined text-[14px]">lock</span>
+          <span>Somente Celery</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Live Polled Master-Detail Telemetry Workspace -->
+  <div id="jobs-live-container"
+       hx-get="/jobs/partials/content?project_id={{ selected_project_id or '' }}&state={{ selected_state or '' }}&selected_job_id={{ selected_job_id or '' }}"
+       hx-trigger="every 3s"
+       hx-swap="innerHTML">
+    {% include "jobs/_list_content.html" %}
   </div>
 </div>
 
-<!-- Filters -->
-<article style="padding: 1rem; margin-bottom: 1.5rem;">
-  <form method="get" action="/jobs" style="margin: 0; display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;">
-    <div style="flex-grow: 1; min-width: 200px;">
-      <label for="project_id" style="margin-bottom: 0.25rem;">Filtrar por Projeto</label>
-      <select id="project_id" name="project_id" style="margin: 0;">
-        <option value="">Todos os Projetos</option>
-        {% for p in projects %}
-          <option value="{{ p.id }}" {% if selected_project_id == p.id %}selected{% endif %}>{{ p.name }}</option>
-        {% endfor %}
-      </select>
-    </div>
+<script>
+  (function initJobsTelemetryUI() {
+    const searchInput = document.getElementById('jobs-search-input');
+    const toggleBtn = document.getElementById('toggle-jobs-autorefresh');
+    const liveContainer = document.getElementById('jobs-live-container');
+    let autoRefreshPaused = false;
 
-    <div style="flex-grow: 1; min-width: 180px;">
-      <label for="state" style="margin-bottom: 0.25rem;">Estado do Job</label>
-      <select id="state" name="state" style="margin: 0;">
-        <option value="">Todos os Estados</option>
-        <option value="pending" {% if selected_state == 'pending' %}selected{% endif %}>Pending (Pendente)</option>
-        <option value="running" {% if selected_state == 'running' %}selected{% endif %}>Running (Em execução)</option>
-        <option value="succeeded" {% if selected_state == 'succeeded' %}selected{% endif %}>Succeeded (Sucesso)</option>
-        <option value="failed" {% if selected_state == 'failed' %}selected{% endif %}>Failed (Falha)</option>
-        <option value="cancelled" {% if selected_state == 'cancelled' %}selected{% endif %}>Cancelled (Cancelado)</option>
-      </select>
-    </div>
+    function applyJobsFilter() {
+      if (!searchInput) return;
+      const term = searchInput.value.toLowerCase().trim();
+      document.querySelectorAll('.job-master-item').forEach(item => {
+        const text = item.textContent.toLowerCase();
+        if (!term || text.includes(term)) {
+          item.classList.remove('hidden');
+        } else {
+          item.classList.add('hidden');
+        }
+      });
+    }
 
-    <div>
-      <button type="submit" class="secondary" style="margin: 0;">Filtrar</button>
-    </div>
-  </form>
-</article>
+    if (searchInput) {
+      searchInput.addEventListener('input', applyJobsFilter);
+    }
 
-<div id="jobs-live-container"
-     hx-get="/jobs/partials/content?project_id={{ selected_project_id or '' }}&state={{ selected_state or '' }}"
-     hx-trigger="every 3s"
-     hx-swap="innerHTML">
-  {% include "jobs/_list_content.html" %}
-</div>
+    if (toggleBtn && liveContainer) {
+      toggleBtn.addEventListener('click', () => {
+        autoRefreshPaused = !autoRefreshPaused;
+        if (autoRefreshPaused) {
+          liveContainer.setAttribute('hx-trigger', 'none');
+          toggleBtn.innerHTML = '<span class="material-symbols-outlined text-[14px]">pause</span><span>Auto-refresh: Pausado</span>';
+          toggleBtn.classList.remove('text-tertiary');
+          toggleBtn.classList.add('text-outline');
+        } else {
+          liveContainer.setAttribute('hx-trigger', 'every 3s');
+          toggleBtn.innerHTML = '<span class="material-symbols-outlined text-[14px]">sync</span><span>Auto-refresh: 3s</span>';
+          toggleBtn.classList.add('text-tertiary');
+          toggleBtn.classList.remove('text-outline');
+        }
+        if (window.htmx) {
+          window.htmx.process(liveContainer);
+        }
+      });
+    }
+
+    document.body.addEventListener('htmx:afterSwap', (evt) => {
+      if (evt.target && evt.target.id === 'jobs-live-container') {
+        applyJobsFilter();
+      }
+    });
+  })();
+</script>
 {% endblock %}

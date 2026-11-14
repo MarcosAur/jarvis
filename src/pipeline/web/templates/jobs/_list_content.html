@@ -1,101 +1,176 @@
-<article style="padding: 0.9rem 1rem; margin-bottom: 1rem;">
-  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
-    <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-      <strong>Status do Celery:</strong>
+<!-- Sub-header Operacional: Celery Worker Watchdog & Telemetria em Tempo Real -->
+<section class="w-full bg-surface-container-lowest px-6 py-2.5 border-b border-[#1e293b]">
+  <div class="max-w-[1720px] mx-auto flex flex-col xl:flex-row items-start xl:items-center justify-between gap-3">
+    <!-- Status do Celery Worker e Timeouts -->
+    <div class="flex flex-wrap items-center gap-3 font-mono text-[11px]">
       {% if worker_health and worker_health.broker_available %}
         {% if worker_health.workers_online > 0 %}
-          <span class="badge badge-success">{{ worker_health.workers_online }} worker(s) online</span>
-          <small style="color: var(--pico-muted-color);">{{ worker_health.worker_names|join(', ') }}</small>
+          <div class="flex items-center gap-2 px-2.5 py-1 rounded bg-surface-container-low border border-[#059669]/30 text-tertiary">
+            <span class="relative flex h-2 w-2">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-tertiary"></span>
+            </span>
+            <span class="font-medium">{{ worker_health.workers_online }} worker(s) online</span>
+            <span class="text-outline hidden sm:inline">• {{ worker_health.worker_names|join(', ') }}</span>
+          </div>
         {% else %}
-          <span class="badge badge-warning">Broker conectado • Nenhum worker ativo</span>
+          <div class="flex items-center gap-2 px-2.5 py-1 rounded bg-surface-container-low border border-[#d97706]/35 text-[#fbbf24]">
+            <span class="w-2 h-2 rounded-full bg-[#f59e0b]"></span>
+            <span>Broker conectado • Nenhum worker ativo</span>
+          </div>
         {% endif %}
       {% else %}
-        <span class="badge badge-danger">Broker Celery indisponível</span>
+        <div class="flex items-center gap-2 px-2.5 py-1 rounded bg-surface-container-low border border-[#ef4444]/35 text-error">
+          <span class="w-2 h-2 rounded-full bg-[#ef4444]"></span>
+          <span>Broker Celery indisponível</span>
+        </div>
       {% endif %}
+
+      <div class="flex items-center gap-1.5 text-on-surface-variant">
+        <span class="material-symbols-outlined text-[15px] text-outline">schedule</span>
+        <span>Beat: <strong class="text-on-surface">{{ pipeline_interval_seconds }}s</strong></span>
+        <span class="text-outline">/</span>
+        <span>Agente: <strong class="text-on-surface">{{ agent_timeout_seconds }}s</strong></span>
+        <span class="text-outline">/</span>
+        <span>Celery: <strong class="text-primary">{{ celery_soft_timeout_seconds }}s</strong> ({{ celery_hard_timeout_seconds }}s)</span>
+      </div>
     </div>
-    <div style="font-size: 0.8rem; color: var(--pico-muted-color);">
-      Agendamento Beat: <strong>{{ pipeline_interval_seconds }}s</strong> &bull;
-      Timeout Agente: <strong>{{ agent_timeout_seconds }}s</strong> &bull;
-      Timeout Celery: <strong>{{ celery_soft_timeout_seconds }}s</strong> (soft) / <strong>{{ celery_hard_timeout_seconds }}s</strong> (hard)
+
+    <!-- Quick Telemetry KPIs -->
+    <div class="flex flex-wrap items-center gap-4 font-mono text-[11px]">
+      <div class="flex items-center gap-1.5">
+        <span class="text-outline uppercase">Fila:</span>
+        <span class="text-on-surface font-semibold tabular-nums">{{ stats.total }} Jobs</span>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <span class="text-outline uppercase">Sucesso:</span>
+        <span class="text-tertiary font-semibold tabular-nums">{{ stats.success_rate }}%</span>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <span class="text-outline uppercase">Tempo Médio:</span>
+        <span class="text-on-surface font-semibold tabular-nums">{{ stats.avg_duration }}</span>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <span class="text-outline uppercase">Rodando:</span>
+        <span class="text-primary font-semibold tabular-nums">{{ stats.running }}</span>
+      </div>
+      <div class="hidden md:flex items-center gap-1.5 px-2 py-0.5 rounded bg-surface-container-high text-secondary border border-[#222f4c]">
+        <span class="material-symbols-outlined text-[14px]">terminal</span>
+        <span class="text-on-surface">{{ default_cli_provider }} CLI</span>
+      </div>
     </div>
   </div>
-</article>
+</section>
 
-<article>
-  <table role="grid">
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>Projeto</th>
-        <th>Card</th>
-        <th>Etapa / Coluna</th>
-        <th>Agente / Modelo</th>
-        <th>Estado</th>
-        <th>Processo / Celery</th>
-        <th>Criado em</th>
-        <th style="text-align: right;">Ações</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for j in jobs %}
-        <tr>
-          <td><strong>#{{ j.id }}</strong></td>
-          <td>{{ j.project_name }}</td>
-          <td>
-            <strong>{{ j.card_title }}</strong>
-            {% if j.card_issue %}<span class="badge badge-info">#{{ j.card_issue }}</span>{% endif %}
-          </td>
-          <td>{{ j.column_name }}</td>
-          <td>
-            <small>{{ j.agent_name }}<br><code>{{ j.cli_provider_snapshot }}/{{ j.model_id_snapshot }}</code></small>
-          </td>
-          <td>
-            {% if j.state == 'pending' %}
-              <span class="badge badge-warning">Pendente</span>
-            {% elif j.state == 'running' %}
-              <span class="badge badge-info">Executando</span>
-            {% elif j.state == 'succeeded' %}
-              <span class="badge badge-success">Sucesso</span>
-            {% elif j.state == 'failed' %}
-              <span class="badge badge-danger">Falhou</span>
-            {% elif j.state == 'cancelled' %}
-              <span class="badge">Cancelado</span>
+<!-- Workspace Principal: Master-Detail Telemetry View -->
+<section class="w-full max-w-[1720px] mx-auto px-6 py-4">
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+    <!-- COLUNA ESQUERDA (Master): Fila de Jobs -->
+    <div class="lg:col-span-5 flex flex-col gap-2.5">
+      <div class="flex items-center justify-between px-1">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-[18px] text-primary">view_timeline</span>
+          <h2 class="text-[15px] text-on-surface font-semibold tracking-tight m-0">Fila de Execuções</h2>
+        </div>
+        <span class="font-mono text-[11px] text-outline">{{ jobs|length }} job(s) exibido(s)</span>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        {% for j in jobs %}
+          {% set is_selected = selected_job_id == j.id %}
+          <a href="/jobs?project_id={{ selected_project_id or '' }}&state={{ selected_state or '' }}&selected_job_id={{ j.id }}"
+             class="job-master-item group relative block p-3 rounded-xl no-underline transition-all duration-150 {% if is_selected %}bg-surface-container-high ring-1 ring-primary/50 shadow-md{% else %}bg-surface-container-low border border-[#1e293b] hover:bg-surface-container{% endif %}">
+            {% if is_selected %}
+              <div class="absolute -left-0.5 top-3 bottom-3 w-1 bg-primary rounded-r"></div>
             {% endif %}
-          </td>
-          <td>
-            <small>{{ j.process_status }}</small>
-            {% if j.celery_task_id %}
-              <br><small style="color: var(--pico-muted-color);">Task: <code>{{ j.celery_task_id[:8] }}</code>{% if j.celery_state %} ({{ j.celery_state }}){% endif %}</small>
-            {% endif %}
-          </td>
-          <td><small>{{ j.created_at.strftime('%d/%m %H:%M') }}</small></td>
-          <td style="text-align: right;">
-            <div class="table-actions" style="justify-content: flex-end;">
-              <a href="/jobs/{{ j.id }}" role="button" class="secondary outline">Detalhes</a>
 
-              {% if j.state == 'pending' %}
-                <form method="post" action="/jobs/{{ j.id }}/cancel" style="display:inline; margin:0;">
-                  <button type="submit" class="outline" style="margin:0;">Cancelar</button>
-                </form>
+            <div class="flex items-start justify-between gap-2 mb-1.5">
+              <div class="flex items-center gap-1.5 font-mono text-[11px] flex-wrap">
+                <span class="{% if is_selected or j.state == 'running' %}text-primary font-bold{% else %}text-on-surface-variant font-medium{% endif %}">#{{ j.id }}</span>
+                <span class="text-outline">•</span>
+                <span class="px-1.5 py-0.5 rounded bg-surface-container-highest text-on-surface-variant">
+                  {% if j.card_issue %}Issue #{{ j.card_issue }}{% else %}Card #{{ j.card_id }}{% endif %}
+                </span>
+                <span class="text-outline hidden sm:inline">•</span>
+                <span class="text-on-surface-variant hidden sm:inline truncate max-w-[130px]">{{ j.project_name }}</span>
+              </div>
+
+              {% if j.state == 'running' %}
+                <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-primary-container/20 text-primary font-mono text-[10px] shrink-0 shadow-[0_0_12px_rgba(77,142,255,0.25)]">
+                  <span class="w-1.5 h-1.5 rounded-full bg-primary animate-ping"></span>
+                  <span>Executando</span>
+                  <span class="tabular-nums">{{ j.duration_label }}</span>
+                </span>
+              {% elif j.state == 'pending' %}
+                <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#78350f]/40 border border-[#d97706]/30 text-[#fcd34d] font-mono text-[10px] shrink-0">
+                  <span class="w-1.5 h-1.5 rounded-full bg-[#f59e0b] animate-pulse"></span>
+                  <span>Pendente</span>
+                </span>
+              {% elif j.state == 'succeeded' %}
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-tertiary-container/25 text-tertiary font-mono text-[10px] shrink-0">
+                  <span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                  <span>Sucesso</span>
+                </span>
+              {% elif j.state == 'failed' %}
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#7f1d1d]/40 border border-[#ef4444]/35 text-error font-mono text-[10px] shrink-0">
+                  <span class="w-1.5 h-1.5 rounded-full bg-[#ef4444]"></span>
+                  <span>Falhou</span>
+                </span>
+              {% elif j.state == 'cancelled' %}
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-highest text-outline font-mono text-[10px] shrink-0">
+                  <span>Cancelado</span>
+                </span>
               {% endif %}
-
-              {% if j.state in ['failed', 'cancelled'] %}
-                <form method="post" action="/jobs/{{ j.id }}/retry" style="display:inline; margin:0;">
-                  <button type="submit" class="secondary outline" style="margin:0;" title="Reenviar job para a fila do Celery">Retry (Celery)</button>
-                </form>
-              {% endif %}
-
-              <form method="post" action="/jobs/{{ j.id }}/delete" style="display:inline; margin:0;" onsubmit="return confirm('Remover este job?');">
-                <button type="submit" class="danger outline" style="margin:0;">&times;</button>
-              </form>
             </div>
-          </td>
-        </tr>
+
+            <div class="text-[12.5px] {% if is_selected %}text-on-surface font-semibold{% else %}text-on-surface-variant group-hover:text-on-surface font-medium{% endif %} line-clamp-1 mb-1.5">
+              {{ j.card_title }}
+            </div>
+
+            <div class="flex items-center justify-between text-[10.5px] font-mono text-outline gap-2 pt-1 border-t border-[#1a2538]">
+              <div class="flex items-center gap-1 truncate max-w-[230px]">
+                <span class="material-symbols-outlined text-[13px] text-secondary shrink-0">psychology</span>
+                <span class="text-on-surface-variant truncate">{{ j.agent_name }}</span>
+                <span>/</span>
+                <span class="text-secondary-fixed-dim truncate">{{ j.model_id_snapshot }}</span>
+              </div>
+              <span class="tabular-nums shrink-0">{{ j.duration_label if j.duration_label != '—' else j.created_at.strftime('%d/%m %H:%M') }}</span>
+            </div>
+
+            <div class="flex items-center justify-between text-[10px] font-mono text-on-surface-variant mt-1">
+              <span class="truncate">{{ j.process_status }}</span>
+              {% if j.celery_task_id %}
+                <span class="text-outline shrink-0 ml-2">Task: <code>{{ j.celery_task_id[:8] }}</code>{% if j.celery_state %} ({{ j.celery_state }}){% endif %}</span>
+              {% endif %}
+            </div>
+          </a>
+        {% else %}
+          <div class="p-8 rounded-xl bg-surface-container-low border border-dashed border-[#1e293b] text-center text-outline text-[12px]">
+            Nenhum job encontrado para os filtros selecionados.
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- COLUNA DIREITA (Detail): Inspector Completo do Job Selecionado -->
+    <div class="lg:col-span-7">
+      {% if selected_detail %}
+        {% set job = selected_detail.job %}
+        {% set project = selected_detail.project %}
+        {% set card = selected_detail.card %}
+        {% set agent = selected_detail.agent %}
+        {% set column = selected_detail.column %}
+        {% set card_events = selected_detail.card_events %}
+        {% set celery_status = selected_detail.celery_status %}
+        {% set duration_label = selected_detail.duration_label %}
+        {% set standalone_detail = false %}
+        {% include "jobs/_detail_content.html" %}
       {% else %}
-        <tr>
-          <td colspan="9" style="text-align: center; color: var(--pico-muted-color);">Nenhum job encontrado.</td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</article>
+        <div class="p-12 rounded-2xl bg-surface-container-low border border-[#1e293b] text-center text-outline">
+          <span class="material-symbols-outlined text-[32px] mb-2">terminal</span>
+          <p class="m-0 text-[13px]">Selecione um job na fila à esquerda para inspecionar metadados, saída do agente e logs do Celery.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>

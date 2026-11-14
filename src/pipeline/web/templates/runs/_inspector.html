@@ -1,0 +1,112 @@
+<div id="audit-inspector" class="bg-surface-container-lowest border border-[#1e293b] rounded-xl shadow-xl overflow-hidden flex flex-col">
+  {% if inspected_job %}
+    <!-- Inspector Header -->
+    <div class="p-5 bg-surface-container-low border-b border-[#1e293b] flex flex-col gap-2">
+      <div class="flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2 font-mono text-[10px] text-primary font-medium">
+          <span class="w-2 h-2 rounded-full {% if inspected_job.state == 'running' %}bg-primary animate-ping{% elif inspected_job.state == 'done' %}bg-tertiary{% elif inspected_job.state == 'failed' %}bg-error{% else %}bg-outline{% endif %}"></span>
+          <span>AUDITORIA EM FOCO: JOB #{{ inspected_job.id }}</span>
+        </div>
+
+        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded font-mono text-[10px] {% if inspected_job.state == 'done' %}bg-emerald-500/20 text-tertiary border border-emerald-500/30{% elif inspected_job.state == 'failed' %}bg-red-500/20 text-error border border-red-500/30{% elif inspected_job.state == 'running' %}bg-primary-container/20 text-primary border border-primary/30{% else %}bg-surface-container text-on-surface-variant border border-[#222f4c]{% endif %}">
+          <span class="material-symbols-outlined text-[13px]">
+            {% if inspected_job.state == 'done' %}check_circle{% elif inspected_job.state == 'failed' %}error{% elif inspected_job.state == 'running' %}sync{% else %}schedule{% endif %}
+          </span>
+          {{ inspected_job.state_label }}
+        </span>
+      </div>
+
+      <h2 class="text-[17px] text-white font-semibold tracking-tight m-0">
+        {{ inspected_job.card_title }}
+      </h2>
+
+      <div class="flex items-center gap-2.5 text-on-surface-variant text-[12px] flex-wrap">
+        <span>Projeto: <span class="text-white font-medium">{{ inspected_job.project_name }}</span></span>
+        <span>•</span>
+        <span>Card: <span class="font-mono text-primary">#{{ inspected_job.card_issue_number or inspected_job.card_id }}</span></span>
+        <span>•</span>
+        <span>Iteração: <span class="font-mono text-secondary">{{ inspected_job.iteration }}</span></span>
+      </div>
+    </div>
+
+    <!-- Snapshot Environment Pill Matrix -->
+    <div class="px-5 py-3.5 bg-surface-container border-b border-[#1e293b] grid grid-cols-2 gap-3 font-mono text-[11px]">
+      <div class="flex flex-col gap-0.5 min-w-0">
+        <span class="text-outline uppercase text-[9px]">CLI / Daemon</span>
+        <span class="text-white font-medium truncate">{{ inspected_job.cli_provider }}</span>
+      </div>
+
+      <div class="flex flex-col gap-0.5 min-w-0">
+        <span class="text-outline uppercase text-[9px]">Modelo Snapshot</span>
+        <span class="text-primary font-medium truncate" title="{{ inspected_job.model_id }}">{{ inspected_job.model_id }}</span>
+      </div>
+
+      <div class="flex flex-col gap-0.5 min-w-0">
+        <span class="text-outline uppercase text-[9px]">Transição</span>
+        <span class="text-secondary truncate">{{ inspected_job.origin_column }} → {{ inspected_job.target_column }}</span>
+      </div>
+
+      <div class="flex flex-col gap-0.5 min-w-0">
+        <span class="text-outline uppercase text-[9px]">Duração / Retrabalhos</span>
+        <span class="text-tertiary truncate">{{ inspected_job.duration }} ({{ inspected_job.rework_events_count }}x retrabalho)</span>
+      </div>
+    </div>
+
+    <!-- Agent Output Terminal -->
+    <div class="p-5 flex flex-col gap-4 bg-surface-container-lowest">
+      <div class="flex items-center justify-between">
+        <span class="font-mono text-[10px] text-outline uppercase tracking-wider">
+          Resumo / Saída do Agente Autônomo
+        </span>
+        <button type="button"
+                onclick="navigator.clipboard && navigator.clipboard.writeText(document.getElementById('inspector-log-output').innerText)"
+                class="inline-flex items-center gap-1 font-mono text-[10px] text-primary hover:underline bg-transparent border-0 cursor-pointer p-0">
+          <span class="material-symbols-outlined text-[14px]">content_copy</span>
+          <span>Copiar Log</span>
+        </button>
+      </div>
+
+      <pre id="inspector-log-output"
+           class="bg-[#030b16] border border-[#1a2538] p-3.5 rounded-lg font-mono text-[11px] text-on-surface-variant overflow-x-auto max-h-[260px] overflow-y-auto whitespace-pre-wrap break-words leading-relaxed m-0 select-text">{% if inspected_job.error %}ERRO DE EXECUÇÃO:
+{{ inspected_job.error }}
+
+{% endif %}{% if inspected_job.output_summary %}{{ inspected_job.output_summary }}{% elif inspected_job.process_status %}Status do Processo: {{ inspected_job.process_status }}{% else %}Sem saída registrada para este job.{% endif %}</pre>
+
+      <!-- Timeline -->
+      <div class="flex flex-col gap-2 pt-1">
+        <span class="font-mono text-[10px] text-outline uppercase tracking-wider">
+          Timeline do Ciclo de Execução
+        </span>
+        <div class="flex flex-col gap-2 font-mono text-[10px]">
+          {% for ev in inspected_job.timeline %}
+            <div class="flex items-start gap-2.5">
+              <span class="text-outline shrink-0 w-14">{{ ev.time }}</span>
+              <span class="w-2 h-2 rounded-full mt-1 shrink-0 {% if ev.tone == 'tertiary' %}bg-tertiary{% elif ev.tone == 'error' %}bg-error{% elif ev.tone == 'secondary' %}bg-secondary{% elif ev.tone == 'warning' %}bg-amber-400{% else %}bg-outline-variant{% endif %}"></span>
+              <span class="text-on-surface-variant leading-snug">{{ ev.label }}</span>
+            </div>
+          {% else %}
+            <span class="text-outline">Nenhum evento registrado.</span>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="pt-3 border-t border-[#1e293b] flex flex-wrap items-center gap-2">
+        <a href="/jobs/{{ inspected_job.id }}"
+           class="flex-1 inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#2563eb] hover:bg-[#3b82f6] text-white text-[12px] font-medium no-underline transition-all shadow-sm">
+          <span class="material-symbols-outlined text-[17px]">terminal</span>
+          <span>Abrir Log Completo (#{{ inspected_job.id }})</span>
+        </a>
+        <a href="/projects/{{ inspected_job.project_id }}/board"
+           class="px-3.5 py-2 rounded-lg bg-surface-container-high hover:bg-surface-container-highest border border-[#222f4c] text-on-surface text-[12px] font-medium no-underline transition-colors">
+          Quadro Kanban
+        </a>
+      </div>
+    </div>
+  {% else %}
+    <div class="p-10 text-center flex flex-col items-center gap-2">
+      <span class="material-symbols-outlined text-[36px] text-outline/60">manage_search</span>
+      <p class="text-[13px] text-on-surface-variant m-0">Selecione um job na lista ao lado para inspecionar sua saída e linha do tempo.</p>
+    </div>
+  {% endif %}
+</div>

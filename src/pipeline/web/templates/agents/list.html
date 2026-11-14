@@ -2,59 +2,493 @@
 
 {% block title %}Agentes de IA — AI Pipeline{% endblock %}
 
+{% block main_container_class %}max-w-[1520px] mx-auto px-4 sm:px-6 py-6{% endblock %}
+
 {% block content %}
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-  <div>
-    <h2>CRUD 1 — Agentes de IA</h2>
-    <p>Agentes inteligentes configurados com CLI local e modelos de IA para atuar nas etapas do Kanban.</p>
+<div class="flex flex-col gap-6">
+  <!-- Top Hero / Subheader Técnico -->
+  <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+    <div class="flex flex-col gap-1.5 max-w-3xl">
+      <div class="flex items-center gap-2 flex-wrap">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-surface-container-high border border-[#222f4c] text-tertiary font-mono text-[10px] tracking-wide uppercase">
+          <span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse"></span>
+          CRUD 1 • Orchestration Layer
+        </span>
+        <span class="text-outline font-mono text-[10px]">•</span>
+        <span class="font-mono text-[10px] text-outline">SOLID Ports &amp; Adapters</span>
+      </div>
+      <h1 class="text-2xl sm:text-[28px] text-white font-semibold tracking-tight m-0 leading-tight">
+        Agentes de IA
+      </h1>
+      <p class="text-[13px] text-on-surface-variant/85 m-0">
+        Gerencie agentes autônomos, associe provedores CLI locais e configure modelos e parâmetros para atuação nas etapas do Kanban com despacho de alta velocidade.
+      </p>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2.5 self-start lg:self-center shrink-0">
+      <button type="button"
+              id="btn-test-cli"
+              hx-post="/agents/scan-clis"
+              hx-target="#cli-status-panel"
+              hx-swap="outerHTML"
+              class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-surface-container-high hover:bg-surface-container-highest border border-[#222f4c] text-on-surface text-[12px] font-medium transition-all cursor-pointer">
+        <span class="material-symbols-outlined text-[16px] text-tertiary">terminal</span>
+        <span>Testar Conexões CLIs</span>
+      </button>
+
+      <button type="button"
+              id="btn-open-modal"
+              class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#2563eb] hover:bg-[#3b82f6] text-white text-[12px] font-medium border border-white/10 shadow-[0_0_12px_rgba(59,130,246,0.3)] transition-all cursor-pointer">
+        <span class="material-symbols-outlined text-[17px]">add</span>
+        <span>Novo Agente</span>
+      </button>
+    </div>
   </div>
-  <a href="/agents/new" role="button">＋ Novo Agente</a>
+
+  <!-- Live Telemetry KPI Strip -->
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div class="bg-surface-container-low border border-[#1e293b] p-4 rounded-xl flex items-center justify-between shadow-sm">
+      <div class="flex flex-col">
+        <span class="font-mono text-[10px] text-outline uppercase tracking-wider">Agentes Ativos</span>
+        <div class="flex items-baseline gap-1.5 mt-1">
+          <span class="text-2xl font-semibold text-white font-mono">{{ active_agents }}</span>
+          <span class="text-[12px] text-on-surface-variant font-mono">/ {{ total_agents }} registrados</span>
+        </div>
+      </div>
+      <div class="w-10 h-10 rounded-lg bg-surface-container border border-[#222f4c] flex items-center justify-center text-primary">
+        <span class="material-symbols-outlined text-[22px]">smart_toy</span>
+      </div>
+    </div>
+
+    <div class="bg-surface-container-low border border-[#1e293b] p-4 rounded-xl flex items-center justify-between shadow-sm">
+      <div class="flex flex-col min-w-0">
+        <span class="font-mono text-[10px] text-outline uppercase tracking-wider">Provedor Principal</span>
+        <div class="flex items-baseline gap-1.5 mt-1 flex-wrap">
+          <span class="text-xl font-semibold text-primary truncate">{{ default_cli_name.replace(' CLI', '') }}</span>
+          <span class="font-mono text-[10px] text-tertiary">CLI ({{ default_cli }})</span>
+        </div>
+      </div>
+      <div class="w-10 h-10 rounded-lg bg-surface-container border border-[#222f4c] flex items-center justify-center text-secondary shrink-0">
+        <span class="material-symbols-outlined text-[22px]">deployed_code</span>
+      </div>
+    </div>
+
+    <div class="bg-surface-container-low border border-[#1e293b] p-4 rounded-xl flex items-center justify-between shadow-sm">
+      <div class="flex flex-col">
+        <span class="font-mono text-[10px] text-outline uppercase tracking-wider">CLIs no $PATH</span>
+        <div class="flex items-baseline gap-1.5 mt-1">
+          <span class="text-2xl font-semibold text-tertiary font-mono">{{ installed_clis }} {{ 'Pronta' if installed_clis == 1 else 'Prontas' }}</span>
+          <span class="font-mono text-[10px] text-outline">{{ missing_clis }} ausentes</span>
+        </div>
+      </div>
+      <div class="w-10 h-10 rounded-lg bg-surface-container border border-[#222f4c] flex items-center justify-center text-tertiary">
+        <span class="material-symbols-outlined text-[22px]">dns</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Grid: Agent Cards (8 col) + CLIs & Telemetry Sidebar (4 col) -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+    <div class="lg:col-span-8 flex flex-col gap-4">
+      <!-- Filter Bar -->
+      <div class="bg-surface-container-low border border-[#1e293b] p-3.5 rounded-xl flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shadow-sm">
+        <div class="flex items-center gap-3 flex-1 min-w-0">
+          <div class="relative w-full sm:w-72">
+            <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-outline text-[17px]">search</span>
+            <input id="agent-search-input"
+                   type="text"
+                   placeholder="Filtrar por agente, modelo, provedor..."
+                   class="w-full bg-surface-container border border-[#222f4c] text-on-surface text-[12px] pl-8 pr-3 py-1.5 rounded-lg focus:outline-none focus:border-primary placeholder:text-outline" />
+          </div>
+          <div class="h-5 w-[1px] bg-surface-variant hidden sm:block"></div>
+          <span id="agents-visible-count" class="font-mono text-[11px] text-outline hidden md:inline whitespace-nowrap">
+            {{ total_agents }} {{ 'agente cadastrado' if total_agents == 1 else 'agentes cadastrados' }}
+          </span>
+        </div>
+
+        <div class="flex items-center gap-2 self-end sm:self-center">
+          <button type="button"
+                  id="btn-toggle-density"
+                  class="px-2.5 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high border border-[#222f4c] text-on-surface-variant hover:text-on-surface font-mono text-[11px] flex items-center gap-1.5 transition-colors cursor-pointer">
+            <span class="material-symbols-outlined text-[14px]">tune</span>
+            <span id="density-label">Visualização: Densa</span>
+          </button>
+          <a href="/agents/new"
+             class="px-2.5 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high border border-[#222f4c] text-on-surface-variant hover:text-on-surface font-mono text-[11px] flex items-center gap-1 no-underline transition-colors"
+             title="Abrir formulário em página dedicada">
+            <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+            <span>Página completa</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Agents Cards List -->
+      <div id="agents-list-container" class="flex flex-col gap-4">
+        {% for item in agent_cards %}
+          {% set a = item.agent %}
+          {% set col_names = item.linked_columns | map(attribute='column_name') | join(' ') %}
+          <div class="agent-card bg-surface-container-low hover:bg-surface-container border border-[#1e293b] hover:border-[#2c3f63] transition-all duration-200 p-5 rounded-xl shadow-[0_4px_18px_rgba(0,0,0,0.22)] flex flex-col gap-4"
+               data-search="{{ (a.name ~ ' ' ~ a.cli_provider ~ ' ' ~ a.model_id ~ ' ' ~ col_names ~ ' ' ~ item.prompt_summary) | lower }}">
+            <!-- Card Header -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div class="flex items-center gap-3.5 min-w-0">
+                <div class="w-11 h-11 rounded-xl bg-surface-container-high border border-[#222f4c] flex items-center justify-center shrink-0 {% if item.running_job %}text-tertiary shadow-[0_0_16px_rgba(78,222,163,0.18)]{% elif a.active %}text-primary shadow-[0_0_16px_rgba(77,142,255,0.14)]{% else %}text-outline{% endif %}">
+                  <span class="material-symbols-outlined text-[23px]">
+                    {% if 'arquit' in (a.name | lower) %}architecture{% elif 'dev' in (a.name | lower) or 'desenv' in (a.name | lower) %}terminal{% elif 'qa' in (a.name | lower) or 'test' in (a.name | lower) or 'rev' in (a.name | lower) %}verified_user{% else %}smart_toy{% endif %}
+                  </span>
+                </div>
+
+                <div class="flex flex-col min-w-0">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <h3 class="text-[17px] font-semibold text-white tracking-tight m-0">{{ a.name }}</h3>
+
+                    {% if item.running_job %}
+                      <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-primary-container/20 border border-primary/35 text-primary font-mono text-[10px]">
+                        <span class="w-1.5 h-1.5 rounded-full bg-primary animate-ping"></span>
+                        <span>Em Execução</span>
+                      </span>
+                    {% elif a.active %}
+                      <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-tertiary font-mono text-[10px]">
+                        <span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                        <span>Ativo</span>
+                      </span>
+                    {% else %}
+                      <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-red-500/15 border border-red-500/30 text-error font-mono text-[10px]">
+                        <span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+                        <span>Inativo</span>
+                      </span>
+                    {% endif %}
+                  </div>
+                  <p class="text-[12px] text-on-surface-variant/80 truncate m-0 mt-0.5">{{ item.prompt_summary }}</p>
+                </div>
+              </div>
+
+              <!-- Quick Last Job Status -->
+              <div class="flex items-center gap-1.5 self-start sm:self-center shrink-0">
+                {% if item.running_job %}
+                  <span class="font-mono text-[10px] text-outline">Status ativo:</span>
+                  <a href="/jobs/{{ item.running_job.id }}"
+                     class="font-mono text-[10px] text-primary bg-surface-container border border-primary/30 px-2 py-0.5 rounded no-underline hover:bg-surface-container-high transition-colors">
+                    Job #{{ item.running_job.id }} ({{ item.running_job.process_status or 'Executando' }})
+                  </a>
+                {% elif item.last_job %}
+                  <span class="font-mono text-[10px] text-outline">Último job:</span>
+                  <a href="/jobs/{{ item.last_job.id }}"
+                     class="font-mono text-[10px] px-2 py-0.5 rounded bg-surface-container border border-[#222f4c] no-underline hover:border-primary/40 transition-colors {% if item.last_job.state == 'done' %}text-tertiary{% elif item.last_job.state == 'failed' %}text-error{% else %}text-primary{% endif %}">
+                    #{{ item.last_job.id }} ({{ item.last_job_state_label }})
+                  </a>
+                {% else %}
+                  <span class="font-mono text-[10px] text-outline bg-surface-container/60 border border-[#1e293b] px-2 py-0.5 rounded">Sem jobs ainda</span>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Technical Specs 3-Col Inner Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-surface-container-lowest/75 border border-[#1a2538] p-3 rounded-lg">
+              <div class="flex flex-col gap-1">
+                <span class="font-mono text-[10px] text-outline uppercase tracking-wider">Provedor CLI</span>
+                <div class="flex items-center gap-2 min-w-0">
+                  <span class="px-1.5 py-0.5 rounded bg-[#2563eb] text-white font-mono text-[10px] font-bold tracking-wider shrink-0">
+                    {{ a.cli_provider }}
+                  </span>
+                  <span class="text-[12px] text-on-surface truncate">{{ item.provider_display }}</span>
+                </div>
+              </div>
+
+              <div class="flex flex-col gap-1">
+                <span class="font-mono text-[10px] text-outline uppercase tracking-wider">Modelo de IA</span>
+                <div class="flex items-center gap-1.5 min-w-0">
+                  <span class="w-2 h-2 rounded-full shrink-0 {% if 'claude' in (a.model_id | lower) %}bg-secondary{% else %}bg-primary{% endif %}"></span>
+                  <span class="font-mono text-[11px] font-medium truncate {% if 'claude' in (a.model_id | lower) %}text-secondary{% else %}text-primary{% endif %}" title="{{ a.model_id }}">
+                    {{ a.model_id }}
+                  </span>
+                </div>
+              </div>
+
+              <div class="flex flex-col gap-1">
+                <span class="font-mono text-[10px] text-outline uppercase tracking-wider">Etapa no Kanban</span>
+                <div class="flex items-center gap-1.5 min-w-0">
+                  <span class="material-symbols-outlined text-[14px] text-primary shrink-0">view_kanban</span>
+                  {% if item.linked_columns %}
+                    {% set first_col = item.linked_columns[0] %}
+                    <span class="font-mono text-[11px] text-on-surface truncate" title="{% for c in item.linked_columns %}{{ c.column_name }} → {{ c.next_column_name or 'Fim' }}{% if not loop.last %}; {% endif %}{% endfor %}">
+                      {{ first_col.column_name }} → {{ first_col.next_column_name or 'Fim' }}{% if item.linked_columns | length > 1 %} (+{{ (item.linked_columns | length) - 1 }}){% endif %}
+                    </span>
+                  {% else %}
+                    <a href="/columns" class="font-mono text-[11px] text-outline hover:text-primary no-underline truncate">Não vinculada</a>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+            <!-- Collapsible Prompt Markdown Preview -->
+            <div class="agent-prompt-drawer hidden bg-surface-container-lowest border border-[#1e293b] rounded-lg p-3">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="font-mono text-[10px] uppercase tracking-wider text-primary">System Prompt (Markdown)</span>
+                <a href="/agents/{{ a.id }}/edit" class="font-mono text-[10px] text-on-surface-variant hover:text-white no-underline">Editar prompt →</a>
+              </div>
+              <pre class="m-0 font-mono text-[11px] text-on-surface-variant whitespace-pre-wrap break-words max-h-48 overflow-y-auto leading-relaxed">{{ a.prompt_markdown if a.prompt_markdown else 'Nenhum prompt configurado.' }}</pre>
+            </div>
+
+            <!-- Card Footer: Telemetry & Actions -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+              <div class="flex flex-wrap items-center gap-2.5 text-outline font-mono text-[11px]">
+                <span class="inline-flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[14px] {% if item.approval_rate is not none %}text-tertiary{% else %}text-outline{% endif %}">check_circle</span>
+                  <span>Aprovação: {% if item.approval_rate is not none %}{{ item.approval_rate }}%{% else %}—{% endif %}</span>
+                </span>
+                <span>•</span>
+                <span>Tempo Médio: {% if item.avg_duration_s is not none %}{{ item.avg_duration_s }}s{% else %}—{% endif %}</span>
+                <span>•</span>
+                <span>Jobs: {{ item.total_jobs }}</span>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-1.5 self-end sm:self-auto">
+                <a href="/agents/{{ a.id }}/edit"
+                   class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-container-highest border border-[#222f4c] text-on-surface text-[11px] font-medium no-underline transition-colors"
+                   title="Editar Agente">
+                  <span class="material-symbols-outlined text-[15px]">edit</span>
+                  <span>Editar</span>
+                </a>
+
+                <form method="post" action="/agents/{{ a.id }}/toggle" class="inline m-0">
+                  <button type="submit"
+                          class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-container-highest border border-[#222f4c] text-on-surface text-[11px] font-medium transition-colors cursor-pointer"
+                          title="{% if a.active %}Pausar Agente{% else %}Ativar Agente{% endif %}">
+                    <span class="material-symbols-outlined text-[15px]">{% if a.active %}pause_circle{% else %}play_circle{% endif %}</span>
+                    <span>{% if a.active %}Pausar{% else %}Ativar{% endif %}</span>
+                  </button>
+                </form>
+
+                <button type="button"
+                        class="btn-toggle-prompt inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-container-highest border border-[#222f4c] text-on-surface text-[11px] font-medium transition-colors cursor-pointer"
+                        title="Visualizar Prompt de Sistema">
+                  <span class="material-symbols-outlined text-[15px] text-secondary">psychology</span>
+                  <span>Prompt</span>
+                </button>
+
+                <form method="post" action="/agents/{{ a.id }}/delete" class="inline m-0" onsubmit="return confirm('Excluir este agente?');">
+                  <button type="submit"
+                          class="p-1.5 rounded-lg bg-surface-container-high hover:bg-red-500/20 border border-[#222f4c] hover:border-red-500/35 text-outline hover:text-error transition-colors cursor-pointer"
+                          title="Excluir Agente">
+                    <span class="material-symbols-outlined text-[16px]">delete</span>
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        {% else %}
+          <div class="bg-surface-container-low border border-[#1e293b] rounded-xl p-10 text-center flex flex-col items-center gap-2.5">
+            <span class="material-symbols-outlined text-[36px] text-outline/60">smart_toy</span>
+            <p class="text-[13px] text-on-surface-variant m-0">Nenhum agente cadastrado ainda.</p>
+            <a href="/agents/new" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#2563eb] hover:bg-[#3b82f6] text-white text-[12px] font-medium no-underline transition-colors">
+              <span class="material-symbols-outlined text-[16px]">add</span>
+              <span>Cadastrar Primeiro Agente</span>
+            </a>
+          </div>
+        {% endfor %}
+
+        <div id="agents-empty-filter" class="hidden bg-surface-container-low border border-[#1e293b] rounded-xl p-8 text-center">
+          <p class="text-[13px] text-on-surface-variant m-0">Nenhum agente corresponde ao filtro aplicado.</p>
+        </div>
+      </div>
+
+      <!-- Bottom SOLID Architecture Callout -->
+      <div class="bg-surface-container-lowest border border-[#1a2538] p-4 rounded-xl flex items-center justify-between gap-4 shadow-sm">
+        <div class="flex items-center gap-3.5">
+          <div class="w-9 h-9 rounded-lg bg-surface-container-high border border-[#222f4c] flex items-center justify-center text-tertiary shrink-0">
+            <span class="material-symbols-outlined text-[18px]">hub</span>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-[13px] font-medium text-on-surface">Arquitetura Aberta (SOLID Ports &amp; Adapters)</span>
+            <span class="text-[12px] text-on-surface-variant/80">Qualquer CLI local registrada em <code class="font-mono text-[11px] text-primary">CliModelProvider</code> pode ser vinculada como agente autônomo nas colunas do fluxo.</span>
+          </div>
+        </div>
+        <a href="/columns" class="hidden sm:inline-flex items-center gap-1 text-primary hover:underline font-mono text-[11px] shrink-0 no-underline">
+          <span>Vincular Colunas</span>
+          <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Right Sidebar (4 col): CLIs no Ambiente Local -->
+    <div class="lg:col-span-4 flex flex-col gap-4">
+      {% include "agents/_cli_panel.html" %}
+    </div>
+  </div>
 </div>
 
-<article>
-  <table role="grid">
-    <thead>
-      <tr>
-        <th>Nome</th>
-        <th>Provedor CLI</th>
-        <th>Modelo</th>
-        <th>Status</th>
-        <th style="text-align: right;">Ações</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for a in agents %}
-        <tr>
-          <td><strong>{{ a.name }}</strong></td>
-          <td><span class="badge badge-info">{{ a.cli_provider }}</span></td>
-          <td><code>{{ a.model_id }}</code></td>
-          <td>
-            {% if a.active %}
-              <span class="badge badge-success">Ativo</span>
-            {% else %}
-              <span class="badge badge-danger">Inativo</span>
-            {% endif %}
-          </td>
-          <td style="text-align: right;">
-            <div class="table-actions" style="justify-content: flex-end;">
-              <a href="/agents/{{ a.id }}/edit" role="button" class="secondary outline">Editar</a>
-              <form method="post" action="/agents/{{ a.id }}/toggle" style="display:inline; margin:0;">
-                <button type="submit" class="outline" style="margin:0;">
-                  {% if a.active %}Pausar{% else %}Ativar{% endif %}
-                </button>
-              </form>
-              <form method="post" action="/agents/{{ a.id }}/delete" style="display:inline; margin:0;" onsubmit="return confirm('Excluir este agente?');">
-                <button type="submit" class="danger outline" style="margin:0;">Excluir</button>
-              </form>
-            </div>
-          </td>
-        </tr>
-      {% else %}
-        <tr>
-          <td colspan="5" style="text-align: center; color: var(--pico-muted-color);">Nenhum agente cadastrado ainda.</td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</article>
+<!-- Modal Overlay: Cadastrar Novo Agente -->
+<div id="modal-novo-agente" class="hidden fixed inset-0 z-50 bg-surface-container-lowest/80 backdrop-blur-md flex items-center justify-center p-4">
+  <div class="bg-surface-container-low border border-[#222f4c] max-w-2xl w-full rounded-xl shadow-2xl p-6 flex flex-col gap-5 max-h-[90vh] overflow-y-auto">
+    <div class="flex items-center justify-between pb-3 border-b border-[#1e293b]">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-surface-container-high border border-[#222f4c] flex items-center justify-center text-primary">
+          <span class="material-symbols-outlined text-[20px]">smart_toy</span>
+        </div>
+        <div class="flex flex-col">
+          <h3 class="text-[17px] font-semibold text-white m-0">Cadastrar Novo Agente de IA</h3>
+          <span class="text-[12px] text-on-surface-variant m-0">Configure a persona, provedor CLI e modelo para as etapas do Kanban</span>
+        </div>
+      </div>
+
+      <button type="button" id="btn-close-modal" class="p-1.5 rounded-lg text-outline hover:text-white bg-surface-container-high border border-[#222f4c] cursor-pointer">
+        <span class="material-symbols-outlined text-[18px]">close</span>
+      </button>
+    </div>
+
+    <form method="post" action="/agents/new" class="flex flex-col gap-4 m-0">
+      <div class="flex flex-col gap-1.5">
+        <label for="modal_agent_name" class="font-mono text-[10px] uppercase tracking-wider text-on-surface">Nome do Agente</label>
+        <input id="modal_agent_name"
+               name="name"
+               type="text"
+               required
+               placeholder="Ex.: Arquiteto Gemini, Desenvolvedor Claude, Revisor Codex"
+               class="w-full bg-surface-container border border-[#222f4c] text-on-surface text-[13px] px-3 py-2 rounded-lg focus:outline-none focus:border-primary placeholder:text-outline" />
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="flex flex-col gap-1.5">
+          <label for="modal_cli_provider" class="font-mono text-[10px] uppercase tracking-wider text-on-surface">Provedor CLI Local ($PATH)</label>
+          <select id="modal_cli_provider"
+                  name="cli_provider"
+                  required
+                  hx-get="/agents/models-options"
+                  hx-target="#modal_model_id_select"
+                  hx-trigger="change"
+                  class="w-full bg-surface-container border border-[#222f4c] text-on-surface font-mono text-[12px] px-3 py-2 rounded-lg focus:outline-none focus:border-primary">
+            {% for p in cli_providers %}
+              <option value="{{ p.key }}" {% if default_cli == p.key %}selected{% endif %}>
+                {{ p.name }} {% if p.installed %}(Instalado){% else %}(Não instalado){% endif %}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="modal_model_id_select" class="font-mono text-[10px] uppercase tracking-wider text-on-surface">Modelo de Linguagem (LLM)</label>
+          <div class="flex items-center gap-2">
+            <select id="modal_model_id_select"
+                    name="model_id"
+                    required
+                    class="flex-1 min-w-0 bg-surface-container border border-[#222f4c] text-on-surface font-mono text-[12px] px-3 py-2 rounded-lg focus:outline-none focus:border-primary">
+              {% for m in default_models %}
+                <option value="{{ m.model_id }}">{{ m.label }}</option>
+              {% else %}
+                <option value="" disabled selected>Nenhum modelo disponível</option>
+              {% endfor %}
+            </select>
+            <button type="button"
+                    hx-post="/agents/sync-models"
+                    hx-include="#modal_cli_provider"
+                    hx-target="#modal_model_id_select"
+                    hx-swap="innerHTML"
+                    title="Sincronizar modelos deste provedor"
+                    class="px-2.5 py-2 rounded-lg bg-surface-container-high hover:bg-surface-container-highest border border-[#222f4c] text-on-surface font-mono text-[11px] shrink-0 cursor-pointer">
+              ↻
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <div class="flex items-center justify-between">
+          <label for="modal_prompt_markdown" class="font-mono text-[10px] uppercase tracking-wider text-on-surface">Persona &amp; Regras de Execução (System Prompt)</label>
+          <span class="font-mono text-[10px] text-outline">Markdown suportado</span>
+        </div>
+        <textarea id="modal_prompt_markdown"
+                  name="prompt_markdown"
+                  rows="6"
+                  placeholder="Defina o papel, diretrizes arquiteturais, contexto e formato esperado..."
+                  class="w-full bg-surface-container border border-[#222f4c] text-on-surface font-mono text-[12px] p-3 rounded-lg focus:outline-none focus:border-primary placeholder:text-outline"></textarea>
+      </div>
+
+      <label for="modal_active" class="flex items-center gap-2.5 p-3 rounded-lg bg-surface-container-lowest border border-[#1a2538] text-[12px] text-on-surface cursor-pointer">
+        <input type="checkbox" id="modal_active" name="active" value="true" checked class="accent-[#3b82f6]" />
+        <span>Agente Ativo (disponível para vincular a colunas do Kanban)</span>
+      </label>
+
+      <div class="flex items-center justify-end gap-2.5 pt-2 border-t border-[#1e293b]">
+        <button type="button" id="btn-cancel-modal" class="px-4 py-2 rounded-lg bg-surface-container-high hover:bg-surface-container-highest border border-[#222f4c] text-on-surface text-[12px] font-medium cursor-pointer">
+          Cancelar
+        </button>
+        <button type="submit" class="px-5 py-2 rounded-lg bg-[#2563eb] hover:bg-[#3b82f6] text-white text-[12px] font-medium border border-white/10 shadow-[0_0_12px_rgba(59,130,246,0.3)] cursor-pointer">
+          Salvar Agente
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  (() => {
+    const modal = document.getElementById('modal-novo-agente');
+    const openBtn = document.getElementById('btn-open-modal');
+    const closeBtn = document.getElementById('btn-close-modal');
+    const cancelBtn = document.getElementById('btn-cancel-modal');
+
+    const closeModal = () => modal && modal.classList.add('hidden');
+    if (openBtn && modal) {
+      openBtn.addEventListener('click', () => modal.classList.remove('hidden'));
+    }
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+    if (modal) {
+      modal.addEventListener('click', (ev) => {
+        if (ev.target === modal) closeModal();
+      });
+    }
+
+    // Live search filter on Agent Cards
+    const searchInput = document.getElementById('agent-search-input');
+    const cards = Array.from(document.querySelectorAll('.agent-card'));
+    const countLabel = document.getElementById('agents-visible-count');
+    const emptyFilter = document.getElementById('agents-empty-filter');
+
+    if (searchInput) {
+      searchInput.addEventListener('input', () => {
+        const query = searchInput.value.trim().toLowerCase();
+        let visible = 0;
+        cards.forEach((card) => {
+          const hay = card.dataset.search || '';
+          const match = !query || hay.includes(query);
+          card.classList.toggle('hidden', !match);
+          if (match) visible += 1;
+        });
+        if (countLabel) {
+          countLabel.textContent = `${visible} ${visible === 1 ? 'agente visível' : 'agentes visíveis'}`;
+        }
+        if (emptyFilter) {
+          emptyFilter.classList.toggle('hidden', !(cards.length > 0 && visible === 0));
+        }
+      });
+    }
+
+    // Per-card Prompt drawer toggle
+    document.querySelectorAll('.btn-toggle-prompt').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const card = btn.closest('.agent-card');
+        const drawer = card ? card.querySelector('.agent-prompt-drawer') : null;
+        if (drawer) drawer.classList.toggle('hidden');
+      });
+    });
+
+    // Global Density / Prompts toggle
+    const densityBtn = document.getElementById('btn-toggle-density');
+    const densityLabel = document.getElementById('density-label');
+    let promptsExpanded = false;
+    if (densityBtn) {
+      densityBtn.addEventListener('click', () => {
+        promptsExpanded = !promptsExpanded;
+        document.querySelectorAll('.agent-prompt-drawer').forEach((drawer) => {
+          drawer.classList.toggle('hidden', !promptsExpanded);
+        });
+        if (densityLabel) {
+          densityLabel.textContent = promptsExpanded ? 'Visualização: Prompts' : 'Visualização: Densa';
+        }
+      });
+    }
+  })();
+</script>
 {% endblock %}
