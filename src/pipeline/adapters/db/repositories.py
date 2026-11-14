@@ -36,14 +36,17 @@ class SqlSettingsRepository:
 
     def update(
         self,
-        default_cli_provider: str,
-        active_project_provider: str,
-        provider_settings: dict[str, Any],
+        default_cli_provider: str | None = None,
+        active_project_provider: str | None = None,
+        provider_settings: dict[str, Any] | None = None,
     ) -> AppSettings:
         settings = self.get()
-        settings.default_cli_provider = default_cli_provider
-        settings.active_project_provider = active_project_provider
-        settings.provider_settings = provider_settings
+        if default_cli_provider is not None:
+            settings.default_cli_provider = default_cli_provider
+        if active_project_provider is not None:
+            settings.active_project_provider = active_project_provider
+        if provider_settings is not None:
+            settings.provider_settings = provider_settings
         settings.updated_at = utc_now()
         self.session.add(settings)
         self.session.flush()
@@ -74,12 +77,14 @@ class SqlAgentRepository:
         model_id: str,
         prompt_markdown: str,
         active: bool = True,
+        max_parallel_executions: int = 1,
     ) -> Agent:
         agent = Agent(
             name=name,
             cli_provider=cli_provider,
             model_id=model_id,
             prompt_markdown=prompt_markdown,
+            max_parallel_executions=max(int(max_parallel_executions), 1),
             active=active,
             created_at=utc_now(),
             updated_at=utc_now(),
@@ -132,9 +137,11 @@ class SqlProjectRepository:
         name: str,
         local_path: str,
         active: bool = True,
+        project_provider: str = "github",
     ) -> Project:
         project = Project(
             project_key=project_key,
+            project_provider=(project_provider or "github").strip(),
             name=name,
             local_path=local_path,
             active=active,

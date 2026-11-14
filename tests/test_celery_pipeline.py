@@ -77,6 +77,7 @@ def test_orchestrator_dispatches_jobs_and_revokes_cancelled():
         )
         proj = uow.projects.create(
             project_key="proj-dispatch",
+            project_provider="fake_board",
             name="Projeto Dispatch",
             local_path="/tmp",
             active=True,
@@ -143,6 +144,7 @@ def test_celery_eager_execution_runs_job_and_skips_cancelled():
         )
         proj = uow.projects.create(
             project_key=f"celery-proj-{uid}",
+            project_provider="fake_board",
             name=f"Projeto Celery {uid}",
             local_path="/tmp",
             active=True,

@@ -16,9 +16,9 @@
         <h1 class="text-[16px] font-semibold text-white tracking-tight truncate">{{ project.name }}</h1>
       </div>
       <div class="flex items-center gap-2 flex-wrap font-mono text-[11px]">
-        <span class="px-2 py-0.5 rounded border border-[#1e293b] bg-[#0c1524] text-[#94a3b8] flex items-center gap-1.5">
-          <span class="material-symbols-outlined text-[13px] text-[#38bdf8]">alt_route</span>
-          {{ active_provider_name }}
+        <span class="px-2 py-0.5 rounded border {% if provider_enabled %}border-[#1e293b] bg-[#0c1524] text-[#94a3b8]{% else %}border-[#ef4444]/40 bg-[#7f1d1d]/30 text-[#fca5a5]{% endif %} flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[13px] {% if provider_enabled %}text-[#38bdf8]{% else %}text-[#ef4444]{% endif %}">alt_route</span>
+          {{ active_provider_name }}{% if not provider_enabled %} (Desativado){% endif %}
         </span>
         <span class="px-2 py-0.5 rounded border border-[#1e293b] bg-[#0c1524] text-[#64748b] hidden md:inline-flex items-center gap-1 max-w-[300px] truncate" title="{{ project.local_path }}">
           <span class="material-symbols-outlined text-[12px] text-[#64748b]">terminal</span>

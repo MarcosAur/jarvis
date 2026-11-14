@@ -62,10 +62,10 @@
 
     <div class="bg-surface-container-low border border-[#1e293b] p-4 rounded-xl flex items-center justify-between shadow-sm">
       <div class="flex flex-col min-w-0">
-        <span class="font-mono text-[10px] text-outline uppercase tracking-wider">Provedor Principal</span>
+        <span class="font-mono text-[10px] text-outline uppercase tracking-wider">Catálogo Multi-Provedor</span>
         <div class="flex items-baseline gap-1.5 mt-1 flex-wrap">
-          <span class="text-xl font-semibold text-primary truncate">{{ default_cli_name.replace(' CLI', '') }}</span>
-          <span class="font-mono text-[10px] text-tertiary">CLI ({{ default_cli }})</span>
+          <span class="text-xl font-semibold text-primary font-mono">{{ total_models_count }} modelos</span>
+          <span class="font-mono text-[10px] text-tertiary">{{ enabled_clis }} CLI(s) ativas</span>
         </div>
       </div>
       <div class="w-10 h-10 rounded-lg bg-surface-container border border-[#222f4c] flex items-center justify-center text-secondary shrink-0">
@@ -192,6 +192,9 @@
                     {{ a.cli_provider }}
                   </span>
                   <span class="text-[12px] text-on-surface truncate">{{ item.provider_display }}</span>
+                  {% if not item.provider_enabled %}
+                    <span class="font-mono text-[9px] px-1.5 py-0.5 rounded bg-red-500/15 text-error border border-red-500/30 shrink-0">Desativado</span>
+                  {% endif %}
                 </div>
               </div>
 
@@ -241,6 +244,12 @@
                 <span>Tempo Médio: {% if item.avg_duration_s is not none %}{{ item.avg_duration_s }}s{% else %}—{% endif %}</span>
                 <span>•</span>
                 <span>Jobs: {{ item.total_jobs }}</span>
+                <span>•</span>
+                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-surface-container border border-[#222f4c] {% if a.max_parallel_executions > 1 %}text-primary{% else %}text-on-surface-variant{% endif %}"
+                      title="Limite de execuções simultâneas deste agente por projeto">
+                  <span class="material-symbols-outlined text-[12px]">bolt</span>
+                  <span>Limite: {{ a.max_parallel_executions }}x/proj{% if item.running_jobs_count > 0 %} ({{ item.running_jobs_count }} ativo){% endif %}</span>
+                </span>
               </div>
 
               <div class="flex flex-wrap items-center gap-1.5 self-end sm:self-auto">
@@ -358,8 +367,8 @@
                   hx-target="#modal_model_id_select"
                   hx-trigger="change"
                   class="w-full bg-surface-container border border-[#222f4c] text-on-surface font-mono text-[12px] px-3 py-2 rounded-lg focus:outline-none focus:border-primary">
-            {% for p in cli_providers %}
-              <option value="{{ p.key }}" {% if default_cli == p.key %}selected{% endif %}>
+            {% for p in cli_providers if p.enabled %}
+              <option value="{{ p.key }}" {% if initial_cli == p.key %}selected{% endif %}>
                 {{ p.name }} {% if p.installed %}(Instalado){% else %}(Não instalado){% endif %}
               </option>
             {% endfor %}
@@ -404,10 +413,24 @@
                   class="w-full bg-surface-container border border-[#222f4c] text-on-surface font-mono text-[12px] p-3 rounded-lg focus:outline-none focus:border-primary placeholder:text-outline"></textarea>
       </div>
 
-      <label for="modal_active" class="flex items-center gap-2.5 p-3 rounded-lg bg-surface-container-lowest border border-[#1a2538] text-[12px] text-on-surface cursor-pointer">
-        <input type="checkbox" id="modal_active" name="active" value="true" checked class="accent-[#3b82f6]" />
-        <span>Agente Ativo (disponível para vincular a colunas do Kanban)</span>
-      </label>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
+        <div class="flex flex-col gap-1">
+          <label for="modal_max_parallel_executions" class="font-mono text-[10px] uppercase tracking-wider text-on-surface">Paralelismo Máximo / Projeto</label>
+          <input id="modal_max_parallel_executions"
+                 name="max_parallel_executions"
+                 type="number"
+                 min="1"
+                 max="32"
+                 value="1"
+                 required
+                 class="w-full bg-surface-container border border-[#222f4c] text-on-surface font-mono text-[12px] px-3 py-2 rounded-lg focus:outline-none focus:border-primary" />
+        </div>
+
+        <label for="modal_active" class="flex items-center gap-2.5 p-3 sm:mt-4 rounded-lg bg-surface-container-lowest border border-[#1a2538] text-[12px] text-on-surface cursor-pointer">
+          <input type="checkbox" id="modal_active" name="active" value="true" checked class="accent-[#3b82f6]" />
+          <span>Agente Ativo no Kanban</span>
+        </label>
+      </div>
 
       <div class="flex items-center justify-end gap-2.5 pt-2 border-t border-[#1e293b]">
         <button type="button" id="btn-cancel-modal" class="px-4 py-2 rounded-lg bg-surface-container-high hover:bg-surface-container-highest border border-[#222f4c] text-on-surface text-[12px] font-medium cursor-pointer">

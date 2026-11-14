@@ -22,10 +22,14 @@ class ModelCatalogService:
 
         return models
 
-    def sync_all_installed_providers(self) -> dict[str, int]:
+    def sync_all_installed_providers(self, disabled_providers: set[str] | None = None) -> dict[str, int]:
         results: dict[str, int] = {}
+        disabled = disabled_providers or set()
         with self.uow_factory() as uow:
             for provider in cli_registry.list_all():
+                if provider.provider_key in disabled:
+                    results[provider.provider_key] = 0
+                    continue
                 if provider.is_installed():
                     try:
                         models = provider.list_models()

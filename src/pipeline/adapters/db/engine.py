@@ -50,10 +50,48 @@ def _ensure_sqlite_job_columns(engine) -> None:
             conn.execute(text("ALTER TABLE jobs ADD COLUMN process_status VARCHAR"))
 
 
+def _ensure_sqlite_agent_columns(engine) -> None:
+    """Safely add new Agent concurrency columns to pre-existing SQLite databases."""
+    if not str(engine.url).startswith("sqlite"):
+        return
+    with engine.begin() as conn:
+        rows = conn.execute(text("PRAGMA table_info(agents)")).fetchall()
+        if not rows:
+            return
+        existing_cols = {row[1] for row in rows}
+        if "max_parallel_executions" not in existing_cols:
+            conn.execute(text("ALTER TABLE agents ADD COLUMN max_parallel_executions INTEGER NOT NULL DEFAULT 1"))
+
+
+def _ensure_sqlite_project_columns(engine) -> None:
+    """Safely add Project.project_provider to pre-existing SQLite databases."""
+    if not str(engine.url).startswith("sqlite"):
+        return
+    with engine.begin() as conn:
+        rows = conn.execute(text("PRAGMA table_info(projects)")).fetchall()
+        if not rows:
+            return
+        existing_cols = {row[1] for row in rows}
+        if "project_provider" not in existing_cols:
+            conn.execute(text("ALTER TABLE projects ADD COLUMN project_provider VARCHAR NOT NULL DEFAULT 'github'"))
+            conn.execute(text("CREATE INDEX IF NOT EXISTS ix_projects_project_provider ON projects (project_provider)"))
+            # Preserve legacy active_project_provider on existing projects if app_settings exists
+            app_rows = conn.execute(text("PRAGMA table_info(app_settings)")).fetchall()
+            if app_rows:
+                row = conn.execute(text("SELECT active_project_provider FROM app_settings WHERE id = 1")).first()
+                if row and row[0]:
+                    conn.execute(
+                        text("UPDATE projects SET project_provider = :prov"),
+                        {"prov": str(row[0]).strip()},
+                    )
+
+
 def init_db(engine=None) -> None:
     eng = engine or get_engine()
     SQLModel.metadata.create_all(eng)
     _ensure_sqlite_job_columns(eng)
+    _ensure_sqlite_agent_columns(eng)
+    _ensure_sqlite_project_columns(eng)
 
 
 def reset_engine() -> None:

@@ -14,6 +14,8 @@ class WorkerHealthStatus:
     broker_available: bool
     workers_online: int
     worker_names: list[str]
+    nodes_online: int = 0
+    active_tasks_count: int = 0
     error: str | None = None
 
 

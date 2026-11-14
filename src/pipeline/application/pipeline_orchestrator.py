@@ -6,6 +6,7 @@ from pipeline.application.sync_service import SyncService
 from pipeline.bootstrap import project_registry
 from pipeline.domain.exceptions import BoardError, EntityNotFoundError
 from pipeline.domain.ports.job_dispatcher import JobDispatcher
+from pipeline.domain.provider_state import is_project_provider_enabled
 
 logger = logging.getLogger(__name__)
 
@@ -32,20 +33,44 @@ class PipelineOrchestrator:
             project_db_id = project.id
 
             settings = uow.settings.get()
-            provider_key = settings.active_project_provider
-            default_cli = settings.default_cli_provider
+            provider_key = project.project_provider or "github"
             provider_settings = dict(settings.provider_settings or {})
+
+            # Derive active agent CLIs configured across active columns for run telemetry
+            active_cols = uow.columns.list_all(active_only=True)
+            col_clis: set[str] = set()
+            for col in active_cols:
+                if col.agent_id:
+                    ag = uow.agents.get_by_id(col.agent_id)
+                    if ag and ag.cli_provider:
+                        col_clis.add(ag.cli_provider)
+            cli_summary = ", ".join(sorted(col_clis)) if col_clis else None
 
             p_provider = project_registry.get_or_none(provider_key)
             if not p_provider:
                 raise BoardError(f"Provedor de projeto '{provider_key}' não está registrado.")
+            if not is_project_provider_enabled(provider_key, provider_settings):
+                run = uow.runs.create(
+                    trigger=trigger,
+                    project_provider_used=provider_key,
+                    project_id=project_db_id,
+                    cli_provider_used=cli_summary,
+                )
+                run = uow.runs.update(
+                    run.id,
+                    status="error",
+                    error=f"Provedor de projeto '{provider_key}' está desativado nas Configurações.",
+                    finished_at=utc_now(),
+                )
+                uow.commit()
+                return run
 
             # Create PipelineRun record
             run = uow.runs.create(
                 trigger=trigger,
                 project_provider_used=provider_key,
                 project_id=project_db_id,
-                cli_provider_used=default_cli,
+                cli_provider_used=cli_summary,
             )
             uow.commit()
             run_id = run.id

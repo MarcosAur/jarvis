@@ -2,48 +2,115 @@
 
 {% block title %}{% if project %}Editar Projeto{% else %}Novo Projeto{% endif %} — AI Pipeline{% endblock %}
 
-{% block content %}
-<article>
-  <header>
-    <h2>{% if project %}Editar Projeto: {{ project.name }}{% else %}Novo Projeto{% endif %}</h2>
-    <p>Cadastre o vínculo entre o projeto externo e o diretório na máquina local.</p>
-  </header>
+{% block main_container_class %}max-w-[960px] mx-auto px-4 sm:px-6 py-6{% endblock %}
 
-  <form method="post" action="{% if project %}/projects/{{ project.id }}/edit{% else %}/projects/new{% endif %}">
-    <div class="grid">
-      <div>
-        <label for="name">
-          Nome do Projeto
-          <input type="text" id="name" name="name" value="{{ project.name if project else '' }}" required placeholder="Ex.: API de Pagamentos">
-        </label>
+{% block content %}
+<div class="mb-5">
+  <a href="/projects" class="inline-flex items-center gap-1 font-mono text-[11px] text-on-surface-variant hover:text-primary no-underline mb-1.5">
+    <span class="material-symbols-outlined text-[14px]">arrow_back</span>
+    <span>Voltar para Projetos</span>
+  </a>
+  <h1 class="text-2xl font-semibold text-white tracking-tight m-0">
+    {% if project %}Editar Projeto: {{ project.name }}{% else %}Novo Projeto{% endif %}
+  </h1>
+  <p class="text-[13px] text-on-surface-variant/85 mt-1 mb-0">
+    Selecione o gerenciador do quadro externo, a chave do board e o diretório local do repositório.
+  </p>
+</div>
+
+<div class="bg-surface-container-low border border-[#1e293b] rounded-xl p-6 shadow-[0_8px_24px_rgba(0,0,0,0.28)]">
+  <form method="post" action="{% if project %}/projects/{{ project.id }}/edit{% else %}/projects/new{% endif %}" class="flex flex-col gap-5 m-0">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="flex flex-col gap-1.5">
+        <label for="name" class="font-mono text-[10px] uppercase tracking-wider text-on-surface">Nome do Projeto</label>
+        <input type="text"
+               id="name"
+               name="name"
+               value="{{ project.name if project else '' }}"
+               required
+               placeholder="Ex.: API de Pagamentos"
+               class="w-full bg-surface-container border border-[#222f4c] text-on-surface text-[13px] px-3.5 py-2 rounded-lg focus:outline-none focus:border-primary placeholder:text-outline" />
       </div>
 
-      <div>
-        <label for="project_key">
-          Chave do Projeto (GitHub / Jira / Trello)
-          <input type="text" id="project_key" name="project_key" value="{{ project.project_key if project else '' }}" required placeholder="Ex.: 3, login/3, URL do GitHub, PROJ-1 ou ID do Trello">
-          <small>Provedor ativo: <strong>{{ active_provider_name }}</strong></small>
-        </label>
+      <div class="flex flex-col gap-1.5">
+        <label for="project_provider" class="font-mono text-[10px] uppercase tracking-wider text-on-surface">Gerenciador de Projetos</label>
+        <select id="project_provider"
+                name="project_provider"
+                required
+                onchange="updateProjectKeyHint()"
+                class="w-full bg-surface-container border border-[#222f4c] text-on-surface font-mono text-[12px] px-3 py-2 rounded-lg focus:outline-none focus:border-primary">
+          {% for pp in project_providers %}
+            <option value="{{ pp.key }}" {% if (project and project.project_provider == pp.key) or (not project and pp.key == 'github') %}selected{% endif %}>
+              {{ pp.name }} ({{ pp.key }}){% if not pp.enabled %} — Desativado nas Configurações{% endif %}
+            </option>
+          {% else %}
+            <option value="" disabled selected>Nenhum provedor habilitado em Configurações</option>
+          {% endfor %}
+        </select>
+        <small class="text-[11px] text-outline">Cada projeto pode usar seu próprio gerenciador (GitHub, Jira ou Trello) simultaneamente.</small>
       </div>
     </div>
 
-    <label for="local_path">
-      Caminho Absoluto na Máquina (local_path)
-      <input type="text" id="local_path" name="local_path" value="{{ project.local_path if project else '' }}" required placeholder="Ex.: /home/maurelio/Projetos/meu_projeto">
-      <small>Onde o código-fonte está clonado na sua máquina.</small>
+    <div class="flex flex-col gap-1.5">
+      <label for="project_key" class="font-mono text-[10px] uppercase tracking-wider text-on-surface">Chave do Projeto / Board</label>
+      <input type="text"
+             id="project_key"
+             name="project_key"
+             value="{{ project.project_key if project else '' }}"
+             required
+             placeholder="Ex.: 3, owner/3 ou URL do GitHub Projects"
+             class="w-full bg-surface-container border border-[#222f4c] text-on-surface font-mono text-[12px] px-3.5 py-2 rounded-lg focus:outline-none focus:border-primary placeholder:text-outline" />
+      <small id="project-key-hint" class="text-[11px] text-outline">
+        GitHub: número do Project v2, <code>owner/numero</code> ou URL completa.
+      </small>
+    </div>
+
+    <div class="flex flex-col gap-1.5">
+      <label for="local_path" class="font-mono text-[10px] uppercase tracking-wider text-on-surface">Caminho Absoluto na Máquina (local_path)</label>
+      <input type="text"
+             id="local_path"
+             name="local_path"
+             value="{{ project.local_path if project else '' }}"
+             required
+             placeholder="Ex.: /home/maurelio/Projetos/meu_projeto"
+             class="w-full bg-surface-container border border-[#222f4c] text-on-surface font-mono text-[12px] px-3.5 py-2 rounded-lg focus:outline-none focus:border-primary placeholder:text-outline" />
+      <small class="text-[11px] text-outline">Onde o código-fonte está clonado na sua máquina.</small>
+    </div>
+
+    <label for="active" class="flex items-center gap-2.5 p-3.5 rounded-lg bg-surface-container-lowest border border-[#1a2538] text-[13px] text-on-surface cursor-pointer">
+      <input type="checkbox" id="active" name="active" value="true" {% if not project or project.active %}checked{% endif %} class="accent-[#3b82f6]" />
+      <span>Projeto Ativo (incluído nas execuções automáticas da pipeline)</span>
     </label>
 
-    <fieldset>
-      <label for="active">
-        <input type="checkbox" id="active" name="active" value="true" {% if not project or project.active %}checked{% endif %}>
-        Projeto Ativo (incluído nas execuções automáticas da pipeline)
-      </label>
-    </fieldset>
-
-    <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
-      <button type="submit">Salvar Projeto</button>
-      <a href="/projects" role="button" class="secondary outline">Cancelar</a>
+    <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-[#1e293b]">
+      <a href="/projects" class="px-4 py-2 rounded-lg bg-surface-container-high hover:bg-surface-container-highest border border-[#222f4c] text-on-surface text-[12px] font-medium no-underline">
+        Cancelar
+      </a>
+      <button type="submit" class="px-5 py-2 rounded-lg bg-[#2563eb] hover:bg-[#3b82f6] text-white text-[12px] font-medium border border-white/10 shadow-[0_0_12px_rgba(59,130,246,0.3)] cursor-pointer">
+        Salvar Projeto
+      </button>
     </div>
   </form>
-</article>
+</div>
+
+<script>
+  function updateProjectKeyHint() {
+    const sel = document.getElementById('project_provider');
+    const hint = document.getElementById('project-key-hint');
+    const input = document.getElementById('project_key');
+    if (!sel || !hint) return;
+    const v = sel.value;
+    if (v === 'jira') {
+      hint.textContent = 'Jira: chave do projeto ou ID do board (ex.: PROJ ou 42).';
+      if (input && !input.value) input.placeholder = 'Ex.: PROJ ou 42';
+    } else if (v === 'trello') {
+      hint.textContent = 'Trello: ID curto ou URL do board do Trello.';
+      if (input && !input.value) input.placeholder = 'Ex.: aBcDeFgH (Board ID)';
+    } else {
+      hint.textContent = 'GitHub: número do Project v2, owner/numero ou URL completa.';
+      if (input && !input.value) input.placeholder = 'Ex.: 3, owner/3 ou URL do GitHub Projects';
+    }
+  }
+  document.addEventListener('DOMContentLoaded', updateProjectKeyHint);
+</script>
 {% endblock %}

@@ -30,6 +30,9 @@
             <span class="relative inline-flex rounded-full h-2 w-2 bg-tertiary"></span>
           </span>
           <span class="font-medium">{{ worker_health.workers_online }} worker(s) Celery online</span>
+          {% if worker_health.nodes_online > 0 %}
+            <span class="text-outline">• {{ worker_health.nodes_online }} nó(s)</span>
+          {% endif %}
         </div>
       {% else %}
         <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-container-low border border-[#d97706]/35 text-[#fbbf24] font-mono text-[11px]">

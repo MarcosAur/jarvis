@@ -38,6 +38,7 @@ class Agent(SQLModel, table=True):
     cli_provider: str = Field(index=True)
     model_id: str
     prompt_markdown: str = Field(default="")
+    max_parallel_executions: int = Field(default=1)
     active: bool = Field(default=True)
     created_at: datetime = Field(default_factory=utc_now)
     updated_at: datetime = Field(default_factory=utc_now)
@@ -48,6 +49,7 @@ class Project(SQLModel, table=True):
 
     id: int | None = Field(default=None, primary_key=True)
     project_key: str = Field(unique=True, index=True)
+    project_provider: str = Field(default="github", index=True)
     name: str
     local_path: str
     active: bool = Field(default=True)

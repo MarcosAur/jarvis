@@ -44,8 +44,8 @@
                 hx-trigger="change"
                 class="w-full bg-surface-container border border-[#222f4c] text-on-surface font-mono text-[12px] px-3 py-2 rounded-lg focus:outline-none focus:border-primary">
           {% for p in cli_providers %}
-            <option value="{{ p.key }}" {% if (agent and agent.cli_provider == p.key) or (not agent and default_cli == p.key) %}selected{% endif %}>
-              {{ p.name }} {% if p.installed %}(Instalado){% else %}(Não instalado){% endif %}
+            <option value="{{ p.key }}" {% if (agent and agent.cli_provider == p.key) or (not agent and initial_cli == p.key) %}selected{% endif %}>
+              {{ p.name }} {% if p.installed %}(Instalado){% else %}(Não instalado){% endif %}{% if not p.enabled %} — Desativado nas Configurações{% endif %}
             </option>
           {% endfor %}
         </select>
@@ -89,10 +89,29 @@
                 class="w-full bg-surface-container border border-[#222f4c] text-on-surface font-mono text-[12px] p-3.5 rounded-lg focus:outline-none focus:border-primary placeholder:text-outline">{{ agent.prompt_markdown if agent else '' }}</textarea>
     </div>
 
-    <label for="active" class="flex items-center gap-2.5 p-3.5 rounded-lg bg-surface-container-lowest border border-[#1a2538] text-[13px] text-on-surface cursor-pointer">
-      <input type="checkbox" id="active" name="active" value="true" {% if not agent or agent.active %}checked{% endif %} class="accent-[#3b82f6]" />
-      <span>Agente Ativo (disponível para vincular a colunas do Kanban)</span>
-    </label>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
+      <div class="flex flex-col gap-1.5">
+        <label for="max_parallel_executions" class="font-mono text-[10px] uppercase tracking-wider text-on-surface">
+          Execuções Paralelas por Projeto
+        </label>
+        <input type="number"
+               id="max_parallel_executions"
+               name="max_parallel_executions"
+               min="1"
+               max="32"
+               required
+               value="{{ agent.max_parallel_executions if agent else 1 }}"
+               class="w-full bg-surface-container border border-[#222f4c] text-on-surface font-mono text-[13px] px-3.5 py-2 rounded-lg focus:outline-none focus:border-primary" />
+        <small class="text-[11px] text-outline">
+          1 = sequencial no mesmo projeto (recomendado para Dev que altera arquivos); &gt;1 = paralelo (ex.: Arquiteto/Revisor).
+        </small>
+      </div>
+
+      <label for="active" class="flex items-center gap-2.5 p-3.5 sm:mt-5 rounded-lg bg-surface-container-lowest border border-[#1a2538] text-[13px] text-on-surface cursor-pointer">
+        <input type="checkbox" id="active" name="active" value="true" {% if not agent or agent.active %}checked{% endif %} class="accent-[#3b82f6]" />
+        <span>Agente Ativo (disponível para vincular a colunas do Kanban)</span>
+      </label>
+    </div>
 
     <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-[#1e293b]">
       <a href="/agents" class="px-4 py-2 rounded-lg bg-surface-container-high hover:bg-surface-container-highest border border-[#222f4c] text-on-surface text-[12px] font-medium no-underline">

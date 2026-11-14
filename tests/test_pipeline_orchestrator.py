@@ -43,6 +43,7 @@ def test_orchestrator_syncs_cards_and_enqueues_jobs():
         )
         proj = uow.projects.create(
             project_key="fake-proj-1",
+            project_provider="fake_board",
             name="Projeto Teste",
             local_path="/tmp",
             active=True,

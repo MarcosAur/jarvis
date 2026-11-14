@@ -11,7 +11,14 @@
               <span class="relative inline-flex rounded-full h-2 w-2 bg-tertiary"></span>
             </span>
             <span class="font-medium">{{ worker_health.workers_online }} worker(s) online</span>
-            <span class="text-outline hidden sm:inline">• {{ worker_health.worker_names|join(', ') }}</span>
+            {% if worker_health.nodes_online > 0 %}
+              <span class="text-outline hidden sm:inline">• {{ worker_health.nodes_online }} nó(s) ({{ worker_health.worker_names|join(', ') }})</span>
+              {% if worker_health.active_tasks_count > 0 %}
+                <span class="text-primary">• {{ worker_health.active_tasks_count }} em execução</span>
+              {% endif %}
+            {% elif worker_health.worker_names %}
+              <span class="text-outline hidden sm:inline">• {{ worker_health.worker_names|join(', ') }}</span>
+            {% endif %}
           </div>
         {% else %}
           <div class="flex items-center gap-2 px-2.5 py-1 rounded bg-surface-container-low border border-[#d97706]/35 text-[#fbbf24]">
@@ -56,7 +63,7 @@
       </div>
       <div class="hidden md:flex items-center gap-1.5 px-2 py-0.5 rounded bg-surface-container-high text-secondary border border-[#222f4c]">
         <span class="material-symbols-outlined text-[14px]">terminal</span>
-        <span class="text-on-surface">{{ default_cli_provider }} CLI</span>
+        <span class="text-on-surface">Multi-Provedor CLI</span>
       </div>
     </div>
   </div>

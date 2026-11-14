@@ -7,6 +7,7 @@ from fastapi.templating import Jinja2Templates
 from pipeline.adapters.db.uow import SqlAlchemyUnitOfWork
 from pipeline.application.model_catalog_service import ModelCatalogService
 from pipeline.bootstrap import cli_registry
+from pipeline.domain.provider_state import is_cli_provider_enabled
 from pipeline.web.dependencies import get_model_catalog_service, get_uow
 
 router = APIRouter(prefix="/agents", tags=["agents"])
@@ -23,13 +24,14 @@ _JOB_STATE_LABELS = {
 
 def _collect_cli_statuses(
     uow: SqlAlchemyUnitOfWork,
-    default_cli_provider: str,
+    provider_settings: dict[str, Any] | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, dict[str, Any]]]:
     cli_statuses: list[dict[str, Any]] = []
     cli_provider_map: dict[str, dict[str, Any]] = {}
 
     for provider in cli_registry.list_all():
         installed = provider.is_installed()
+        enabled = is_cli_provider_enabled(provider.provider_key, provider_settings)
         binary_path = shutil.which(provider.binary_name)
         cached_models = uow.models.list_by_provider(provider.provider_key)
         item: dict[str, Any] = {
@@ -38,13 +40,23 @@ def _collect_cli_statuses(
             "binary_name": provider.binary_name,
             "binary_path": binary_path,
             "installed": installed,
-            "is_default": provider.provider_key == default_cli_provider,
+            "enabled": enabled,
             "models_count": len(cached_models),
         }
         cli_statuses.append(item)
         cli_provider_map[provider.provider_key] = item
 
     return cli_statuses, cli_provider_map
+
+
+def _pick_initial_cli(cli_statuses: list[dict[str, Any]]) -> str:
+    for item in cli_statuses:
+        if item["enabled"] and item["installed"]:
+            return str(item["key"])
+    for item in cli_statuses:
+        if item["enabled"]:
+            return str(item["key"])
+    return str(cli_statuses[0]["key"]) if cli_statuses else "agy"
 
 
 def _summarize_prompt(prompt_markdown: str, max_len: int = 115) -> str:
@@ -63,8 +75,9 @@ def _build_agents_dashboard_context(uow: SqlAlchemyUnitOfWork) -> dict[str, Any]
     columns = uow.columns.list_all()
     jobs = uow.jobs.list_all(limit=500)
 
-    cli_statuses, cli_provider_map = _collect_cli_statuses(uow, app_settings.default_cli_provider)
-    default_models = uow.models.list_by_provider(app_settings.default_cli_provider)
+    cli_statuses, cli_provider_map = _collect_cli_statuses(uow, app_settings.provider_settings)
+    initial_cli_key = _pick_initial_cli(cli_statuses)
+    default_models = uow.models.list_by_provider(initial_cli_key)
 
     columns_by_agent: dict[int, list[dict[str, Any]]] = {}
     for col in columns:
@@ -106,14 +119,18 @@ def _build_agents_dashboard_context(uow: SqlAlchemyUnitOfWork) -> dict[str, Any]
         provider_info = cli_provider_map.get(agent.cli_provider)
         linked_cols = columns_by_agent.get(agent.id, []) if agent.id is not None else []
 
+        running_jobs_count = sum(1 for j in agent_jobs if j.state == "running")
+
         agent_cards.append(
             {
                 "agent": agent,
                 "prompt_summary": _summarize_prompt(agent.prompt_markdown),
                 "provider_display": provider_info["name"] if provider_info else agent.cli_provider.upper(),
                 "provider_installed": provider_info["installed"] if provider_info else False,
+                "provider_enabled": provider_info["enabled"] if provider_info else True,
                 "linked_columns": linked_cols,
                 "running_job": running_job,
+                "running_jobs_count": running_jobs_count,
                 "last_job": last_job,
                 "last_job_state_label": _JOB_STATE_LABELS.get(last_job.state, last_job.state) if last_job else None,
                 "total_jobs": len(agent_jobs),
@@ -128,22 +145,22 @@ def _build_agents_dashboard_context(uow: SqlAlchemyUnitOfWork) -> dict[str, Any]
     active_agents = sum(1 for a in agents if a.active)
     installed_clis = sum(1 for c in cli_statuses if c["installed"])
     missing_clis = len(cli_statuses) - installed_clis
-
-    default_cli_key = app_settings.default_cli_provider
-    default_cli_name = cli_provider_map.get(default_cli_key, {}).get("name", default_cli_key.upper())
+    enabled_clis = sum(1 for c in cli_statuses if c["enabled"])
+    total_models_count = sum(int(c["models_count"]) for c in cli_statuses if c["enabled"])
 
     return {
         "active_page": "agents",
         "agents": agents,
         "agent_cards": agent_cards,
         "cli_providers": cli_statuses,
-        "default_cli": default_cli_key,
-        "default_cli_name": default_cli_name,
+        "initial_cli": initial_cli_key,
         "default_models": default_models,
         "total_agents": total_agents,
         "active_agents": active_agents,
         "installed_clis": installed_clis,
         "missing_clis": missing_clis,
+        "enabled_clis": enabled_clis,
+        "total_models_count": total_models_count,
     }
 
 
@@ -174,7 +191,7 @@ def scan_clis_panel(
 ):
     with uow:
         app_settings = uow.settings.get()
-        cli_statuses, _ = _collect_cli_statuses(uow, app_settings.default_cli_provider)
+        cli_statuses, _ = _collect_cli_statuses(uow, app_settings.provider_settings)
 
     installed_clis = sum(1 for c in cli_statuses if c["installed"])
     return templates.TemplateResponse(
@@ -195,13 +212,11 @@ def new_agent_form(
 ):
     with uow:
         settings = uow.settings.get()
-        default_cli = settings.default_cli_provider
-        models = uow.models.list_by_provider(default_cli)
+        cli_statuses, _ = _collect_cli_statuses(uow, settings.provider_settings)
+        initial_cli = _pick_initial_cli(cli_statuses)
+        models = uow.models.list_by_provider(initial_cli)
 
-    cli_providers = [
-        {"key": p.provider_key, "name": p.display_name, "installed": p.is_installed()}
-        for p in cli_registry.list_all()
-    ]
+    cli_providers = [c for c in cli_statuses if c["enabled"]]
 
     return templates.TemplateResponse(
         request=request,
@@ -210,7 +225,7 @@ def new_agent_form(
             "active_page": "agents",
             "agent": None,
             "cli_providers": cli_providers,
-            "default_cli": default_cli,
+            "initial_cli": initial_cli,
             "models": models,
         },
     )
@@ -222,9 +237,11 @@ def create_agent(
     cli_provider: str = Form(...),
     model_id: str = Form(...),
     prompt_markdown: str = Form(""),
+    max_parallel_executions: int = Form(1),
     active: bool = Form(False),
     uow: SqlAlchemyUnitOfWork = Depends(get_uow),
 ):
+    safe_parallel = max(1, min(int(max_parallel_executions), 32))
     with uow:
         uow.agents.create(
             name=name.strip(),
@@ -232,6 +249,7 @@ def create_agent(
             model_id=model_id.strip(),
             prompt_markdown=prompt_markdown,
             active=active,
+            max_parallel_executions=safe_parallel,
         )
         uow.commit()
 
@@ -248,12 +266,11 @@ def edit_agent_form(
         agent = uow.agents.get_by_id(agent_id)
         if not agent:
             return RedirectResponse(url="/agents?alert_message=Agente+não+encontrado&alert_type=error", status_code=303)
+        settings = uow.settings.get()
+        cli_statuses, _ = _collect_cli_statuses(uow, settings.provider_settings)
         models = uow.models.list_by_provider(agent.cli_provider)
 
-    cli_providers = [
-        {"key": p.provider_key, "name": p.display_name, "installed": p.is_installed()}
-        for p in cli_registry.list_all()
-    ]
+    cli_providers = [c for c in cli_statuses if c["enabled"] or c["key"] == agent.cli_provider]
 
     return templates.TemplateResponse(
         request=request,
@@ -262,7 +279,7 @@ def edit_agent_form(
             "active_page": "agents",
             "agent": agent,
             "cli_providers": cli_providers,
-            "default_cli": agent.cli_provider,
+            "initial_cli": agent.cli_provider,
             "models": models,
         },
     )
@@ -275,9 +292,11 @@ def update_agent(
     cli_provider: str = Form(...),
     model_id: str = Form(...),
     prompt_markdown: str = Form(""),
+    max_parallel_executions: int = Form(1),
     active: bool = Form(False),
     uow: SqlAlchemyUnitOfWork = Depends(get_uow),
 ):
+    safe_parallel = max(1, min(int(max_parallel_executions), 32))
     with uow:
         uow.agents.update(
             agent_id,
@@ -285,6 +304,7 @@ def update_agent(
             cli_provider=cli_provider.strip(),
             model_id=model_id.strip(),
             prompt_markdown=prompt_markdown,
+            max_parallel_executions=safe_parallel,
             active=active,
         )
         uow.commit()

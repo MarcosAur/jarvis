@@ -5,6 +5,10 @@ from pipeline.bootstrap import cli_registry, project_registry
 from pipeline.domain.entities import CliPromptRequest
 from pipeline.domain.exceptions import EntityNotFoundError
 from pipeline.domain.ports.uow import UnitOfWork
+from pipeline.domain.provider_state import (
+    is_cli_provider_enabled,
+    is_project_provider_enabled,
+)
 
 
 class JobRunnerService:
@@ -116,6 +120,11 @@ class JobRunnerService:
                 self.mark_failed(job_id, error_msg, process_status="Falha: agente não associado")
                 return {"success": False, "job_id": job_id, "error": error_msg}
 
+            if not is_cli_provider_enabled(provider_key, settings.provider_settings):
+                error_msg = f"Provedor CLI '{provider_key}' está desativado nas Configurações."
+                self.mark_failed(job_id, error_msg, process_status=f"Falha: CLI '{provider_key}' desativada")
+                return {"success": False, "job_id": job_id, "error": error_msg}
+
             cli_provider = cli_registry.get_or_none(provider_key)
             if not cli_provider or not cli_provider.is_installed():
                 error_msg = f"Provedor CLI '{provider_key}' não está instalado no sistema."
@@ -137,40 +146,46 @@ class JobRunnerService:
 
             if res.success:
                 warnings = []
-                if job.target_column_snapshot and settings.active_project_provider:
-                    p_provider = project_registry.get_or_none(settings.active_project_provider)
-                    if p_provider:
-                        self._update_process_status(
-                            job_id,
-                            f"Atualizando card no provedor ({settings.active_project_provider})",
+                project_provider_key = project.project_provider if project and project.project_provider else None
+                if job.target_column_snapshot and project_provider_key:
+                    if not is_project_provider_enabled(project_provider_key, settings.provider_settings):
+                        warnings.append(
+                            f"Provedor '{project_provider_key}' desativado; movimentação remota ignorada."
                         )
-                        try:
-                            p_provider.add_comment(
-                                project.project_key,
-                                card.remote_id,
-                                f"🤖 **Agente {agent.name}** ({provider_key}/{model_id}):\n\n{res.output_text}",
-                                settings.provider_settings,
+                    else:
+                        p_provider = project_registry.get_or_none(project_provider_key)
+                        if p_provider:
+                            self._update_process_status(
+                                job_id,
+                                f"Atualizando card no provedor ({project_provider_key})",
                             )
-                        except Exception as e:
-                            warnings.append(f"Falha ao comentar no card: {e}")
-                        try:
-                            p_provider.move_card(
-                                project.project_key,
-                                card.remote_id,
-                                job.target_column_snapshot,
-                                settings.provider_settings,
-                            )
-                            with self.uow_factory() as uow:
-                                uow.cards.update(card.id, column_name=job.target_column_snapshot)
-                                uow.events.create(
-                                    card_id=card.id,
-                                    event_type="column_changed",
-                                    from_column=card.column_name,
-                                    to_column=job.target_column_snapshot,
+                            try:
+                                p_provider.add_comment(
+                                    project.project_key,
+                                    card.remote_id,
+                                    f"🤖 **Agente {agent.name}** ({provider_key}/{model_id}):\n\n{res.output_text}",
+                                    settings.provider_settings,
                                 )
-                                uow.commit()
-                        except Exception as e:
-                            warnings.append(f"Falha ao mover o card: {e}")
+                            except Exception as e:
+                                warnings.append(f"Falha ao comentar no card: {e}")
+                            try:
+                                p_provider.move_card(
+                                    project.project_key,
+                                    card.remote_id,
+                                    job.target_column_snapshot,
+                                    settings.provider_settings,
+                                )
+                                with self.uow_factory() as uow:
+                                    uow.cards.update(card.id, column_name=job.target_column_snapshot)
+                                    uow.events.create(
+                                        card_id=card.id,
+                                        event_type="column_changed",
+                                        from_column=card.column_name,
+                                        to_column=job.target_column_snapshot,
+                                    )
+                                    uow.commit()
+                            except Exception as e:
+                                warnings.append(f"Falha ao mover o card: {e}")
 
                 with self.uow_factory() as uow:
                     final_status = "Concluído com avisos no quadro" if warnings else "Concluído com sucesso"

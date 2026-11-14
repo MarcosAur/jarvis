@@ -9,10 +9,23 @@ from pipeline.application.pipeline_orchestrator import PipelineOrchestrator
 from pipeline.bootstrap import project_registry
 from pipeline.config import config
 from pipeline.domain.ports.job_dispatcher import JobDispatcher
+from pipeline.domain.provider_state import (
+    get_disabled_project_providers,
+    is_project_provider_enabled,
+)
 from pipeline.web.dependencies import get_job_dispatcher, get_orchestrator, get_uow
 
 router = APIRouter(prefix="/projects", tags=["projects"])
 templates = Jinja2Templates(directory="src/pipeline/web/templates")
+
+
+def _project_provider_options(provider_settings: dict | None, current_key: str | None = None) -> list[dict]:
+    options = []
+    for pp in project_registry.list_all():
+        enabled = is_project_provider_enabled(pp.provider_key, provider_settings)
+        if enabled or pp.provider_key == current_key:
+            options.append({"key": pp.provider_key, "name": pp.display_name, "enabled": enabled})
+    return options
 
 
 @router.get("", response_class=HTMLResponse)
@@ -24,6 +37,10 @@ def list_projects(
 ):
     with uow:
         projects = uow.projects.list_all()
+        settings = uow.settings.get()
+        disabled_providers = get_disabled_project_providers(settings.provider_settings)
+
+    provider_labels = {pp.provider_key: pp.display_name for pp in project_registry.list_all()}
 
     return templates.TemplateResponse(
         request=request,
@@ -31,6 +48,8 @@ def list_projects(
         context={
             "active_page": "projects",
             "projects": projects,
+            "provider_labels": provider_labels,
+            "disabled_providers": disabled_providers,
             "alert_message": alert_message,
             "alert_type": alert_type,
         },
@@ -44,8 +63,7 @@ def new_project_form(
 ):
     with uow:
         settings = uow.settings.get()
-        p_provider = project_registry.get_or_none(settings.active_project_provider)
-        active_provider_name = p_provider.display_name if p_provider else settings.active_project_provider
+        project_providers = _project_provider_options(settings.provider_settings)
 
     return templates.TemplateResponse(
         request=request,
@@ -53,7 +71,7 @@ def new_project_form(
         context={
             "active_page": "projects",
             "project": None,
-            "active_provider_name": active_provider_name,
+            "project_providers": project_providers,
         },
     )
 
@@ -61,6 +79,7 @@ def new_project_form(
 @router.post("/new")
 def create_project(
     name: str = Form(...),
+    project_provider: str = Form("github"),
     project_key: str = Form(...),
     local_path: str = Form(...),
     active: bool = Form(False),
@@ -74,9 +93,17 @@ def create_project(
             status_code=303,
         )
 
+    provider_key = (project_provider or "github").strip()
+    if not project_registry.get_or_none(provider_key):
+        return RedirectResponse(
+            url=f"/projects?alert_message=Provedor+de+projeto+inválido:+{provider_key}&alert_type=error",
+            status_code=303,
+        )
+
     with uow:
         uow.projects.create(
             name=name.strip(),
+            project_provider=provider_key,
             project_key=project_key.strip(),
             local_path=str(path.resolve()),
             active=active,
@@ -97,8 +124,7 @@ def edit_project_form(
         if not project:
             return RedirectResponse(url="/projects?alert_message=Projeto+não+encontrado&alert_type=error", status_code=303)
         settings = uow.settings.get()
-        p_provider = project_registry.get_or_none(settings.active_project_provider)
-        active_provider_name = p_provider.display_name if p_provider else settings.active_project_provider
+        project_providers = _project_provider_options(settings.provider_settings, current_key=project.project_provider)
 
     return templates.TemplateResponse(
         request=request,
@@ -106,7 +132,7 @@ def edit_project_form(
         context={
             "active_page": "projects",
             "project": project,
-            "active_provider_name": active_provider_name,
+            "project_providers": project_providers,
         },
     )
 
@@ -115,6 +141,7 @@ def edit_project_form(
 def update_project(
     project_id: int,
     name: str = Form(...),
+    project_provider: str = Form("github"),
     project_key: str = Form(...),
     local_path: str = Form(...),
     active: bool = Form(False),
@@ -127,10 +154,18 @@ def update_project(
             status_code=303,
         )
 
+    provider_key = (project_provider or "github").strip()
+    if not project_registry.get_or_none(provider_key):
+        return RedirectResponse(
+            url=f"/projects?alert_message=Provedor+de+projeto+inválido:+{provider_key}&alert_type=error",
+            status_code=303,
+        )
+
     with uow:
         uow.projects.update(
             project_id,
             name=name.strip(),
+            project_provider=provider_key,
             project_key=project_key.strip(),
             local_path=str(path.resolve()),
             active=active,
@@ -209,8 +244,10 @@ def _build_board_context(
             return None
 
         settings = uow.settings.get()
-        p_provider = project_registry.get_or_none(settings.active_project_provider)
-        active_provider_name = p_provider.display_name if p_provider else settings.active_project_provider
+        proj_provider_key = project.project_provider or "github"
+        p_provider = project_registry.get_or_none(proj_provider_key)
+        active_provider_name = p_provider.display_name if p_provider else proj_provider_key
+        provider_enabled = is_project_provider_enabled(proj_provider_key, settings.provider_settings)
 
         raw_columns = uow.columns.list_all(active_only=True)
         columns = []
@@ -256,7 +293,8 @@ def _build_board_context(
         "active_page": "board",
         "project": project,
         "active_provider_name": active_provider_name,
-        "active_provider_key": settings.active_project_provider,
+        "active_provider_key": proj_provider_key,
+        "provider_enabled": provider_enabled,
         "columns": columns,
         "cards_by_column": cards_by_column,
         "latest_job_by_card": latest_job_by_card,

@@ -39,6 +39,7 @@ class Config(BaseSettings):
     CELERY_PIPELINE_INTERVAL_SECONDS: int = 60
     CELERY_TIMEOUT_OVERHEAD_SECONDS: int = 120
     CELERY_HARD_TIMEOUT_GRACE_SECONDS: int = 60
+    CELERY_AGENT_SLOT_RETRY_SECONDS: int = 15
     CELERY_TASK_ALWAYS_EAGER: bool = False
 
     # Default provider secrets/keys (opcionais, fallback se não informados no DB)

@@ -52,6 +52,7 @@ def test_cruds_end_to_end():
         "/projects/new",
         data={
             "name": project_name,
+            "project_provider": "github",
             "project_key": project_key,
             "local_path": "/tmp",
             "active": "true",
@@ -88,7 +89,7 @@ def test_cruds_end_to_end():
     # ==================== CRUD 4: SETTINGS ====================
     resp = client.get("/settings")
     assert resp.status_code == 200
-    assert "Provedor CLI Padrão" in resp.text
+    assert "Controle de Provedores Ativos" in resp.text
 
     resp = client.post(
         "/settings",
@@ -118,7 +119,7 @@ def test_agents_nexus_dashboard_and_cli_scan():
     resp = client.get("/agents")
     assert resp.status_code == 200
     assert "Agentes Ativos" in resp.text
-    assert "Provedor Principal" in resp.text
+    assert "Catálogo Multi-Provedor" in resp.text
     assert "CLIs no $PATH" in resp.text
     assert "CLIs no Ambiente Local" in resp.text
     assert "Modelos &amp; Limites do Worker" not in resp.text
@@ -157,8 +158,8 @@ def test_nexus_columns_settings_runs_and_centered_navbar():
     # Configurações Globais
     settings_resp = client.get("/settings")
     assert settings_resp.status_code == 200
-    assert "Provedores &amp; Ambientes Padrão" in settings_resp.text
-    assert "Provedor CLI Padrão" in settings_resp.text
+    assert "Controle de Provedores Ativos" in settings_resp.text
+    assert "Gerenciadores de Projeto" in settings_resp.text
     assert "Credenciais dos Provedores de Projetos" in settings_resp.text
     assert 'form="sync-models-form"' in settings_resp.text
 
@@ -235,4 +236,21 @@ def test_nexus_columns_settings_runs_and_centered_navbar():
     assert "Snapshot do Despacho" in new_job_resp.text
     assert "Limites de Execução (SLA)" in new_job_resp.text
     assert f"Card Auditoria {uid}" in new_job_resp.text
+
+    # Agent per-project max_parallel_executions CRUD
+    create_agent_resp = client.post(
+        "/agents/new",
+        data={
+            "name": f"Arquiteto Paralelo {uid}",
+            "cli_provider": "agy",
+            "model_id": "gemini-4-argon-medium",
+            "prompt_markdown": "Prompt paralelo",
+            "max_parallel_executions": "3",
+            "active": "true",
+        },
+        follow_redirects=True,
+    )
+    assert create_agent_resp.status_code == 200
+    assert f"Arquiteto Paralelo {uid}" in create_agent_resp.text
+    assert "Limite: 3x/proj" in create_agent_resp.text
 

@@ -26,8 +26,8 @@
           </div>
         </div>
 
-        {% if cli.is_default %}
-          <span class="font-mono text-[10px] px-2 py-0.5 rounded bg-[#2563eb] text-white font-semibold shrink-0">Padrão</span>
+        {% if not cli.enabled %}
+          <span class="font-mono text-[10px] text-error bg-red-500/10 border border-red-500/30 px-2 py-0.5 rounded shrink-0">Desativado</span>
         {% elif cli.installed %}
           <span class="font-mono text-[10px] text-tertiary bg-surface-container border border-emerald-500/25 px-2 py-0.5 rounded shrink-0">Ativo</span>
         {% else %}
